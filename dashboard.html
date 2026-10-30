@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#090909">
+<title>TrendyBot 2.0 — Public Dashboard</title>
+<style>
+:root{--bg:#090909;--panel:#121212;--panel2:#171717;--gold:#d8b56a;--gold2:#f1d99e;--muted:#999;--line:#292929;--green:#72d6a0}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 75% -10%,#342716 0,transparent 38%),var(--bg);color:#f5f1e8;font:15px/1.5 Inter,system-ui,Arial,sans-serif}
+a{color:inherit;text-decoration:none}.wrap{max-width:1120px;margin:auto;padding:28px 22px 60px}
+nav{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:8px 0 28px;border-bottom:1px solid var(--line)}
+.brand{font-weight:900;letter-spacing:.15em}.brand span{color:var(--gold)}.navlinks{display:flex;gap:20px;color:#c6c0b5;font-size:13px}
+.hero{padding:48px 0 28px;display:flex;justify-content:space-between;align-items:end;gap:24px}.eyebrow{color:var(--gold);font-size:11px;letter-spacing:.24em;text-transform:uppercase;font-weight:800}
+h1{font-size:clamp(32px,6vw,54px);line-height:1.05;letter-spacing:-.04em;margin:10px 0}.sub{color:var(--muted);max-width:580px}
+.badge{border:1px solid #66532e;color:var(--gold2);background:#211a10;border-radius:30px;padding:9px 13px;font-size:12px;white-space:nowrap}
+.notice{padding:12px 15px;border:1px solid #574628;background:#1b160e;border-radius:12px;color:#d9c69d;font-size:12px;margin:8px 0 22px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.card{background:linear-gradient(145deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:16px;padding:20px;min-height:130px}
+.label{color:var(--muted);font-size:12px}.value{font-size:32px;font-weight:800;letter-spacing:-.04em;margin:9px 0 2px}.hint{font-size:11px;color:#827d73}.gold{color:var(--gold2)}
+.section{margin-top:28px;display:grid;grid-template-columns:1.35fr 1fr;gap:14px}.section h2{font-size:16px;margin:0 0 16px}.bars{display:flex;align-items:end;gap:10px;height:130px;padding-top:12px}.barbox{flex:1;text-align:center;color:#817b70;font-size:10px}.bar{height:var(--h);min-height:8px;background:linear-gradient(180deg,#e8cd8e,#8a6931);border-radius:6px 6px 2px 2px;margin-bottom:8px;opacity:.85}
+.activity{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);font-size:12px}.dot{width:7px;height:7px;border-radius:50%;background:var(--gold);margin-top:6px;flex:none}.activity small{display:block;color:var(--muted);margin-top:3px}
+.commands{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.cmd{background:#0d0d0d;border:1px solid var(--line);border-radius:10px;padding:12px}.cmd b{color:var(--gold2);font-family:ui-monospace,monospace}.cmd small{display:block;color:var(--muted);margin-top:5px}
+footer{border-top:1px solid var(--line);margin-top:38px;padding-top:20px;display:flex;justify-content:space-between;color:#777;font-size:11px}
+@media(max-width:800px){.grid{grid-template-columns:repeat(2,1fr)}.section{grid-template-columns:1fr}.hero{align-items:start;flex-direction:column}.commands{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:440px){.navlinks{gap:10px;font-size:11px}.wrap{padding-inline:15px}.grid{gap:9px}.card{padding:15px}.value{font-size:27px}.commands{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body><div class="wrap">
+<nav><a class="brand" href="./index.html">TRENDY<span>BOT</span> 2.0</a><div class="navlinks"><a href="./index.html">Home</a><a href="#activity">Activity</a><a href="#commands">Commands</a></div></nav>
+<header class="hero"><div><div class="eyebrow">Trendy Core • Control Center</div><h1>Public <span class="gold">Dashboard.</span></h1><p class="sub">A quick look at the TrendyBot 2.0 ecosystem, its capabilities and activity.</p></div><div class="badge">● PREVIEW MODE</div></header>
+<div class="notice">Preview data only — live bot telemetry has not been connected yet. Numbers and activity below are illustrative, not real-time measurements.</div>
+<section class="grid">
+<div class="card"><div class="label">Bot status</div><div class="value gold">Preview</div><div class="hint">Live connection pending</div></div>
+<div class="card"><div class="label">Registered users</div><div class="value">—</div><div class="hint">Awaiting secure data feed</div></div>
+<div class="card"><div class="label">Commands</div><div class="value">06</div><div class="hint">Featured commands</div></div>
+<div class="card"><div class="label">Uptime</div><div class="value">—</div><div class="hint">Not connected</div></div>
+</section>
+<section class="section">
+<div class="card"><h2>Activity overview</h2><div class="bars">
+<div class="barbox"><div class="bar" style="--h:38%"></div>Mon</div><div class="barbox"><div class="bar" style="--h:57%"></div>Tue</div><div class="barbox"><div class="bar" style="--h:45%"></div>Wed</div><div class="barbox"><div class="bar" style="--h:78%"></div>Thu</div><div class="barbox"><div class="bar" style="--h:62%"></div>Fri</div><div class="barbox"><div class="bar" style="--h:90%"></div>Sat</div><div class="barbox"><div class="bar" style="--h:52%"></div>Sun</div></div><div class="hint">Illustrative chart — not connected to bot events.</div></div>
+<div class="card" id="activity"><h2>Recent activity</h2>
+<div class="activity"><i class="dot"></i><div>Dashboard preview prepared<small>Sample event • Not live</small></div></div>
+<div class="activity"><i class="dot"></i><div>Command directory loaded<small>Sample event • Not live</small></div></div>
+<div class="activity"><i class="dot"></i><div>Trendy Core interface ready<small>Sample event • Not live</small></div></div>
+</div></section>
+<section class="card" id="commands" style="margin-top:14px"><h2>Featured commands</h2><div class="commands">
+<div class="cmd"><b>.ai</b><small>AI assistant</small></div><div class="cmd"><b>.play</b><small>Music search</small></div><div class="cmd"><b>.video</b><small>Video downloads</small></div><div class="cmd"><b>.tagall</b><small>Group mentions</small></div><div class="cmd"><b>.promote</b><small>Group admin tools</small></div><div class="cmd"><b>.demote</b><small>Group admin tools</small></div>
+</div></section>
+<footer><span>© TrendyBot 2.0 • Trendy Core</span><span>Built for speed. Designed for everyone.</span></footer>
+</div></body></html>
