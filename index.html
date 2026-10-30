@@ -1,48 +1,200 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#090909">
-<meta name="description" content="TrendyBot 2.0 — your smart, fast and creative WhatsApp assistant. AI, downloads, media, groups, games and utilities.">
-<title>TrendyBot 2.0 — Always Ready</title>
+<meta name="description" content="Create your TrendyBot 2.0 account or sign in to continue.">
+<title>TrendyBot 2.0 — Account Portal</title>
 <style>
-:root{--bg:#090909;--panel:#111;--panel2:#151515;--gold:#d8b56d;--gold2:#f1d99e;--text:#f5f2eb;--muted:#a9a49a;--line:rgba(216,181,109,.2);--white:#fff}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 75% 0%,rgba(216,181,109,.12),transparent 35%),var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;line-height:1.6}a{color:inherit;text-decoration:none}.wrap{width:min(1160px,calc(100% - 40px));margin:auto}
-header{position:sticky;top:0;z-index:10;background:rgba(9,9,9,.84);backdrop-filter:blur(18px);border-bottom:1px solid rgba(255,255,255,.07)}.nav{height:76px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:11px;font-weight:900;letter-spacing:.12em}.brandmark{width:38px;height:38px;border:1px solid var(--gold);border-radius:12px;display:grid;place-items:center;color:var(--gold);font-size:19px;box-shadow:0 0 24px rgba(216,181,109,.12)}.brand small{display:block;color:var(--gold);font-size:9px;letter-spacing:.28em;margin-top:-5px}.links{display:flex;gap:27px;color:#c9c4b9;font-size:13px}.links a:hover{color:var(--gold2)}.navcta,.btn{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:12px 20px;font-size:13px;font-weight:800;transition:.2s}.navcta,.btn.primary{background:linear-gradient(120deg,#b88c42,#f0d99e);color:#17120a}.btn.secondary{border:1px solid var(--line);color:var(--text);background:rgba(255,255,255,.025)}.btn:hover,.navcta:hover{transform:translateY(-2px);filter:brightness(1.08)}
-.hero{padding:100px 0 82px;display:grid;grid-template-columns:1.15fr .85fr;align-items:center;gap:50px;min-height:620px}.eyebrow{color:var(--gold);font-size:11px;font-weight:800;letter-spacing:.3em;text-transform:uppercase}.hero h1{font-size:clamp(48px,7vw,86px);line-height:.99;letter-spacing:-.065em;margin:20px 0}.hero h1 span{color:var(--gold2);font-family:Georgia,serif;font-weight:500;font-style:italic}.hero p{max-width:570px;color:var(--muted);font-size:17px}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}.hero-note{margin-top:25px;color:#777166;font-size:11px;letter-spacing:.12em}.orb-wrap{display:grid;place-items:center;min-height:390px;position:relative}.orb{width:min(330px,75vw);aspect-ratio:1;border-radius:50%;border:1px solid rgba(216,181,109,.55);display:grid;place-items:center;position:relative;background:radial-gradient(circle at 50% 45%,rgba(216,181,109,.19),rgba(216,181,109,.025) 48%,transparent 70%);box-shadow:0 0 90px rgba(216,181,109,.08),inset 0 0 50px rgba(216,181,109,.08)}.orb:before,.orb:after{content:"";position:absolute;inset:18px;border:1px solid rgba(216,181,109,.2);border-radius:50%}.orb:after{inset:-22px;border-style:dashed;animation:spin 36s linear infinite}.sigil{font-size:100px;color:var(--gold2);font-family:Georgia,serif;text-shadow:0 0 45px rgba(216,181,109,.35)}.orb-label{position:absolute;bottom:18px;color:var(--gold);font-size:10px;letter-spacing:.32em}@keyframes spin{to{transform:rotate(360deg)}}
-section{padding:78px 0}.section-head{display:flex;justify-content:space-between;align-items:end;gap:25px;margin-bottom:30px}.section-head h2{font-size:clamp(30px,4vw,46px);letter-spacing:-.045em;margin:8px 0 0}.section-head p{color:var(--muted);max-width:420px;font-size:14px;margin:0}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.card{padding:25px;border:1px solid rgba(255,255,255,.08);background:linear-gradient(145deg,rgba(255,255,255,.045),rgba(255,255,255,.012));border-radius:18px;min-height:180px;transition:.25s}.card:hover{border-color:var(--line);transform:translateY(-4px);background:linear-gradient(145deg,rgba(216,181,109,.09),rgba(255,255,255,.015))}.icon{font-size:23px;color:var(--gold2)}.card h3{margin:13px 0 6px;font-size:17px}.card p{margin:0;color:var(--muted);font-size:13px}.command-area{display:grid;grid-template-columns:.7fr 1.3fr;gap:30px}.command-intro{color:var(--muted);font-size:14px}.pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}.pill{border:1px solid var(--line);color:var(--gold2);border-radius:999px;padding:7px 12px;font-size:11px}.commands{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.cmd{background:var(--panel);border:1px solid rgba(255,255,255,.07);padding:15px 17px;border-radius:12px;display:flex;justify-content:space-between;gap:12px}.cmd code{color:var(--gold2);font-size:13px}.cmd span{color:#888176;font-size:11px;text-align:right}
-.banner{border:1px solid var(--line);border-radius:24px;padding:42px;background:radial-gradient(circle at 90% 10%,rgba(216,181,109,.16),transparent 35%),#10100f;display:flex;align-items:center;justify-content:space-between;gap:25px}.banner h2{font-size:clamp(28px,4vw,42px);margin:7px 0}.banner p{color:var(--muted);margin:0;max-width:540px;font-size:14px}.status{display:inline-flex;align-items:center;gap:8px;color:#c7c1b4;font-size:11px;letter-spacing:.1em}.dot{width:7px;height:7px;background:#75d69b;border-radius:50%;box-shadow:0 0 12px #75d69b}
-footer{padding:30px 0 45px;border-top:1px solid rgba(255,255,255,.07);color:#777166;font-size:11px}.foot{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}.gold{color:var(--gold2)}
-@media(max-width:800px){.links{display:none}.hero{grid-template-columns:1fr;padding:75px 0 35px;gap:10px}.orb-wrap{min-height:300px}.orb{width:245px}.sigil{font-size:75px}.grid{grid-template-columns:repeat(2,1fr)}.command-area{grid-template-columns:1fr}.section-head{display:block}.section-head p{margin-top:12px}.banner{display:block}.banner .btn{margin-top:20px}}
-@media(max-width:520px){.wrap{width:min(100% - 28px,1160px)}.nav{height:66px}.navcta{padding:10px 14px;font-size:11px}.hero h1{font-size:53px}.hero p{font-size:15px}.grid,.commands{grid-template-columns:1fr}.card{min-height:150px}section{padding:58px 0}.banner{padding:27px}.foot{display:block}.foot span{display:block;margin:7px 0}}
+:root{--bg:#090909;--panel:#111;--gold:#d8b56d;--gold2:#f1d99e;--text:#f5f2eb;--muted:#a9a49a;--line:rgba(216,181,109,.2)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% 0%,rgba(216,181,109,.13),transparent 45%),var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;display:flex;flex-direction:column}
+a{color:inherit;text-decoration:none}
+header{height:76px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center}
+.wrap{width:min(1100px,calc(100% - 36px));margin:auto}
+.nav{display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:11px;font-weight:900;letter-spacing:.12em}
+.brandmark{width:38px;height:38px;border:1px solid var(--gold);border-radius:12px;display:grid;place-items:center;color:var(--gold);font-size:19px}
+.brand small{display:block;color:var(--gold);font-size:9px;letter-spacing:.28em;margin-top:-5px}
+.back{font-size:12px;color:var(--muted)}
+.back:hover{color:var(--gold2)}
+main{flex:1;display:grid;place-items:center;padding:55px 18px}
+.layout{width:min(930px,100%);display:grid;grid-template-columns:1fr 440px;gap:55px;align-items:center}
+.intro .eyebrow{color:var(--gold);font-size:11px;font-weight:800;letter-spacing:.3em;text-transform:uppercase}
+.intro h1{font-size:clamp(42px,6vw,68px);line-height:1;letter-spacing:-.06em;margin:20px 0}
+.intro h1 span{color:var(--gold2);font-family:Georgia,serif;font-style:italic;font-weight:500}
+.intro p{color:var(--muted);font-size:15px;line-height:1.8;max-width:410px}
+.features{display:flex;gap:9px;flex-wrap:wrap;margin-top:25px}
+.feature{border:1px solid var(--line);border-radius:30px;padding:8px 12px;color:var(--gold2);font-size:10px;letter-spacing:.08em}
+.panel{background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.015));border:1px solid var(--line);border-radius:23px;padding:30px;box-shadow:0 20px 80px rgba(0,0,0,.3)}
+.panel-head{text-align:center;margin-bottom:24px}
+.panel-head .symbol{font-family:Georgia,serif;color:var(--gold2);font-size:34px}
+.panel-head h2{font-size:22px;margin:5px 0}
+.panel-head p{color:var(--muted);font-size:12px;margin:0}
+.tabs{display:grid;grid-template-columns:1fr 1fr;padding:5px;background:#090909;border:1px solid rgba(255,255,255,.07);border-radius:12px;margin-bottom:23px}
+.tab{border:0;background:transparent;color:var(--muted);padding:12px 7px;border-radius:8px;font-size:11px;font-weight:800;letter-spacing:.08em;cursor:pointer}
+.tab.active{background:linear-gradient(120deg,#b88c42,#f1d99e);color:#17120a}
+.field{margin-bottom:15px}
+label{display:block;color:#d6d0c4;font-size:11px;font-weight:700;margin-bottom:7px}
+input{width:100%;padding:14px 13px;border-radius:10px;border:1px solid #333;background:#090909;color:var(--text);font-size:13px;outline:none}
+input:focus{border-color:var(--gold)}
+input::placeholder{color:#666}
+.submit{width:100%;border:0;border-radius:30px;padding:14px;background:linear-gradient(120deg,#b88c42,#f1d99e);color:#17120a;font-size:12px;font-weight:900;letter-spacing:.1em;cursor:pointer;margin-top:7px}
+.submit:disabled{opacity:.55;cursor:wait}
+.forgot{display:block;text-align:right;color:var(--gold2);font-size:11px;margin:0 0 16px;cursor:pointer;background:none;border:0;width:100%}
+.message{display:none;margin-top:16px;padding:12px;border-radius:10px;font-size:12px;line-height:1.6;overflow-wrap:anywhere}
+.message.success{display:block;background:rgba(65,150,100,.12);border:1px solid rgba(100,210,140,.25);color:#a9e5bd}
+.message.error{display:block;background:rgba(200,65,65,.1);border:1px solid rgba(220,90,90,.25);color:#ffb1a8}
+.terms{text-align:center;color:#777166;font-size:10px;margin-top:18px;line-height:1.7}
+footer{text-align:center;padding:22px;color:#777166;font-size:10px;border-top:1px solid rgba(255,255,255,.06)}
+@media(max-width:760px){.layout{grid-template-columns:1fr;gap:30px;max-width:440px}.intro{text-align:center}.intro p{margin:auto}.features{justify-content:center}.intro h1{font-size:48px}main{padding:38px 15px}.panel{padding:24px 20px}}
 </style>
 </head>
 <body>
 <header><div class="wrap nav">
-<a class="brand" href="#"><span class="brandmark">T</span><span>TRENDYBOT<small>VERSION 2.0</small></span></a>
-<nav class="links"><a href="#features">Features</a><a href="#commands">Commands</a><a href="#about">About</a></nav>
-<a class="navcta" href="https://t.me/trendy_creators_bot" target="_blank" rel="noopener">OPEN TELEGRAM ↗</a>
+<a class="brand" href="./"><span class="brandmark">T</span><span>TRENDYBOT<small>VERSION 2.0</small></span></a>
+<a class="back" href="./dashboard.html">← PUBLIC DASHBOARD</a>
 </div></header>
 <main>
-<div class="wrap hero">
-<div><div class="eyebrow">✦ The next-generation assistant</div><h1>Smart by nature.<br><span>Trendy</span> by design.</h1><p>Your smart, fast and creative WhatsApp assistant. One powerful companion for AI, downloads, media, groups, games and everyday utilities.</p><div class="actions"><a class="btn primary" href="https://t.me/trendy_creators_bot" target="_blank" rel="noopener">Get started on Telegram ↗</a><a class="btn secondary" href="#features">Explore features ↓</a></div><div class="hero-note">BUILT FOR SPEED&nbsp; · &nbsp;DESIGNED FOR EVERYONE</div></div>
-<div class="orb-wrap"><div class="orb"><div class="sigil">T</div><div class="orb-label">TRENDY CORE</div></div></div>
+<div class="layout">
+<section class="intro">
+<div class="eyebrow">✦ Welcome to Trendy Core</div>
+<h1>Your world.<br><span>Your TrendyBot.</span></h1>
+<p>Create your account or sign in to continue. Your account will be the secure home for managing your TrendyBot WhatsApp connection.</p>
+<div class="features"><span class="feature">✧ AI TOOLS</span><span class="feature">♫ MEDIA</span><span class="feature">◇ GROUPS</span><span class="feature">⌘ UTILITIES</span></div>
+</section>
+<section class="panel">
+<div class="panel-head"><div class="symbol">T</div><h2>Account Portal</h2><p>Access your TrendyBot experience</p></div>
+<div class="tabs">
+<button class="tab active" id="signupTab" type="button">CREATE ACCOUNT</button>
+<button class="tab" id="signinTab" type="button">SIGN IN</button>
 </div>
-<section id="features"><div class="wrap"><div class="section-head"><div><div class="eyebrow">What TrendyBot can do</div><h2>Everything you need.<br><span class="gold">One assistant.</span></h2></div><p>Powerful tools brought together in one simple WhatsApp experience. Explore the core capabilities.</p></div>
-<div class="grid">
-<article class="card"><div class="icon">✧</div><h3>AI Intelligence</h3><p>Get help, ideas and answers with AI-powered conversations.</p></article>
-<article class="card"><div class="icon">♫</div><h3>Music & Downloads</h3><p>Find music and access supported media download tools.</p></article>
-<article class="card"><div class="icon">▧</div><h3>Media Studio</h3><p>Useful image, sticker and media utilities for everyday chats.</p></article>
-<article class="card"><div class="icon">♧</div><h3>Group Tools</h3><p>Helpful group administration and community management commands.</p></article>
-<article class="card"><div class="icon">◇</div><h3>Games & Fun</h3><p>Bring interactive entertainment and playful moments to chats.</p></article>
-<article class="card"><div class="icon">⌘</div><h3>Smart Utilities</h3><p>Quick tools designed to make everyday tasks easier.</p></article>
-</div></div></section>
-<section id="commands"><div class="wrap command-area"><div><div class="eyebrow">Quick command preview</div><h2 style="font-size:38px;line-height:1.1;letter-spacing:-.04em">A command for<br><span class="gold">every moment.</span></h2><p class="command-intro">A preview of selected commands. Available commands can vary as TrendyBot continues to evolve.</p><div class="pills"><span class="pill">AI</span><span class="pill">DOWNLOADS</span><span class="pill">GROUPS</span><span class="pill">UTILITIES</span></div></div>
-<div class="commands"><div class="cmd"><code>.ai</code><span>AI assistant</span></div><div class="cmd"><code>.play</code><span>Find music</span></div><div class="cmd"><code>.video</code><span>Video tools</span></div><div class="cmd"><code>.tagall</code><span>Group utility</span></div><div class="cmd"><code>.promote</code><span>Admin action</span></div><div class="cmd"><code>.demote</code><span>Admin action</span></div></div>
-</div></section>
-<section id="about"><div class="wrap"><div class="banner"><div><div class="status"><span class="dot"></span> TRENDY CORE — ALWAYS READY</div><h2>Your chat. Your tools.<br><span class="gold">Your TrendyBot.</span></h2><p>Ready to explore? Visit our Telegram bot to get started and follow updates from the TrendyBot community.</p></div><a class="btn primary" href="https://t.me/trendy_creators_bot" target="_blank" rel="noopener">Visit @trendy_creators_bot ↗</a></div></div></section>
+<form id="authForm">
+<div class="field" id="confirmField">
+<label for="confirmEmail">CONFIRM EMAIL</label>
+<input id="confirmEmail" type="email" autocomplete="email" placeholder="Enter your email again">
+</div>
+<div class="field">
+<label for="email">EMAIL ADDRESS</label>
+<input id="email" type="email" autocomplete="email" placeholder="you@example.com" required>
+</div>
+<div class="field">
+<label for="password">PASSWORD</label>
+<input id="password" type="password" autocomplete="new-password" minlength="8" placeholder="At least 8 characters" required>
+</div>
+<button class="forgot" id="forgotBtn" type="button" hidden>Forgot your password?</button>
+<button class="submit" id="submitBtn" type="submit">CREATE MY ACCOUNT →</button>
+</form>
+<div class="message" id="message" role="status" aria-live="polite"></div>
+<div class="terms">By continuing, you agree to use TrendyBot responsibly.<br>Protected by Supabase authentication.</div>
+</section>
+</div>
 </main>
-<footer><div class="wrap foot"><span>© <span id="year"></span> TRENDYBOT 2.0. All rights reserved.</span><span>AI · DOWNLOADS · MEDIA · GROUPS · GAMES · UTILITIES</span><span class="gold">TRENDY CORE — ALWAYS READY</span></div></footer>
-<script>document.getElementById('year').textContent=new Date().getFullYear();</script>
-</body></html>
+<footer>© <span id="year"></span> TRENDYBOT 2.0 · TRENDY CORE — ALWAYS READY</footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL='https://aqxmqymvsoyrxbgcuvam.supabase.co';
+const SUPABASE_KEY='sb_publishable_RIGjv2RpnCqqwvpfmH7xng_aw5Lw-r';
+const {createClient}=supabase;
+const client=createClient(SUPABASE_URL,SUPABASE_KEY);
+const form=document.getElementById('authForm');
+const signupTab=document.getElementById('signupTab');
+const signinTab=document.getElementById('signinTab');
+const confirmField=document.getElementById('confirmField');
+const confirmEmail=document.getElementById('confirmEmail');
+const email=document.getElementById('email');
+const password=document.getElementById('password');
+const submitBtn=document.getElementById('submitBtn');
+const forgotBtn=document.getElementById('forgotBtn');
+const message=document.getElementById('message');
+let mode='signup';
+
+document.getElementById('year').textContent=new Date().getFullYear();
+
+function showMessage(text,type){
+ message.textContent=text;
+ message.className='message '+type;
+}
+function setMode(next){
+ mode=next;
+ signupTab.classList.toggle('active',mode==='signup');
+ signinTab.classList.toggle('active',mode==='signin');
+ confirmField.hidden=mode!=='signup';
+ confirmEmail.required=mode==='signup';
+ password.autocomplete=mode==='signup'?'new-password':'current-password';
+ forgotBtn.hidden=mode!=='signin';
+ submitBtn.textContent=mode==='signup'?'CREATE MY ACCOUNT →':'SIGN IN →';
+ message.className='message';
+ message.textContent='';
+}
+signupTab.addEventListener('click',()=>setMode('signup'));
+signinTab.addEventListener('click',()=>setMode('signin'));
+
+form.addEventListener('submit',async(event)=>{
+ event.preventDefault();
+ message.className='message';
+ const address=email.value.trim().toLowerCase();
+ const secret=password.value;
+ if(mode==='signup' && confirmEmail.value.trim().toLowerCase()!==address){
+  showMessage('Your email addresses do not match. Please check them.','error');return;
+ }
+ if(secret.length<8){
+  showMessage('Your password must contain at least 8 characters.','error');return;
+ }
+ submitBtn.disabled=true;
+ submitBtn.textContent=mode==='signup'?'CREATING ACCOUNT...':'SIGNING IN...';
+ try{
+  if(mode==='signup'){
+   const {data,error}=await client.auth.signUp({
+    email:address,
+    password:secret,
+    options:{emailRedirectTo:window.location.origin+'/'}
+   });
+   if(error) throw error;
+   if(data.session){
+    showMessage('Account created! Opening WhatsApp connection...','success');
+    window.location.replace('/connect.html');
+   }else{
+    showMessage('Account created! Check your inbox for the Supabase verification email, then return here to sign in.','success');
+   }
+   form.reset();
+  }else{
+   const {data,error}=await client.auth.signInWithPassword({email:address,password:secret});
+   if(error) throw error;
+   if(!data.session) throw new Error('Sign-in did not create a session. Please try again.');
+   showMessage('Sign-in successful! Opening secure WhatsApp connection...','success');
+   window.location.replace('/connect.html');
+  }
+ }catch(error){
+  showMessage(error.message||'Something went wrong. Please try again.','error');
+ }finally{
+  submitBtn.disabled=false;
+  submitBtn.textContent=mode==='signup'?'CREATE MY ACCOUNT →':'SIGN IN →';
+ }
+});
+
+forgotBtn.addEventListener('click',async()=>{
+ const address=email.value.trim().toLowerCase();
+ if(!address){showMessage('Enter your email address first.','error');email.focus();return;}
+ forgotBtn.disabled=true;
+ try{
+  const {error}=await client.auth.resetPasswordForEmail(address,{redirectTo:window.location.origin+'/'});
+  if(error) throw error;
+  showMessage('If an account exists for this address, a password recovery email will be sent.','success');
+ }catch(error){
+  showMessage(error.message||'Unable to request password recovery.','error');
+ }finally{forgotBtn.disabled=false;}
+});
+
+(async()=>{
+ const {data}=await client.auth.getSession();
+ if(data.session){
+  setMode('signin');
+  showMessage('Account session found. Opening WhatsApp connection...','success');
+  window.location.replace('/connect.html');
+ }
+})();
+</script>
+</body>
+</html>

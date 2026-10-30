@@ -14,6 +14,10 @@ nav{display:flex;justify-content:space-between;align-items:center;gap:18px;paddi
 .hero{padding:48px 0 28px;display:flex;justify-content:space-between;align-items:end;gap:24px}.eyebrow{color:var(--gold);font-size:11px;letter-spacing:.24em;text-transform:uppercase;font-weight:800}
 h1{font-size:clamp(32px,6vw,54px);line-height:1.05;letter-spacing:-.04em;margin:10px 0}.sub{color:var(--muted);max-width:580px}
 .badge{border:1px solid #66532e;color:var(--gold2);background:#211a10;border-radius:30px;padding:9px 13px;font-size:12px;white-space:nowrap}
+.hero-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.start-btn{display:inline-flex;align-items:center;gap:12px;padding:12px 21px;border-radius:30px;background:linear-gradient(120deg,#b88c42,#f1d99e);color:#17120a;font-size:12px;font-weight:900;letter-spacing:.08em;box-shadow:0 5px 24px rgba(216,181,106,.16);transition:.2s}
+.start-btn:hover{transform:translateY(-2px);filter:brightness(1.08)}
+.start-btn span{font-size:17px}
 .notice{padding:12px 15px;border:1px solid #574628;background:#1b160e;border-radius:12px;color:#d9c69d;font-size:12px;margin:8px 0 22px}
 .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.card{background:linear-gradient(145deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:16px;padding:20px;min-height:130px}
 .label{color:var(--muted);font-size:12px}.value{font-size:32px;font-weight:800;letter-spacing:-.04em;margin:9px 0 2px}.hint{font-size:11px;color:#827d73}.gold{color:var(--gold2)}
@@ -27,12 +31,12 @@ footer{border-top:1px solid var(--line);margin-top:38px;padding-top:20px;display
 </head>
 <body><div class="wrap">
 <nav><a class="brand" href="./index.html">TRENDY<span>BOT</span> 2.0</a><div class="navlinks"><a href="./index.html">Home</a><a href="#activity">Activity</a><a href="#commands">Commands</a></div></nav>
-<header class="hero"><div><div class="eyebrow">Trendy Core • Control Center</div><h1>Public <span class="gold">Dashboard.</span></h1><p class="sub">A quick look at the TrendyBot 2.0 ecosystem, its capabilities and activity.</p></div><div class="badge">● PREVIEW MODE</div></header>
+<header class="hero"><div><div class="eyebrow">Trendy Core • Control Center</div><h1>Public <span class="gold">Dashboard.</span></h1><p class="sub">A quick look at the TrendyBot 2.0 ecosystem, its capabilities and activity.</p></div><div class="hero-actions"><a class="start-btn" href="https://trendybot-website.pages.dev/">GET STARTED <span>→</span></a><div class="badge">● PREVIEW MODE</div></div></header>
 <div class="notice">Preview data only — live bot telemetry has not been connected yet. Numbers and activity below are illustrative, not real-time measurements.</div>
 <section class="grid">
 <div class="card"><div class="label">Bot status</div><div class="value gold">Preview</div><div class="hint">Live connection pending</div></div>
 <div class="card"><div class="label">Registered users</div><div class="value">—</div><div class="hint">Awaiting secure data feed</div></div>
-<div class="card"><div class="label">Commands</div><div class="value">06</div><div class="hint">Featured commands</div></div>
+<div class="card"><div class="label">Commands</div><div class="value">150</div><div class="hint">Available commands</div></div>
 <div class="card"><div class="label">Uptime</div><div class="value">—</div><div class="hint">Not connected</div></div>
 </section>
 <section class="section">

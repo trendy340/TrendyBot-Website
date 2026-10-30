@@ -2,19 +2,183 @@
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#090909"><title>Connect WhatsApp — TrendyBot 2.0</title>
 <style>
 :root{--bg:#090909;--gold:#d8b56a;--gold2:#f1d99e;--muted:#a29c91;--line:#302b22}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% -15%,#382a15 0,transparent 45%),var(--bg);color:#f7f2e8;font:15px/1.55 Inter,system-ui,Arial,sans-serif}.wrap{max-width:900px;margin:auto;padding:26px 20px 60px}nav{display:flex;justify-content:space-between;align-items:center;padding:8px 0 24px;border-bottom:1px solid #292929}.brand{font-weight:900;letter-spacing:.14em}.brand span{color:var(--gold)}nav a,.back{color:var(--gold2);text-decoration:none;font-size:13px}.hero{text-align:center;padding:45px 0 25px}.eyebrow{font-size:11px;letter-spacing:.23em;text-transform:uppercase;color:var(--gold);font-weight:800}h1{font-size:clamp(34px,7vw,52px);letter-spacing:-.045em;line-height:1.08;margin:12px 0}.hero p{color:var(--muted);max-width:590px;margin:0 auto}.card{max-width:650px;margin:0 auto;background:linear-gradient(145deg,#1a1a1a,#101010);border:1px solid var(--line);border-radius:20px;padding:25px;box-shadow:0 20px 70px #0008}.tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px}.tab{border:1px solid #3a352b;background:#101010;color:#c9c2b6;border-radius:12px;padding:13px;cursor:pointer;font-weight:700}.tab.active{border-color:var(--gold);background:#241d11;color:var(--gold2)}label{display:block;font-size:12px;color:#d7c9a8;margin:0 0 8px}input{width:100%;padding:15px;border-radius:10px;border:1px solid #403a30;background:#090909;color:white;font-size:16px;outline:none}input:focus{border-color:var(--gold)}.hint{font-size:12px;color:var(--muted);margin:8px 0 18px}.action{width:100%;padding:14px;border:0;border-radius:10px;background:linear-gradient(100deg,#b68c43,#f0d99e);color:#17120a;font-weight:900;font-size:14px;cursor:pointer}.qrbox{height:185px;border:1px dashed #5c4b2c;border-radius:12px;display:grid;place-items:center;text-align:center;color:#aaa;padding:18px;margin:12px 0 18px;background:#0c0c0c}.qrmark{font-size:40px;color:var(--gold2)}.status{display:none;margin-top:14px;padding:13px;border:1px solid #65512e;background:#211a10;color:#ead6a8;border-radius:10px;font-size:13px}.steps{max-width:650px;margin:20px auto 0;padding:18px 22px;border:1px solid #292929;border-radius:15px;background:#101010}.steps h2{font-size:15px;margin:0 0 10px}.steps ol{margin:0;padding-left:20px;color:#aaa;font-size:13px}.steps li{margin:7px 0}.disclaimer{max-width:650px;margin:14px auto 0;color:#827d73;font-size:11px;text-align:center}footer{text-align:center;color:#716b60;font-size:11px;margin-top:35px}@media(max-width:520px){.wrap{padding-inline:14px}.card{padding:18px}.tab{font-size:12px;padding:11px}}
-</style></head><body><main class="wrap">
+</style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script></head><body><main class="wrap">
 <nav><a class="brand" href="./index.html">TRENDY<span>BOT</span> 2.0</a><a href="./dashboard.html">Public Dashboard</a></nav>
 <header class="hero"><div class="eyebrow">Trendy Core • WhatsApp onboarding</div><h1>Connect <span style="color:var(--gold2)">your WhatsApp.</span></h1><p>Choose your preferred linking method. Your WhatsApp account will connect as a companion device when the secure connection service is enabled.</p></header>
 <section class="card"><div class="tabs"><button class="tab active" id="pairTab" type="button">⌨ Pairing code</button><button class="tab" id="qrTab" type="button">▦ QR code</button></div>
 <div id="pairPanel"><label for="phone">WhatsApp phone number</label><input id="phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="e.g. 2348012345678"><p class="hint">Include your country code. Enter digits only — no +, spaces or dashes.</p><button class="action" id="pairBtn" type="button">Generate pairing code</button></div>
 <div id="qrPanel" hidden><div class="qrbox"><div><div class="qrmark">▦</div><b>QR connection will appear here</b><br><small>Secure connection service not connected yet</small></div></div><button class="action" id="qrBtn" type="button">Start QR connection</button></div>
-<div class="status" id="status" role="status">Connection service is not active yet.</div></section>
+<div class="cf-turnstile" data-sitekey="0x4AAAAAAFs_xdzbq9wc2gcc" data-theme="dark"></div><div class="status" id="status" role="status">Connection service is not active yet.</div></section>
 <section class="steps"><h2>How linking will work</h2><ol><li>Choose pairing code or QR code above.</li><li>Open WhatsApp on your phone and go to <b>Linked Devices</b>.</li><li>Choose <b>Link a Device</b>, then scan the QR or choose phone-number linking and enter the code.</li><li>Keep this page open until the connection status confirms success.</li></ol></section>
 <p class="disclaimer">Security note: Never share a pairing code or QR code with anyone. It grants access to link a device to your WhatsApp account. Only link a session you control.</p><footer>© TrendyBot 2.0 • Trendy Core — Always Ready.</footer></main>
+
 <script>
-const pairTab=document.getElementById('pairTab'),qrTab=document.getElementById('qrTab'),pairPanel=document.getElementById('pairPanel'),qrPanel=document.getElementById('qrPanel'),statusBox=document.getElementById('status');
-function show(mode){const pair=mode==='pair';pairTab.classList.toggle('active',pair);qrTab.classList.toggle('active',!pair);pairPanel.hidden=!pair;qrPanel.hidden=pair;statusBox.style.display='none'}
-pairTab.addEventListener('click',()=>show('pair'));qrTab.addEventListener('click',()=>show('qr'));
-document.getElementById('pairBtn').addEventListener('click',()=>{const n=document.getElementById('phone').value.trim();statusBox.textContent=!/^\d{8,15}$/.test(n)?'Enter a valid phone number with country code, using digits only.':'Connection service is not active yet. This page is the interface only; no pairing code is being generated.';statusBox.style.display='block';});
-document.getElementById('qrBtn').addEventListener('click',()=>{statusBox.textContent='Connection service is not active yet. This page is the interface only; no QR code is being generated.';statusBox.style.display='block';});
-</script></body></html>
+const API_BASE_KEY='trendyApiBase';
+const SUPABASE_URL='https://aqxmqymvsoyrxbgcuvam.supabase.co';
+const SUPABASE_KEY='sb_publishable_RIGjv2RpnCqqwvpfmH7xng_aw5Lw-r';
+const {createClient}=supabase;
+const authClient=createClient(SUPABASE_URL,SUPABASE_KEY);
+document.body.style.visibility='hidden';
+(async()=>{
+ try{
+  const {data,error}=await authClient.auth.getSession();
+  const user=data?.session?.user;
+  if(error||!user||!(user.email_confirmed_at||user.confirmed_at)){
+   window.location.replace('./index.html');
+   return;
+  }
+  document.body.style.visibility='visible';
+ }catch{
+  window.location.replace('./index.html');
+ }
+})();
+
+
+async function getVerifiedAccessToken(){
+ const {data,error}=await authClient.auth.getSession();
+ if(error||!data.session)throw new Error('Please sign in to your TrendyBot account first.');
+ const user=data.session.user;
+ if(!user||!(user.email_confirmed_at||user.confirmed_at))
+  throw new Error('Please verify your email address before connecting WhatsApp.');
+ return data.session.access_token;
+}
+
+async function authHeaders(c,withJson=false){
+ const userToken=await getVerifiedAccessToken();
+ const headers={'Authorization':'Bearer '+userToken,'X-Session-Token':c.accessToken};
+ if(withJson)headers['Content-Type']='application/json';
+ return headers;
+}
+const pairTab=document.getElementById('pairTab'),qrTab=document.getElementById('qrTab');
+const pairPanel=document.getElementById('pairPanel'),qrPanel=document.getElementById('qrPanel');
+const statusBox=document.getElementById('status');
+let pollTimer=null;
+
+function show(mode){
+ const pair=mode==='pair';
+ pairTab.classList.toggle('active',pair);
+ qrTab.classList.toggle('active',!pair);
+ pairPanel.hidden=!pair;qrPanel.hidden=pair;
+ statusBox.style.display='none';
+}
+pairTab.addEventListener('click',()=>show('pair'));
+qrTab.addEventListener('click',()=>show('qr'));
+
+function status(message){
+ statusBox.textContent=message;statusBox.style.display='block';
+}
+function apiBase(){
+ let base=(window.TRENDY_API_BASE||localStorage.getItem(API_BASE_KEY)||'').trim();
+ if(!base){
+  base=prompt('Enter your secure TrendyBot Connect API HTTPS address:')||'';
+  base=base.trim().replace(/\/+$/,'');
+  if(base)localStorage.setItem(API_BASE_KEY,base);
+ }
+ return base.replace(/\/+$/,'');
+}
+async function request(url,options={}){
+ const response=await fetch(url,options);
+ let data={};try{data=await response.json()}catch{}
+ if(!response.ok||data.success===false)throw new Error(data.message||data.error||`Request failed (${response.status})`);
+ return data;
+}
+async function createSession(base){
+ if(!window.turnstile)throw new Error('Security verification is loading. Please wait.');
+ const token=turnstile.getResponse();
+ if(!token)throw new Error('Please complete the security verification first.');
+ const userToken=await getVerifiedAccessToken();
+ const data=await request(base+'/api/sessions',{
+  method:'POST',
+  headers:{'Content-Type':'application/json','Authorization':'Bearer '+userToken},
+  body:JSON.stringify({turnstileToken:token})
+ });
+ turnstile.reset();
+ const session=data.session||data;
+ const sessionId=session.sessionId||session.id||data.sessionId;
+ const accessToken=session.accessToken||data.accessToken||data.token;
+ if(!sessionId||!accessToken)throw new Error('API did not return session credentials.');
+ sessionStorage.setItem('trendySessionId',sessionId);
+ sessionStorage.setItem('trendyAccessToken',accessToken);
+ return {sessionId,accessToken};
+}
+async function startConnection(mode){
+ if(pollTimer)clearInterval(pollTimer);
+ const base=apiBase();
+ if(!base||!/^https:\/\//i.test(base))throw new Error('A valid HTTPS API address is required.');
+ if(mode==='pairing'&&!/^[0-9]{8,15}$/.test(document.getElementById('phone').value.trim()))
+  throw new Error('Enter a valid phone number with country code, using digits only.');
+ status('Verifying security and creating your private session…');
+ const c=await createSession(base);
+ const body={mode};
+ if(mode==='pairing')body.phoneNumber=document.getElementById('phone').value.trim();
+ const headers=await authHeaders(c,true);
+ await request(base+'/api/sessions/'+encodeURIComponent(c.sessionId)+'/connect',{
+  method:'POST',headers,body:JSON.stringify(body)
+ });
+ status(mode==='qr'?'Starting QR connection…':'Requesting pairing code…');
+ pollStatus(base,c);
+}
+
+async function pollStatus(base,c){
+ const qrbox=document.querySelector('.qrbox');
+ let attempts=0, stopped=false;
+
+ const stop=()=>{
+  stopped=true;
+  if(pollTimer){clearInterval(pollTimer);pollTimer=null;}
+ };
+
+ const poll=async()=>{
+  if(stopped)return;
+  try{
+   const headers=await authHeaders(c);
+   const data=await request(base+'/api/sessions/'+encodeURIComponent(c.sessionId),{headers});
+   const session=data.session||data;
+   const state=session.status||'connecting';
+
+   if(session.qr){
+    const img=document.createElement('img');
+    img.alt='WhatsApp QR code';
+    img.style.cssText='width:min(100%,280px);height:auto';
+    img.src=session.qr;
+    qrbox.replaceChildren(img);
+   }
+
+   if(session.pairingCode){
+    let code=document.getElementById('trendyPairingCode');
+    if(!code){
+     code=document.createElement('div');
+     code.id='trendyPairingCode';
+     code.style.cssText='font-size:2rem;font-weight:bold;letter-spacing:5px;text-align:center;padding:18px;color:#d6b46a';
+     pairPanel.appendChild(code);
+    }
+    code.textContent=session.pairingCode;
+   }
+
+   if(state==='connected'){
+    stop();status('✅ WhatsApp connected successfully!');return;
+   }
+   if(['error','logged_out','disconnected'].includes(state)){
+    stop();status('Connection status: '+state+'. Please try again.');return;
+   }
+
+   status(session.pairingCode?'Your pairing code is ready. Enter it in WhatsApp.':
+    session.qr?'Scan this QR code with WhatsApp.':
+    'Waiting for WhatsApp connection details…');
+
+   if(++attempts>=150){
+    stop();status('Connection request timed out. Please try again.');
+   }
+  }catch(e){
+   stop();status('Connection check failed: '+e.message);
+  }
+ };
+
+ await poll();
+ if(!stopped)pollTimer=setInterval(poll,2000);
+}
+
+document.getElementById('pairBtn').addEventListener('click',async()=>{try{await startConnection('pairing')}catch(e){status(e.message)}});
+document.getElementById('qrBtn').addEventListener('click',async()=>{try{show('qr');await startConnection('qr')}catch(e){status(e.message)}});
+</script>
+</body></html>
