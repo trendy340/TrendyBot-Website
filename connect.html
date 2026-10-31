@@ -68,7 +68,7 @@ function status(message){
  statusBox.textContent=message;statusBox.style.display='block';
 }
 function apiBase(){
- let base=(window.TRENDY_API_BASE||localStorage.getItem(API_BASE_KEY)||'').trim();
+ let base=(window.TRENDY_API_BASE||localStorage.getItem(API_BASE_KEY)||'https://consists-continue-month-night.trycloudflare.com').trim();
  if(!base){
   base=prompt('Enter your secure TrendyBot Connect API HTTPS address:')||'';
   base=base.trim().replace(/\/+$/,'');
