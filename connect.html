@@ -156,7 +156,7 @@ async function pollStatus(base,c){
    }
 
    if(state==='connected'){
-    stop();status('✅ WhatsApp connected successfully!');return;
+    stop();status('✅ WhatsApp connected successfully! Redirecting to dashboard...');setTimeout(()=>window.location.replace('./dashboard.html'),1500);return;
    }
    if(['error','logged_out','disconnected'].includes(state)){
     stop();status('Connection status: '+state+'. Please try again.');return;

@@ -2,53 +2,373 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#090909">
-<title>TrendyBot 2.0 — Public Dashboard</title>
+<title>TrendyBot 2.0 — Live Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--bg:#090909;--panel:#121212;--panel2:#171717;--gold:#d8b56a;--gold2:#f1d99e;--muted:#999;--line:#292929;--green:#72d6a0}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 75% -10%,#342716 0,transparent 38%),var(--bg);color:#f5f1e8;font:15px/1.5 Inter,system-ui,Arial,sans-serif}
-a{color:inherit;text-decoration:none}.wrap{max-width:1120px;margin:auto;padding:28px 22px 60px}
-nav{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:8px 0 28px;border-bottom:1px solid var(--line)}
-.brand{font-weight:900;letter-spacing:.15em}.brand span{color:var(--gold)}.navlinks{display:flex;gap:20px;color:#c6c0b5;font-size:13px}
-.hero{padding:48px 0 28px;display:flex;justify-content:space-between;align-items:end;gap:24px}.eyebrow{color:var(--gold);font-size:11px;letter-spacing:.24em;text-transform:uppercase;font-weight:800}
-h1{font-size:clamp(32px,6vw,54px);line-height:1.05;letter-spacing:-.04em;margin:10px 0}.sub{color:var(--muted);max-width:580px}
-.badge{border:1px solid #66532e;color:var(--gold2);background:#211a10;border-radius:30px;padding:9px 13px;font-size:12px;white-space:nowrap}
-.hero-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.start-btn{display:inline-flex;align-items:center;gap:12px;padding:12px 21px;border-radius:30px;background:linear-gradient(120deg,#b88c42,#f1d99e);color:#17120a;font-size:12px;font-weight:900;letter-spacing:.08em;box-shadow:0 5px 24px rgba(216,181,106,.16);transition:.2s}
-.start-btn:hover{transform:translateY(-2px);filter:brightness(1.08)}
-.start-btn span{font-size:17px}
-.notice{padding:12px 15px;border:1px solid #574628;background:#1b160e;border-radius:12px;color:#d9c69d;font-size:12px;margin:8px 0 22px}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.card{background:linear-gradient(145deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:16px;padding:20px;min-height:130px}
-.label{color:var(--muted);font-size:12px}.value{font-size:32px;font-weight:800;letter-spacing:-.04em;margin:9px 0 2px}.hint{font-size:11px;color:#827d73}.gold{color:var(--gold2)}
-.section{margin-top:28px;display:grid;grid-template-columns:1.35fr 1fr;gap:14px}.section h2{font-size:16px;margin:0 0 16px}.bars{display:flex;align-items:end;gap:10px;height:130px;padding-top:12px}.barbox{flex:1;text-align:center;color:#817b70;font-size:10px}.bar{height:var(--h);min-height:8px;background:linear-gradient(180deg,#e8cd8e,#8a6931);border-radius:6px 6px 2px 2px;margin-bottom:8px;opacity:.85}
-.activity{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);font-size:12px}.dot{width:7px;height:7px;border-radius:50%;background:var(--gold);margin-top:6px;flex:none}.activity small{display:block;color:var(--muted);margin-top:3px}
-.commands{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.cmd{background:#0d0d0d;border:1px solid var(--line);border-radius:10px;padding:12px}.cmd b{color:var(--gold2);font-family:ui-monospace,monospace}.cmd small{display:block;color:var(--muted);margin-top:5px}
-footer{border-top:1px solid var(--line);margin-top:38px;padding-top:20px;display:flex;justify-content:space-between;color:#777;font-size:11px}
-@media(max-width:800px){.grid{grid-template-columns:repeat(2,1fr)}.section{grid-template-columns:1fr}.hero{align-items:start;flex-direction:column}.commands{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:440px){.navlinks{gap:10px;font-size:11px}.wrap{padding-inline:15px}.grid{gap:9px}.card{padding:15px}.value{font-size:27px}.commands{grid-template-columns:1fr 1fr}}
+:root{--bg:#090909;--panel:#141414;--panel2:#1b1b1b;--gold:#d8b56a;--gold2:#f1d99e;--muted:#999;--line:#292929;--green:#72d6a0;--red:#ff7777}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at 75% -10%,#342716 0,transparent 38%),var(--bg);color:#f5f1e8;font:14px/1.5 Inter,system-ui,Arial,sans-serif}
+button,input{font:inherit}
+button,a{cursor:pointer}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1200px;margin:auto;padding:20px}
+nav{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0 20px;border-bottom:1px solid var(--line)}
+.brand{font-weight:900;letter-spacing:.13em}.brand span{color:var(--gold)}
+.navlinks{display:flex;gap:14px;align-items:center}
+.btn{border:1px solid #66532e;background:#211a10;color:var(--gold2);border-radius:9px;padding:9px 13px;font-size:12px;font-weight:700}
+.btn.primary{background:linear-gradient(120deg,#b88c42,#f1d99e);color:#17120a;border:0}
+header{padding:28px 0 20px}
+.eyebrow{color:var(--gold);font-size:10px;letter-spacing:.22em;font-weight:800}
+h1{font-size:clamp(27px,5vw,42px);line-height:1.1;margin:7px 0}
+.muted{color:var(--muted)}
+.statusbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:14px 16px;margin:15px 0}
+.status{font-weight:800}.online{color:var(--green)}.offline{color:var(--red)}
+.layout{display:grid;grid-template-columns:320px 1fr;gap:15px;margin-top:15px}
+.panel{background:linear-gradient(145deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:15px;overflow:hidden;min-width:0}
+.panelhead{padding:16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px}
+.panelhead h2{font-size:14px;margin:0}
+.chatlist{max-height:570px;overflow:auto}
+.chatitem{width:100%;display:flex;gap:11px;align-items:center;text-align:left;padding:13px 15px;background:transparent;color:#eee;border:0;border-bottom:1px solid #242424}
+.chatitem:hover,.chatitem.active{background:#282116}
+.avatar{width:39px;height:39px;border-radius:50%;display:grid;place-items:center;background:#352a18;color:var(--gold2);font-weight:900;flex:none}
+.chatmeta{min-width:0;flex:1}.chatname{font-weight:750;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.preview{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.time{font-size:10px;color:#827d73;white-space:nowrap}
+.chatpanel{display:flex;flex-direction:column;min-height:570px}
+.chathead{padding:14px 17px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.chathead .chatmeta{flex:1}
+.messages{padding:17px;flex:1;min-height:360px;max-height:510px;overflow:auto;display:flex;flex-direction:column;gap:10px}
+.bubble{max-width:min(78%,520px);padding:10px 12px;border-radius:12px;background:#252525;align-self:flex-start;overflow-wrap:anywhere}
+.bubble.out{background:#49391e;align-self:flex-end}
+.bubble small{display:block;color:#c3b99f;font-size:10px;margin-top:5px;text-align:right}
+.empty{color:var(--muted);text-align:center;padding:45px 18px}
+.composer{display:flex;gap:9px;padding:13px;border-top:1px solid var(--line)}
+.composer input{min-width:0;flex:1;background:#090909;border:1px solid #383838;color:white;border-radius:9px;padding:12px;outline:none}
+.composer input:focus{border-color:var(--gold)}
+.composer button{min-width:75px}
+.notice{font-size:11px;color:#b9a77e;padding:12px 15px;border-top:1px solid var(--line)}
+.error{color:var(--red);font-size:12px;padding:12px}
+.hidden{display:none!important}
+footer{border-top:1px solid var(--line);margin-top:25px;padding:18px 0;color:#777;font-size:11px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+@media(max-width:760px){.wrap{padding:13px}.layout{grid-template-columns:1fr}.chatlist{max-height:230px}.chatpanel{min-height:470px}.messages{min-height:300px;max-height:430px}.navlinks{gap:7px}.btn{padding:8px 10px}}
 </style>
 </head>
-<body><div class="wrap">
-<nav><a class="brand" href="./index.html">TRENDY<span>BOT</span> 2.0</a><div class="navlinks"><a href="./index.html">Home</a><a href="#activity">Activity</a><a href="#commands">Commands</a></div></nav>
-<header class="hero"><div><div class="eyebrow">Trendy Core • Control Center</div><h1>Public <span class="gold">Dashboard.</span></h1><p class="sub">A quick look at the TrendyBot 2.0 ecosystem, its capabilities and activity.</p></div><div class="hero-actions"><a class="start-btn" href="https://trendybot-website.pages.dev/">GET STARTED <span>→</span></a><div class="badge">● PREVIEW MODE</div></div></header>
-<div class="notice">Preview data only — live bot telemetry has not been connected yet. Numbers and activity below are illustrative, not real-time measurements.</div>
-<section class="grid">
-<div class="card"><div class="label">Bot status</div><div class="value gold">Preview</div><div class="hint">Live connection pending</div></div>
-<div class="card"><div class="label">Registered users</div><div class="value">—</div><div class="hint">Awaiting secure data feed</div></div>
-<div class="card"><div class="label">Commands</div><div class="value">150</div><div class="hint">Available commands</div></div>
-<div class="card"><div class="label">Uptime</div><div class="value">—</div><div class="hint">Not connected</div></div>
+<body>
+<div class="wrap">
+<nav>
+<a class="brand" href="./index.html">TRENDY<span>BOT</span> 2.0</a>
+<div class="navlinks">
+<a class="btn" href="./connect.html">Connect WhatsApp</a>
+<button class="btn" id="signout">Sign out</button>
+</div>
+</nav>
+
+<header>
+<div class="eyebrow">TRENDY CORE • CONTROL CENTER</div>
+<h1>Live <span style="color:var(--gold2)">Dashboard.</span></h1>
+<p class="muted">Manage your connected WhatsApp session and conversations.</p>
+</header>
+
+<div class="statusbar">
+<div><div class="muted" style="font-size:11px">WHATSAPP CONNECTION</div><div id="connection" class="status">Checking connection…</div></div>
+<a class="btn primary" href="./connect.html">＋ Connect WhatsApp</a>
+</div>
+
+<div id="alert" class="error hidden"></div>
+
+<div class="layout">
+<section class="panel">
+<div class="panelhead"><h2>💬 Conversations</h2><span id="chatcount" class="muted">0</span></div>
+<div id="chatlist" class="chatlist"><div class="empty">Loading conversations…</div></div>
+<div class="notice">Personal chats only. Group conversations are not supported yet.</div>
 </section>
-<section class="section">
-<div class="card"><h2>Activity overview</h2><div class="bars">
-<div class="barbox"><div class="bar" style="--h:38%"></div>Mon</div><div class="barbox"><div class="bar" style="--h:57%"></div>Tue</div><div class="barbox"><div class="bar" style="--h:45%"></div>Wed</div><div class="barbox"><div class="bar" style="--h:78%"></div>Thu</div><div class="barbox"><div class="bar" style="--h:62%"></div>Fri</div><div class="barbox"><div class="bar" style="--h:90%"></div>Sat</div><div class="barbox"><div class="bar" style="--h:52%"></div>Sun</div></div><div class="hint">Illustrative chart — not connected to bot events.</div></div>
-<div class="card" id="activity"><h2>Recent activity</h2>
-<div class="activity"><i class="dot"></i><div>Dashboard preview prepared<small>Sample event • Not live</small></div></div>
-<div class="activity"><i class="dot"></i><div>Command directory loaded<small>Sample event • Not live</small></div></div>
-<div class="activity"><i class="dot"></i><div>Trendy Core interface ready<small>Sample event • Not live</small></div></div>
-</div></section>
-<section class="card" id="commands" style="margin-top:14px"><h2>Featured commands</h2><div class="commands">
-<div class="cmd"><b>.ai</b><small>AI assistant</small></div><div class="cmd"><b>.play</b><small>Music search</small></div><div class="cmd"><b>.video</b><small>Video downloads</small></div><div class="cmd"><b>.tagall</b><small>Group mentions</small></div><div class="cmd"><b>.promote</b><small>Group admin tools</small></div><div class="cmd"><b>.demote</b><small>Group admin tools</small></div>
-</div></section>
+
+<section class="panel chatpanel">
+<div class="chathead">
+<div class="avatar" id="selectedavatar">T</div>
+<div class="chatmeta"><div class="chatname" id="selectedname">Select a conversation</div><div class="preview" id="selectednumber">Your WhatsApp chats will appear here.</div></div>
+</div>
+<div class="messages" id="messages"><div class="empty">Select a conversation to view messages.</div></div>
+<form class="composer" id="sendform">
+<input id="messageinput" placeholder="Connect WhatsApp and select a chat…" maxlength="4000" autocomplete="off" disabled>
+<button class="btn primary" id="sendbutton" disabled>Send</button>
+</form>
+<div class="notice">Messages are kept temporarily in memory (latest 100). This is not permanent chat history.</div>
+</section>
+</div>
+
 <footer><span>© TrendyBot 2.0 • Trendy Core</span><span>Built for speed. Designed for everyone.</span></footer>
-</div></body></html>
+</div>
+
+<script>
+const SUPABASE_URL='https://aqxmqymvsoyrxbgcuvam.supabase.co';
+const SUPABASE_KEY='sb_publishable_RIGjv2RpnCqqwvpfmH7xng_aw5LwR-l';
+const API_BASE_KEY='trendyApiBase';
+const {createClient}=supabase;
+const authClient=createClient(SUPABASE_URL,SUPABASE_KEY);
+
+const sessionId=sessionStorage.getItem('trendySessionId');
+const sessionToken=sessionStorage.getItem('trendyAccessToken');
+
+let selectedChat=null;
+let allMessages=[];
+let connected=false;
+let pollTimer=null;
+let busy=false;
+
+const $=id=>document.getElementById(id);
+
+function apiBase(){
+ const base=(window.TRENDY_API_BASE||localStorage.getItem(API_BASE_KEY)||'https://infrared-determines-stomach-meets.trycloudflare.com').trim();
+ return base.replace(/\/+$/,'');
+}
+
+function showError(message){
+ $('alert').textContent=message;
+ $('alert').classList.remove('hidden');
+}
+function clearError(){
+ $('alert').textContent='';
+ $('alert').classList.add('hidden');
+}
+
+async function getUserToken(){
+ const {data,error}=await authClient.auth.getSession();
+ if(error||!data.session?.access_token) throw new Error('Your login session has expired. Please sign in again.');
+ const user=data.session.user;
+ if(!(user?.email_confirmed_at||user?.confirmed_at)) throw new Error('Please verify your email before using the dashboard.');
+ return data.session.access_token;
+}
+
+async function api(path,options={}){
+ const userToken=await getUserToken();
+ const headers={
+  Authorization:'Bearer '+userToken,
+  'X-Session-Token':sessionToken||'',
+  ...(options.body?{'Content-Type':'application/json'}:{})
+ };
+ const response=await fetch(apiBase()+path,{...options,headers:{...headers,...options.headers}});
+ let result;
+ try{result=await response.json()}catch{throw new Error('The API returned an invalid response.')}
+ if(!response.ok||result.success===false) throw new Error(result.message||'Request failed ('+response.status+').');
+ return result;
+}
+
+function phoneFromJid(jid){
+ if(!jid||!jid.endsWith('@s.whatsapp.net')) return '';
+ return jid.slice(0,jid.indexOf('@')).replace(/\D/g,'');
+}
+function timeLabel(timestamp){
+ const date=new Date(Number(timestamp)*1000);
+ return Number.isNaN(date.getTime())?'':date.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+}
+function chatTitle(jid,items){
+ const latest=[...items].reverse().find(m=>m.pushName);
+ return latest?.pushName||phoneFromJid(jid)||'WhatsApp chat';
+}
+function safeText(node,value){node.textContent=value??'';}
+
+function renderChats(){
+ const grouped=new Map();
+ for(const m of allMessages){
+  if(!m.chat||!m.chat.endsWith('@s.whatsapp.net')||m.isStatus) continue;
+  if(!grouped.has(m.chat)) grouped.set(m.chat,[]);
+  grouped.get(m.chat).push(m);
+ }
+ const chats=[...grouped.entries()].sort((a,b)=>(b[1].at(-1)?.timestamp||0)-(a[1].at(-1)?.timestamp||0));
+ $('chatcount').textContent=chats.length;
+ const list=$('chatlist');
+ list.replaceChildren();
+
+ if(!chats.length){
+  const empty=document.createElement('div');
+  empty.className='empty';
+  empty.textContent=connected?'No messages received yet. New personal conversations will appear here.':'Connect WhatsApp to load conversations.';
+  list.appendChild(empty);
+  return;
+ }
+
+ for(const [jid,items] of chats){
+  const title=chatTitle(jid,items);
+  const latest=items.at(-1);
+  const button=document.createElement('button');
+  button.className='chatitem'+(selectedChat===jid?' active':'');
+  const avatar=document.createElement('div');
+  avatar.className='avatar';
+  avatar.textContent=title.slice(0,1).toUpperCase();
+  const meta=document.createElement('div');
+  meta.className='chatmeta';
+  const name=document.createElement('div');
+  name.className='chatname';
+  name.textContent=title;
+  const preview=document.createElement('div');
+  preview.className='preview';
+  preview.textContent=(latest.fromMe?'You: ':'')+(latest.text||'['+latest.messageType+']');
+  const time=document.createElement('div');
+  time.className='time';
+  time.textContent=timeLabel(latest.timestamp);
+  meta.append(name,preview);
+  button.append(avatar,meta,time);
+  button.addEventListener('click',()=>selectChat(jid));
+  list.appendChild(button);
+ }
+}
+
+function renderMessages(){
+ const box=$('messages');
+ box.replaceChildren();
+ if(!selectedChat){
+  const empty=document.createElement('div');
+  empty.className='empty';
+  empty.textContent='Select a conversation to view messages.';
+  box.appendChild(empty);
+  return;
+ }
+ const items=allMessages.filter(m=>m.chat===selectedChat);
+ if(!items.length){
+  const empty=document.createElement('div');
+  empty.className='empty';
+  empty.textContent='No messages in this conversation yet.';
+  box.appendChild(empty);
+  return;
+ }
+ for(const m of items){
+  const bubble=document.createElement('div');
+  bubble.className='bubble'+(m.fromMe?' out':'');
+  const content=document.createElement('div');
+  content.textContent=m.text||'['+m.messageType+']';
+  const time=document.createElement('small');
+  time.textContent=(m.fromMe?'You · ':'')+timeLabel(m.timestamp);
+  bubble.append(content,time);
+  box.appendChild(bubble);
+ }
+ box.scrollTop=box.scrollHeight;
+}
+
+function selectChat(jid){
+ selectedChat=jid;
+ const items=allMessages.filter(m=>m.chat===jid);
+ const title=chatTitle(jid,items);
+ safeText($('selectedname'),title);
+ safeText($('selectednumber'),phoneFromJid(jid));
+ $('selectedavatar').textContent=title.slice(0,1).toUpperCase();
+ $('messageinput').disabled=!connected||!phoneFromJid(jid);
+ $('messageinput').placeholder=connected?'Write a message…':'WhatsApp is not connected';
+ $('sendbutton').disabled=!connected||!phoneFromJid(jid);
+ renderChats();
+ renderMessages();
+}
+
+async function refresh(){
+ if(busy)return;
+ busy=true;
+ try{
+  clearError();
+  if(!sessionId||!sessionToken){
+   $('connection').textContent='No connected session found';
+   $('connection').className='status offline';
+   showError('No saved WhatsApp session was found in this browser. Please connect WhatsApp first.');
+   $('chatlist').replaceChildren();
+   const empty=document.createElement('div');
+   empty.className='empty';
+   empty.textContent='No session available.';
+   $('chatlist').appendChild(empty);
+   $('messageinput').disabled=true;
+   $('sendbutton').disabled=true;
+   return;
+  }
+
+  const [statusResult,messageResult]=await Promise.all([
+   api('/api/sessions/'+encodeURIComponent(sessionId)),
+   api('/api/sessions/'+encodeURIComponent(sessionId)+'/messages')
+  ]);
+
+  const state=messageResult.status||statusResult.session?.status||'disconnected';
+  connected=state==='connected';
+  $('connection').textContent=connected?'● WhatsApp connected':'● WhatsApp '+state;
+  $('connection').className='status '+(connected?'online':'offline');
+
+  allMessages=Array.isArray(messageResult.messages)?messageResult.messages:[];
+  const available=new Set(allMessages.filter(m=>m.chat?.endsWith('@s.whatsapp.net')&&!m.isStatus).map(m=>m.chat));
+  if(selectedChat&&!available.has(selectedChat)) selectedChat=null;
+
+  renderChats();
+  if(selectedChat){
+   const items=allMessages.filter(m=>m.chat===selectedChat);
+   if(items.length){
+    const title=chatTitle(selectedChat,items);
+    safeText($('selectedname'),title);
+    safeText($('selectednumber'),phoneFromJid(selectedChat));
+   }
+  }
+  $('messageinput').disabled=!connected||!selectedChat||!phoneFromJid(selectedChat);
+  $('messageinput').placeholder=connected?'Write a message…':'WhatsApp is not connected';
+  $('sendbutton').disabled=!connected||!selectedChat||!phoneFromJid(selectedChat);
+  renderMessages();
+ }catch(error){
+  showError(error.message);
+  if(/login session|verify your email/i.test(error.message)){
+   setTimeout(()=>window.location.replace('./index.html'),1800);
+  }
+ }finally{busy=false;}
+}
+
+$('sendform').addEventListener('submit',async event=>{
+ event.preventDefault();
+ const text=$('messageinput').value.trim();
+ const phoneNumber=phoneFromJid(selectedChat);
+ if(!text||!phoneNumber||!connected)return;
+
+ $('sendbutton').disabled=true;
+ $('sendbutton').textContent='Sending…';
+ try{
+  clearError();
+  await api('/api/sessions/'+encodeURIComponent(sessionId)+'/messages',{
+   method:'POST',
+   body:JSON.stringify({phoneNumber,text})
+  });
+  $('messageinput').value='';
+  await refresh();
+ }catch(error){showError(error.message);}
+ finally{
+  $('sendbutton').textContent='Send';
+  $('sendbutton').disabled=!connected||!selectedChat||!phoneFromJid(selectedChat);
+ }
+});
+
+$('signout').addEventListener('click',async()=>{
+ await authClient.auth.signOut();
+ sessionStorage.removeItem('trendySessionId');
+ sessionStorage.removeItem('trendyAccessToken');
+ window.location.replace('./index.html');
+});
+
+(async()=>{
+ try{
+  const {data,error}=await authClient.auth.getSession();
+  if(error||!data.session?.user) throw new Error('Please sign in to access your dashboard.');
+  const user=data.session.user;
+  if(!(user.email_confirmed_at||user.confirmed_at)) throw new Error('Please verify your email before using the dashboard.');
+  if(!sessionId||!sessionToken){
+   $('connection').textContent='WhatsApp not connected';
+   $('connection').className='status offline';
+   showError('Your login is active, but no WhatsApp session is saved in this browser. Select Connect WhatsApp to continue.');
+   $('chatlist').replaceChildren();
+   const empty=document.createElement('div');
+   empty.className='empty';
+   empty.textContent='No connected session. Connect WhatsApp to get started.';
+   $('chatlist').appendChild(empty);
+   return;
+  }
+  await refresh();
+  pollTimer=setInterval(refresh,4000);
+ }catch(error){
+  showError(error.message);
+  setTimeout(()=>window.location.replace('./index.html'),2200);
+ }
+})();
+</script>
+</body>
+</html>
