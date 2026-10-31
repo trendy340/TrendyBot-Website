@@ -155,6 +155,29 @@ async function pollStatus(base,c){
      pairPanel.appendChild(code);
     }
     code.textContent=session.pairingCode;
+
+    let copyBtn=document.getElementById('copyPairingCode');
+    if(!copyBtn){
+     copyBtn=document.createElement('button');
+     copyBtn.id='copyPairingCode';
+     copyBtn.type='button';
+     copyBtn.className='action';
+     copyBtn.style.marginTop='8px';
+     copyBtn.textContent='📋 Copy Pairing Code';
+     code.insertAdjacentElement('afterend',copyBtn);
+
+     copyBtn.addEventListener('click',async()=>{
+      try{
+       await navigator.clipboard.writeText(
+        document.getElementById('trendyPairingCode').textContent.trim()
+       );
+       copyBtn.textContent='✅ Copied!';
+       setTimeout(()=>copyBtn.textContent='📋 Copy Pairing Code',2000);
+      }catch(error){
+       status('Unable to copy automatically. Please select and copy the code manually.');
+      }
+     });
+    }
    }
 
    if(state==='connected'){
