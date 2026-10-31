@@ -99,6 +99,8 @@ async function createSession(base){
  if(!sessionId||!accessToken)throw new Error('API did not return session credentials.');
  sessionStorage.setItem('trendySessionId',sessionId);
  sessionStorage.setItem('trendyAccessToken',accessToken);
+ localStorage.setItem('trendySessionId',sessionId);
+ localStorage.setItem('trendyAccessToken',accessToken);
  return {sessionId,accessToken};
 }
 async function startConnection(mode){

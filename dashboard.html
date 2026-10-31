@@ -110,8 +110,8 @@ const API_BASE_KEY='trendyApiBase';
 const {createClient}=supabase;
 const authClient=createClient(SUPABASE_URL,SUPABASE_KEY);
 
-const sessionId=sessionStorage.getItem('trendySessionId');
-const sessionToken=sessionStorage.getItem('trendyAccessToken');
+const sessionId=sessionStorage.getItem('trendySessionId')||localStorage.getItem('trendySessionId');
+const sessionToken=sessionStorage.getItem('trendyAccessToken')||localStorage.getItem('trendyAccessToken');
 
 let selectedChat=null;
 let allMessages=[];
@@ -343,6 +343,8 @@ $('signout').addEventListener('click',async()=>{
  await authClient.auth.signOut();
  sessionStorage.removeItem('trendySessionId');
  sessionStorage.removeItem('trendyAccessToken');
+ localStorage.removeItem('trendySessionId');
+ localStorage.removeItem('trendyAccessToken');
  window.location.replace('./index.html');
 });
 
