@@ -29,7 +29,38 @@ main{flex:1;display:grid;place-items:center;padding:55px 18px}
 .feature{border:1px solid var(--line);border-radius:30px;padding:8px 12px;color:var(--gold2);font-size:10px;letter-spacing:.08em}
 .panel{background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.015));border:1px solid var(--line);border-radius:23px;padding:30px;box-shadow:0 20px 80px rgba(0,0,0,.3)}
 .panel-head{text-align:center;margin-bottom:24px}
-.panel-head .symbol{font-family:Georgia,serif;color:var(--gold2);font-size:34px}
+
+.panel-head .welcome-neon{
+  min-height:46px;
+  margin-bottom:8px;
+  color:#f1d99e;
+  font-size:clamp(19px,5vw,27px);
+  font-weight:900;
+  letter-spacing:.035em;
+  text-shadow:0 0 5px #f1d99e,0 0 12px rgba(241,217,158,.8),0 0 28px rgba(216,181,109,.55);
+  animation:neonPulse 2s ease-in-out infinite alternate;
+}
+.typing-cursor{
+  display:inline-block;
+  width:2px;
+  height:1em;
+  margin-left:4px;
+  vertical-align:-2px;
+  background:#f1d99e;
+  box-shadow:0 0 8px #f1d99e,0 0 15px #d8b56d;
+  animation:cursorBlink .75s steps(2,start) infinite;
+}
+@keyframes neonPulse{
+  from{filter:brightness(.85)}
+  to{filter:brightness(1.3)}
+}
+@keyframes cursorBlink{
+  to{visibility:hidden}
+}
+@media(prefers-reduced-motion:reduce){
+  .welcome-neon,.typing-cursor{animation:none}
+}
+
 .panel-head h2{font-size:22px;margin:5px 0}
 .panel-head p{color:var(--muted);font-size:12px;margin:0}
 .tabs{display:grid;grid-template-columns:1fr 1fr;padding:5px;background:#090909;border:1px solid rgba(255,255,255,.07);border-radius:12px;margin-bottom:23px}
@@ -65,7 +96,7 @@ footer{text-align:center;padding:22px;color:#777166;font-size:10px;border-top:1p
 <div class="features"><span class="feature">✧ AI TOOLS</span><span class="feature">♫ MEDIA</span><span class="feature">◇ GROUPS</span><span class="feature">⌘ UTILITIES</span></div>
 </section>
 <section class="panel">
-<div class="panel-head"><div class="symbol">T</div><h2>Account Portal</h2><p>Access your TrendyBot experience</p></div>
+<div class="panel-head"><div class="welcome-neon" aria-label="Welcome to TrendyBot"><span id="welcomeTyping"></span><span class="typing-cursor" aria-hidden="true"></span></div><h2>Account Portal</h2><p>Access your TrendyBot experience</p></div>
 <div class="tabs">
 <button class="tab active" id="signupTab" type="button">CREATE ACCOUNT</button>
 <button class="tab" id="signinTab" type="button">SIGN IN</button>
@@ -196,5 +227,48 @@ forgotBtn.addEventListener('click',async()=>{
  }
 })();
 </script>
+
+<script>
+(() => {
+  const target = document.getElementById('welcomeTyping');
+  if (!target) return;
+
+  const text = 'Welcome to TrendyBot';
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    target.textContent = text;
+    return;
+  }
+
+  let index = 0;
+  let deleting = false;
+
+  function typeEffect() {
+    target.textContent = text.slice(0, index);
+
+    if (!deleting) {
+      index++;
+      if (index > text.length) {
+        deleting = true;
+        setTimeout(typeEffect, 1800);
+        return;
+      }
+      setTimeout(typeEffect, 95);
+    } else {
+      index--;
+      if (index < 0) {
+        index = 0;
+        deleting = false;
+        setTimeout(typeEffect, 500);
+        return;
+      }
+      setTimeout(typeEffect, 45);
+    }
+  }
+
+  typeEffect();
+})();
+</script>
+
 </body>
 </html>
