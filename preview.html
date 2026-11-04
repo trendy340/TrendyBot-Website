@@ -11,10 +11,10 @@
 a{color:inherit;text-decoration:none}.wrap{max-width:1120px;margin:auto;padding:28px 22px 60px}
 nav{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:8px 0 28px;border-bottom:1px solid var(--line)}
 .brand{font-weight:900;letter-spacing:.15em}.brand span{color:var(--gold)}.navlinks{display:flex;gap:20px;color:#c6c0b5;font-size:13px}
-.hero{padding:48px 0 28px;display:flex;justify-content:space-between;align-items:end;gap:24px}.eyebrow{color:var(--gold);font-size:11px;letter-spacing:.24em;text-transform:uppercase;font-weight:800}
+.hero{padding:48px 0 28px;display:flex;justify-content:space-between;align-items:end;gap:24px}.welcome-neon{font-size:clamp(17px,3vw,23px);font-weight:900;letter-spacing:.06em;color:#f1d99e;text-shadow:0 0 7px rgba(241,217,158,.8),0 0 18px rgba(216,181,106,.65);margin:0 0 12px;min-height:1.4em;animation:welcomeGlow 2s ease-in-out infinite alternate}.typing-cursor{display:inline-block;width:2px;height:1em;background:#f1d99e;margin-left:5px;vertical-align:-.12em;animation:cursorBlink .75s steps(2,start) infinite}@keyframes welcomeGlow{from{text-shadow:0 0 5px rgba(241,217,158,.5),0 0 12px rgba(216,181,106,.35)}to{text-shadow:0 0 10px rgba(241,217,158,.95),0 0 25px rgba(216,181,106,.8)}}@keyframes cursorBlink{to{visibility:hidden}}@media(prefers-reduced-motion:reduce){.welcome-neon,.typing-cursor{animation:none}}.eyebrow{color:var(--gold);font-size:11px;letter-spacing:.24em;text-transform:uppercase;font-weight:800}
 h1{font-size:clamp(32px,6vw,54px);line-height:1.05;letter-spacing:-.04em;margin:10px 0}.sub{color:var(--muted);max-width:580px}
 .badge{border:1px solid #66532e;color:var(--gold2);background:#211a10;border-radius:30px;padding:9px 13px;font-size:12px;white-space:nowrap}
-.hero-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.live-clock{min-width:190px;padding:9px 14px;border:1px solid #66532e;border-radius:12px;background:linear-gradient(145deg,#211a10,#111);box-shadow:0 4px 20px rgba(216,181,106,.09)}.clock-label{color:var(--gold);font-size:9px;font-weight:800;letter-spacing:.2em;text-transform:uppercase}.clock-time{font:800 23px/1.3 ui-monospace,monospace;letter-spacing:.04em;color:var(--gold2);text-shadow:0 0 12px rgba(216,181,106,.25)}.clock-date{font-size:11px;color:#c6c0b5}.clock-zone{font-size:9px;color:#827d73;margin-top:2px}.hero-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .start-btn{display:inline-flex;align-items:center;gap:12px;padding:12px 21px;border-radius:30px;background:linear-gradient(120deg,#b88c42,#f1d99e);color:#17120a;font-size:12px;font-weight:900;letter-spacing:.08em;box-shadow:0 5px 24px rgba(216,181,106,.16);transition:.2s}
 .start-btn:hover{transform:translateY(-2px);filter:brightness(1.08)}
 .start-btn span{font-size:17px}
@@ -31,7 +31,7 @@ footer{border-top:1px solid var(--line);margin-top:38px;padding-top:20px;display
 </head>
 <body><div class="wrap">
 <nav><a class="brand" href="./index.html">TRENDY<span>BOT</span> 2.0</a><div class="navlinks"><a href="./index.html">Home</a><a href="#activity">Activity</a><a href="#commands">Commands</a><a href="./dashboard.html">Live Dashboard →</a></div></nav>
-<header class="hero"><div><div class="eyebrow">Trendy Core • Control Center</div><h1>Public <span class="gold">Dashboard.</span></h1><p class="sub">A quick look at the TrendyBot 2.0 ecosystem, its capabilities and activity.</p></div><div class="hero-actions"><a class="start-btn" href="https://trendybot-website.pages.dev/">GET STARTED <span>→</span></a><div class="badge">● PREVIEW MODE</div></div></header>
+<header class="hero"><div><div class="eyebrow">Trendy Core • Control Center</div><div class="welcome-neon" aria-label="Welcome to TrendyBot"><span id="welcomeTyping"></span><span class="typing-cursor" aria-hidden="true"></span></div><h1>Public <span class="gold">Dashboard.</span></h1><p class="sub">A quick look at the TrendyBot 2.0 ecosystem, its capabilities and activity.</p></div><div class="hero-actions"><a class="start-btn" href="https://trendybot-website.pages.dev/">GET STARTED <span>→</span></a><div class="badge">● PREVIEW MODE</div><div class="live-clock" id="liveClock"><div class="clock-label">YOUR LOCAL TIME</div><div class="clock-time" id="clockTime">--:--:--</div><div class="clock-date" id="clockDate">Loading date…</div><div class="clock-zone" id="clockZone"></div></div></div></header>
 <div class="notice">Preview data only — live bot telemetry has not been connected yet. Numbers and activity below are illustrative, not real-time measurements.</div>
 <section class="grid">
 <div class="card"><div class="label">Bot status</div><div class="value gold">Preview</div><div class="hint">Live connection pending</div></div>
@@ -51,4 +51,64 @@ footer{border-top:1px solid var(--line);margin-top:38px;padding-top:20px;display
 <div class="cmd"><b>.ai</b><small>AI assistant</small></div><div class="cmd"><b>.play</b><small>Music search</small></div><div class="cmd"><b>.video</b><small>Video downloads</small></div><div class="cmd"><b>.tagall</b><small>Group mentions</small></div><div class="cmd"><b>.promote</b><small>Group admin tools</small></div><div class="cmd"><b>.demote</b><small>Group admin tools</small></div>
 </div></section>
 <footer><span>© TrendyBot 2.0 • Trendy Core</span><span>Built for speed. Designed for everyone.</span></footer>
-</div></body></html>
+</div><script>
+(() => {
+  const target = document.getElementById('welcomeTyping');
+  if (!target) return;
+  const message = 'Welcome to TrendyBot';
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    target.textContent = message;
+    return;
+  }
+  let index = 0;
+  let deleting = false;
+  function type() {
+    target.textContent = message.slice(0, index);
+    if (!deleting && index < message.length) {
+      index++;
+      setTimeout(type, 105);
+    } else if (!deleting) {
+      deleting = true;
+      setTimeout(type, 1700);
+    } else if (index > 0) {
+      index--;
+      setTimeout(type, 55);
+    } else {
+      deleting = false;
+      setTimeout(type, 500);
+    }
+  }
+  type();
+})();
+</script>
+<script>
+(() => {
+  const time = document.getElementById('clockTime');
+  const date = document.getElementById('clockDate');
+  const zone = document.getElementById('clockZone');
+  if (!time || !date || !zone) return;
+
+  const timeFormat = new Intl.DateTimeFormat(undefined, {
+    hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+  });
+  const dateFormat = new Intl.DateTimeFormat(undefined, {
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+  });
+  const zoneFormat = new Intl.DateTimeFormat(undefined, {
+    timeZoneName: 'short'
+  });
+
+  function updateClock() {
+    const now = new Date();
+    time.textContent = timeFormat.format(now);
+    date.textContent = dateFormat.format(now);
+    const zonePart = zoneFormat.formatToParts(now).find(part => part.type === 'timeZoneName');
+    zone.textContent = Intl.DateTimeFormat().resolvedOptions().timeZone +
+      (zonePart ? ' • ' + zonePart.value : '');
+  }
+
+  updateClock();
+  setInterval(updateClock, 1000);
+})();
+</script>
+</body></html>
