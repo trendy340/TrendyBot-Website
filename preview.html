@@ -47,10 +47,29 @@ footer{border-top:1px solid var(--line);margin-top:38px;padding-top:20px;display
     <meta name="twitter:description" content="Explore the TrendyBot 2.0 public dashboard. Discover powerful features, advanced security and the Trendy Core experience.">
     <meta name="twitter:image" content="https://trendybot-website.pages.dev/trendybot-og-image.jpg">
 
+
+<style>
+.trendy-visible-banner {
+  display: block;
+  width: 100%;
+  max-width: 760px;
+  height: auto;
+  margin: 24px auto;
+  border: 1px solid rgba(216,181,106,.55);
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(216,181,106,.14);
+}
+</style>
+
 </head>
 <body><div class="wrap">
 <nav><a class="brand" href="./index.html">TRENDY<span>BOT</span> 2.0</a><div class="navlinks"><a href="./index.html">Home</a><a href="#activity">Activity</a><a href="#commands">Commands</a><a href="./dashboard.html">Live Dashboard →</a></div></nav>
 <header class="hero"><div><div class="eyebrow">Trendy Core • Control Center</div><div class="welcome-neon" aria-label="Welcome to TrendyBot"><span id="welcomeTyping"></span><span class="typing-cursor" aria-hidden="true"></span></div><h1>Public <span class="gold">Dashboard.</span></h1><p class="sub">A quick look at the TrendyBot 2.0 ecosystem, its capabilities and activity.</p></div><div class="hero-actions"><a class="start-btn" href="https://trendybot-website.pages.dev/">GET STARTED <span>→</span></a><div class="badge">● PREVIEW MODE</div><div class="live-clock" id="liveClock"><div class="clock-label">YOUR LOCAL TIME</div><div class="clock-time" id="clockTime">--:--:--</div><div class="clock-date" id="clockDate">Loading date…</div><div class="clock-zone" id="clockZone"></div></div></div></header>
+<img class="trendy-visible-banner"
+     src="./trendybot-og-image.jpg"
+     alt="TrendyBot 2.0 — Your Smart WhatsApp Assistant"
+     loading="eager">
+
 <div class="notice">Preview data only — live bot telemetry has not been connected yet. Numbers and activity below are illustrative, not real-time measurements.</div>
 <section class="grid">
 <div class="card"><div class="label">Bot status</div><div class="value gold">Preview</div><div class="hint">Live connection pending</div></div>
