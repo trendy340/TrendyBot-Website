@@ -68,13 +68,12 @@ function status(message){
  statusBox.textContent=message;statusBox.style.display='block';
 }
 function apiBase(){
- let base=(window.TRENDY_API_BASE||localStorage.getItem(API_BASE_KEY)||'https://evening-poems-presenting-interesting.trycloudflare.com').trim();
- if(!base){
-  base=prompt('Enter your secure TrendyBot Connect API HTTPS address:')||'';
-  base=base.trim().replace(/\/+$/,'');
-  if(base)localStorage.setItem(API_BASE_KEY,base);
- }
- return base.replace(/\/+$/,'');
+ const savedBase=localStorage.getItem(API_BASE_KEY)||'';
+ const defaultBase='https://trendybot-connect-gateway.trendycreator380.workers.dev';
+ let base=(window.TRENDY_API_BASE||(savedBase&&!savedBase.includes('.trycloudflare.com')?savedBase:defaultBase)).trim();
+ base=base.replace(/\/+$/,'');
+ if(base)localStorage.setItem(API_BASE_KEY,base);
+ return base;
 }
 async function request(url,options={}){
  const response=await fetch(url,options);
