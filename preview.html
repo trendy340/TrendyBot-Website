@@ -27,6 +27,78 @@ h1{font-size:clamp(32px,6vw,54px);line-height:1.05;letter-spacing:-.04em;margin:
 footer{border-top:1px solid var(--line);margin-top:38px;padding-top:20px;display:flex;justify-content:space-between;color:#777;font-size:11px}
 @media(max-width:800px){.grid{grid-template-columns:repeat(2,1fr)}.section{grid-template-columns:1fr}.hero{align-items:start;flex-direction:column}.commands{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:440px){.navlinks{gap:10px;font-size:11px}.wrap{padding-inline:15px}.grid{gap:9px}.card{padding:15px}.value{font-size:27px}.commands{grid-template-columns:1fr 1fr}}
+
+/* TRENDY_LIVE_TELEMETRY */
+.metric-card {
+  position:relative;
+  overflow:hidden;
+  transition:transform .25s,border-color .25s,box-shadow .25s;
+  animation:metricEnter .65s ease both;
+}
+.metric-card:nth-child(2){animation-delay:.08s}
+.metric-card:nth-child(3){animation-delay:.16s}
+.metric-card:nth-child(4){animation-delay:.24s}
+.metric-card:hover {
+  transform:translateY(-5px);
+  border-color:#806638;
+  box-shadow:0 12px 30px rgba(216,181,106,.10);
+}
+.metric-card .value{transition:color .25s}
+.metric-card::after {
+  content:"";
+  position:absolute;
+  width:100px;height:100px;
+  right:-55px;top:-55px;
+  border-radius:50%;
+  background:rgba(216,181,106,.06);
+  pointer-events:none;
+}
+@keyframes metricEnter {
+  from{opacity:0;transform:translateY(15px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.overview-row {
+  display:flex;
+  justify-content:space-between;
+  margin:17px 0 8px;
+  color:#c6c0b5;
+  font-size:12px;
+}
+.overview-row strong{color:var(--gold2)}
+.meter {
+  height:9px;
+  background:#29231a;
+  border-radius:20px;
+  overflow:hidden;
+}
+.meter div {
+  height:100%;
+  width:0;
+  border-radius:20px;
+  background:linear-gradient(90deg,#8a6931,#f1d99e);
+  box-shadow:0 0 12px rgba(216,181,106,.35);
+  transition:width 1s ease;
+}
+#systemDot {
+  animation:systemPulse 1.8s infinite;
+}
+#systemDot.offline{background:#e16d6d}
+#systemDot.online{background:#72d6a0}
+@keyframes systemPulse {
+  0%,100%{box-shadow:0 0 0 0 rgba(216,181,106,.4)}
+  50%{box-shadow:0 0 0 7px rgba(216,181,106,0)}
+}
+#apiStatus.online{color:#72d6a0}
+#apiStatus.offline{color:#e16d6d}
+#telemetryNotice.online{border-color:#37694d;color:#a5e8bd}
+#telemetryNotice.offline{border-color:#704040;color:#f0aaaa}
+@media(prefers-reduced-motion:reduce){
+ .metric-card{animation:none;transition:none}
+ .metric-card:hover{transform:none}
+ .meter div{transition:none}
+ #systemDot{animation:none}
+}
+
 </style>
 
     <!-- TrendyBot social sharing preview -->
@@ -64,27 +136,82 @@ footer{border-top:1px solid var(--line);margin-top:38px;padding-top:20px;display
 </head>
 <body><div class="wrap">
 <nav><a class="brand" href="./index.html">TRENDY<span>BOT</span> 2.0</a><div class="navlinks"><a href="./index.html">Home</a><a href="#activity">Activity</a><a href="#commands">Commands</a><a href="./dashboard.html">Live Dashboard →</a></div></nav>
-<header class="hero"><div><div class="eyebrow">Trendy Core • Control Center</div><div class="welcome-neon" aria-label="Welcome to TrendyBot"><span id="welcomeTyping"></span><span class="typing-cursor" aria-hidden="true"></span></div><h1>Public <span class="gold">Dashboard.</span></h1><p class="sub">A quick look at the TrendyBot 2.0 ecosystem, its capabilities and activity.</p></div><div class="hero-actions"><a class="start-btn" href="https://trendybot-website.pages.dev/">GET STARTED <span>→</span></a><div class="badge">● PREVIEW MODE</div><div class="live-clock" id="liveClock"><div class="clock-label">YOUR LOCAL TIME</div><div class="clock-time" id="clockTime">--:--:--</div><div class="clock-date" id="clockDate">Loading date…</div><div class="clock-zone" id="clockZone"></div></div></div></header>
+<header class="hero"><div><div class="eyebrow">Trendy Core • Control Center</div><div class="welcome-neon" aria-label="Welcome to TrendyBot"><span id="welcomeTyping"></span><span class="typing-cursor" aria-hidden="true"></span></div><h1>Public <span class="gold">Dashboard.</span></h1><p class="sub">A quick look at the TrendyBot 2.0 ecosystem, its capabilities and activity.</p></div><div class="hero-actions"><a class="start-btn" href="https://trendybot-website.pages.dev/">GET STARTED <span>→</span></a><div class="badge" id="apiBadge">● CONNECTING</div><div class="live-clock" id="liveClock"><div class="clock-label">YOUR LOCAL TIME</div><div class="clock-time" id="clockTime">--:--:--</div><div class="clock-date" id="clockDate">Loading date…</div><div class="clock-zone" id="clockZone"></div></div></div></header>
 <img class="trendy-visible-banner"
      src="./trendybot-og-image.jpg"
      alt="TrendyBot 2.0 — Your Smart WhatsApp Assistant"
      loading="eager">
 
-<div class="notice">Preview data only — live bot telemetry has not been connected yet. Numbers and activity below are illustrative, not real-time measurements.</div>
-<section class="grid">
-<div class="card"><div class="label">Bot status</div><div class="value gold">Preview</div><div class="hint">Live connection pending</div></div>
-<div class="card"><div class="label">Registered users</div><div class="value">—</div><div class="hint">Awaiting secure data feed</div></div>
-<div class="card"><div class="label">Commands</div><div class="value">150</div><div class="hint">Available commands</div></div>
-<div class="card"><div class="label">Uptime</div><div class="value">—</div><div class="hint">Not connected</div></div>
+
+<div class="notice" id="telemetryNotice" role="status">
+  Connecting to Trendy Core live telemetry...
+</div>
+
+<section class="grid" aria-label="Live bot statistics">
+  <div class="card metric-card">
+    <div class="label">API status</div>
+    <div class="value gold" id="apiStatus">Connecting</div>
+    <div class="hint" id="apiStatusHint">Checking gateway...</div>
+  </div>
+  <div class="card metric-card">
+    <div class="label">Total bot sessions</div>
+    <div class="value" id="totalSessions">—</div>
+    <div class="hint">Registered sessions</div>
+  </div>
+  <div class="card metric-card">
+    <div class="label">Connected WhatsApp bots</div>
+    <div class="value" id="connectedSessions">—</div>
+    <div class="hint">Currently connected</div>
+  </div>
+  <div class="card metric-card">
+    <div class="label">API uptime</div>
+    <div class="value" id="apiUptime">—</div>
+    <div class="hint">Server running time</div>
+  </div>
 </section>
+
 <section class="section">
-<div class="card"><h2>Activity overview</h2><div class="bars">
-<div class="barbox"><div class="bar" style="--h:38%"></div>Mon</div><div class="barbox"><div class="bar" style="--h:57%"></div>Tue</div><div class="barbox"><div class="bar" style="--h:45%"></div>Wed</div><div class="barbox"><div class="bar" style="--h:78%"></div>Thu</div><div class="barbox"><div class="bar" style="--h:62%"></div>Fri</div><div class="barbox"><div class="bar" style="--h:90%"></div>Sat</div><div class="barbox"><div class="bar" style="--h:52%"></div>Sun</div></div><div class="hint">Illustrative chart — not connected to bot events.</div></div>
-<div class="card" id="activity"><h2>Recent activity</h2>
-<div class="activity"><i class="dot"></i><div>Dashboard preview prepared<small>Sample event • Not live</small></div></div>
-<div class="activity"><i class="dot"></i><div>Command directory loaded<small>Sample event • Not live</small></div></div>
-<div class="activity"><i class="dot"></i><div>Trendy Core interface ready<small>Sample event • Not live</small></div></div>
-</div></section>
+  <div class="card">
+    <h2>Connection overview</h2>
+    <div class="overview-row">
+      <span>Total sessions</span>
+      <strong id="overviewTotal">—</strong>
+    </div>
+    <div class="meter"><div id="totalMeter"></div></div>
+    <div class="overview-row">
+      <span>Connected sessions</span>
+      <strong id="overviewConnected">—</strong>
+    </div>
+    <div class="meter"><div id="connectedMeter"></div></div>
+    <div class="hint" style="margin-top:15px">
+      Live aggregate session statistics from Trendy Core.
+    </div>
+  </div>
+
+  <div class="card" id="activity">
+    <h2>Live system status</h2>
+    <div class="activity">
+      <i class="dot" id="systemDot"></i>
+      <div id="systemMessage">
+        Waiting for API response...
+        <small id="systemDetail">Telemetry initializing</small>
+      </div>
+    </div>
+    <div class="activity">
+      <i class="dot"></i>
+      <div>Automatic monitoring
+        <small>Refresh interval: 30 seconds</small>
+      </div>
+    </div>
+    <div class="activity">
+      <i class="dot"></i>
+      <div>Last updated
+        <small id="lastUpdated">Waiting for first response</small>
+      </div>
+    </div>
+  </div>
+</section>
+</section>
 <section class="card" id="commands" style="margin-top:14px"><h2>Featured commands</h2><div class="commands">
 <div class="cmd"><b>.ai</b><small>AI assistant</small></div><div class="cmd"><b>.play</b><small>Music search</small></div><div class="cmd"><b>.video</b><small>Video downloads</small></div><div class="cmd"><b>.tagall</b><small>Group mentions</small></div><div class="cmd"><b>.promote</b><small>Group admin tools</small></div><div class="cmd"><b>.demote</b><small>Group admin tools</small></div>
 </div></section>
@@ -149,4 +276,149 @@ footer{border-top:1px solid var(--line);margin-top:38px;padding-top:20px;display
   setInterval(updateClock, 1000);
 })();
 </script>
+
+<script>
+/* TRENDY_LIVE_TELEMETRY */
+(() => {
+  const API_BASE = 'https://trendybot-connect-gateway.trendycreator380.workers.dev';
+  const REFRESH_MS = 30000;
+
+  const el = id => document.getElementById(id);
+  const reducedMotion = window.matchMedia(
+    '(prefers-reduced-motion: reduce)'
+  ).matches;
+
+  function animateNumber(element, target) {
+    if (!element) return;
+    if (reducedMotion) {
+      element.textContent = target.toLocaleString();
+      return;
+    }
+
+    const start = Number(element.dataset.current || 0);
+    const duration = 800;
+    const began = performance.now();
+
+    function frame(now) {
+      const progress = Math.min((now - began) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const value = Math.round(start + (target - start) * eased);
+      element.textContent = value.toLocaleString();
+
+      if (progress < 1) requestAnimationFrame(frame);
+      else element.dataset.current = String(target);
+    }
+
+    requestAnimationFrame(frame);
+  }
+
+  function formatUptime(seconds) {
+    seconds = Math.max(0, Math.floor(seconds));
+    const days = Math.floor(seconds / 86400);
+    const hours = Math.floor((seconds % 86400) / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+
+    if (days) return days + 'd ' + hours + 'h';
+    if (hours) return hours + 'h ' + minutes + 'm';
+    return minutes + 'm ' + (seconds % 60) + 's';
+  }
+
+  function setOffline() {
+    el('apiStatus').textContent = 'Offline';
+    el('apiStatus').className = 'value offline';
+    el('apiStatusHint').textContent = 'Gateway unavailable';
+    el('apiBadge').textContent = '● OFFLINE';
+    el('telemetryNotice').textContent =
+      'Live telemetry is temporarily unavailable. Please try again shortly.';
+    el('telemetryNotice').className = 'notice offline';
+
+    ['totalSessions','connectedSessions','apiUptime',
+     'overviewTotal','overviewConnected'].forEach(id => {
+      el(id).textContent = '—';
+    });
+
+    el('totalMeter').style.width = '0%';
+    el('connectedMeter').style.width = '0%';
+    el('systemDot').className = 'dot offline';
+    el('systemMessage').childNodes[0].textContent =
+      'API connection unavailable ';
+    el('systemDetail').textContent = 'Waiting for the next retry';
+  }
+
+  async function refreshTelemetry() {
+    try {
+      const response = await fetch(API_BASE + '/api/public/stats', {
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+        cache: 'no-store',
+        signal: AbortSignal.timeout(10000)
+      });
+
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+
+      const data = await response.json();
+      const stats = data.stats;
+
+      if (
+        !data.success ||
+        data.status !== 'online' ||
+        !stats ||
+        !Number.isSafeInteger(stats.totalSessions) ||
+        !Number.isSafeInteger(stats.connectedSessions) ||
+        !Number.isFinite(stats.uptimeSeconds) ||
+        stats.totalSessions < 0 ||
+        stats.connectedSessions < 0 ||
+        stats.connectedSessions > stats.totalSessions ||
+        stats.uptimeSeconds < 0
+      ) throw new Error('Invalid telemetry response');
+
+      el('apiStatus').textContent = 'Online';
+      el('apiStatus').className = 'value online';
+      el('apiStatusHint').textContent = 'Gateway responding normally';
+      el('apiBadge').textContent = '● LIVE API';
+      el('telemetryNotice').textContent =
+        'Live telemetry connected • Statistics refresh automatically every 30 seconds.';
+      el('telemetryNotice').className = 'notice online';
+
+      animateNumber(el('totalSessions'), stats.totalSessions);
+      animateNumber(el('connectedSessions'), stats.connectedSessions);
+
+      el('apiUptime').textContent = formatUptime(stats.uptimeSeconds);
+      el('overviewTotal').textContent = stats.totalSessions.toLocaleString();
+      el('overviewConnected').textContent =
+        stats.connectedSessions.toLocaleString();
+
+      const total = stats.totalSessions;
+      const connected = stats.connectedSessions;
+      const scale = Math.max(total, 1);
+
+      el('totalMeter').style.width = '100%';
+      el('connectedMeter').style.width =
+        Math.min(100, connected / scale * 100) + '%';
+
+      el('systemDot').className = 'dot online';
+      el('systemMessage').childNodes[0].textContent =
+        'Trendy Core API is online ';
+      el('systemDetail').textContent =
+        connected + ' connected bot(s) out of ' + total + ' session(s)';
+
+      const updated = data.generatedAt
+        ? new Date(data.generatedAt)
+        : new Date();
+
+      el('lastUpdated').textContent = Number.isNaN(updated.getTime())
+        ? 'Just now'
+        : updated.toLocaleString();
+
+    } catch (error) {
+      console.warn('[Trendy Telemetry]', error.message);
+      setOffline();
+    }
+  }
+
+  refreshTelemetry();
+  setInterval(refreshTelemetry, REFRESH_MS);
+})();
+</script>
+
 </body></html>
