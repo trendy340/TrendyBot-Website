@@ -173,6 +173,10 @@ async function api(path,options={}){
  return result;
 }
 
+function isPersonalChat(jid){
+ return typeof jid==='string'&&
+   (jid.endsWith('@s.whatsapp.net')||jid.endsWith('@lid'));
+}
 function phoneFromJid(jid){
  if(!jid||!jid.endsWith('@s.whatsapp.net')) return '';
  return jid.slice(0,jid.indexOf('@')).replace(/\D/g,'');
@@ -214,7 +218,7 @@ function initializeReadMarkers(){
  let changed=false;
  const grouped=new Map();
  for(const m of allMessages){
-  if(!m.chat?.endsWith('@s.whatsapp.net')||m.isStatus)continue;
+  if(!isPersonalChat(m.chat)||m.isStatus)continue;
   grouped.set(m.chat,Math.max(grouped.get(m.chat)||0,Number(m.timestamp)||0));
  }
  for(const [jid,last] of grouped){
@@ -301,7 +305,7 @@ function clearSelectedConversation(){
 function renderChats(){
  const grouped=new Map();
  for(const m of allMessages){
-  if(!m.chat||!m.chat.endsWith('@s.whatsapp.net')||m.isStatus) continue;
+  if(!isPersonalChat(m.chat)||m.isStatus) continue;
   if(!grouped.has(m.chat)) grouped.set(m.chat,[]);
   grouped.get(m.chat).push(m);
  }
@@ -441,7 +445,7 @@ async function refresh(){
 
   allMessages=Array.isArray(messageResult.messages)?messageResult.messages:[];
     initializeReadMarkers();
-  const available=new Set(allMessages.filter(m=>m.chat?.endsWith('@s.whatsapp.net')&&!m.isStatus).map(m=>m.chat));
+  const available=new Set(allMessages.filter(m=>isPersonalChat(m.chat)&&!m.isStatus).map(m=>m.chat));
   if(selectedChat&&!available.has(selectedChat)) selectedChat=null;
 
   renderChats();
