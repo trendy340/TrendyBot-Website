@@ -4,67 +4,40 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#090909">
-<title>TrendyBot 2.0 — Live Dashboard</title>
+<title>TrendyBot 2.0 — Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--bg:#090909;--panel:#141414;--panel2:#1b1b1b;--gold:#d8b56a;--gold2:#f1d99e;--muted:#999;--line:#292929;--green:#72d6a0;--red:#ff7777}
+:root{--bg:#090909;--panel:#151515;--gold:#d8b56a;--gold2:#f1d99e;--muted:#999;--line:#292929;--green:#72d6a0;--red:#ff7777}
 *{box-sizing:border-box}
 body{margin:0;background:radial-gradient(ellipse at 75% -10%,#342716 0,transparent 38%),var(--bg);color:#f5f1e8;font:14px/1.5 Inter,system-ui,Arial,sans-serif}
-button,input{font:inherit}
-button,a{cursor:pointer}
+button,a{font:inherit;cursor:pointer}
 a{color:inherit;text-decoration:none}
-.wrap{max-width:1200px;margin:auto;padding:20px}
+.wrap{max-width:1100px;margin:auto;padding:20px}
 nav{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0 20px;border-bottom:1px solid var(--line)}
 .brand{font-weight:900;letter-spacing:.13em}.brand span{color:var(--gold)}
-.navlinks{display:flex;gap:14px;align-items:center}
+.navlinks{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
 .btn{border:1px solid #66532e;background:#211a10;color:var(--gold2);border-radius:9px;padding:9px 13px;font-size:12px;font-weight:700}
 .btn.primary{background:linear-gradient(120deg,#b88c42,#f1d99e);color:#17120a;border:0}
-header{padding:28px 0 20px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+header{padding:30px 0 20px}
 .eyebrow{color:var(--gold);font-size:10px;letter-spacing:.22em;font-weight:800}
-h1{font-size:clamp(27px,5vw,42px);line-height:1.1;margin:7px 0}
+h1{font-size:clamp(28px,5vw,43px);line-height:1.1;margin:7px 0}
 .muted{color:var(--muted)}
-.statusbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:14px 16px;margin:15px 0}
-.status{font-weight:800}.online{color:var(--green)}.offline{color:var(--red)}
-.layout{display:grid;grid-template-columns:320px 1fr;gap:15px;margin-top:15px}
-.panel{background:linear-gradient(145deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:15px;overflow:hidden;min-width:0}
-.panelhead{padding:16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px}
-.panelhead h2{font-size:14px;margin:0}
-.chatlist{max-height:570px;overflow:auto}
-.chatitem{width:100%;display:flex;gap:11px;align-items:center;text-align:left;padding:13px 15px;background:transparent;color:#eee;border:0;border-bottom:1px solid #242424}
-.chatitem:hover,.chatitem.active{background:#282116}
-.avatar{width:39px;height:39px;border-radius:50%;display:grid;place-items:center;background:#352a18;color:var(--gold2);font-weight:900;flex:none}
-.chatmeta{min-width:0;flex:1}.chatname{font-weight:750;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.preview{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.time{font-size:10px;color:#827d73;white-space:nowrap}
-.chatpanel{display:flex;flex-direction:column;min-height:570px}
-.chathead{padding:14px 17px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
-.chathead .chatmeta{flex:1}
-.messages{padding:17px;flex:1;min-height:360px;max-height:510px;overflow:auto;display:flex;flex-direction:column;gap:10px}
-.bubble{max-width:min(78%,520px);padding:10px 12px;border-radius:12px;background:#252525;align-self:flex-start;overflow-wrap:anywhere}
-.bubble.out{background:#49391e;align-self:flex-end}
-.bubble small{display:block;color:#c3b99f;font-size:10px;margin-top:5px;text-align:right}
-.empty{color:var(--muted);text-align:center;padding:45px 18px}
-.composer{display:flex;gap:9px;padding:13px;border-top:1px solid var(--line)}
-.composer input{min-width:0;flex:1;background:#090909;border:1px solid #383838;color:white;border-radius:9px;padding:12px;outline:none}
-.composer input:focus{border-color:var(--gold)}
-.composer button{min-width:75px}
-.notice{font-size:11px;color:#b9a77e;padding:12px 15px;border-top:1px solid var(--line)}
-.error{color:var(--red);font-size:12px;padding:12px}
-.hidden{display:none!important}
-footer{border-top:1px solid var(--line);margin-top:25px;padding:18px 0;color:#777;font-size:11px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
-@media(max-width:760px){.wrap{padding:13px}.layout{grid-template-columns:1fr}.chatlist{max-height:230px}.chatpanel{min-height:470px}.messages{min-height:300px;max-height:430px}.navlinks{gap:7px}.btn{padding:8px 10px}}
-
-.searchbox{display:block;width:calc(100% - 24px);margin:12px;background:#090909;border:1px solid #383838;color:white;border-radius:9px;padding:11px;outline:none}
-.searchbox:focus{border-color:var(--gold)}
-.chattools{display:flex;gap:7px;flex-wrap:wrap;padding:10px 13px;border-bottom:1px solid var(--line)}
-.chattools .btn{padding:7px 9px}
-.chattools .btn:disabled{opacity:.4;cursor:not-allowed}
-.quickbar{padding:9px 13px 0}
-.quickbar select{width:100%;background:#111;color:var(--gold2);border:1px solid #383838;border-radius:8px;padding:9px}
-.contactdetails{display:none;margin:10px 13px;padding:12px;background:#211a10;border:1px solid #66532e;border-radius:9px;color:#e9dfc8;font-size:12px;overflow-wrap:anywhere}
-.contactdetails.show{display:block}
-.unreadbadge{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:20px;background:#b88c42;color:#17120a;font-size:10px;font-weight:900}
-
+.statusbar,.panel{background:linear-gradient(145deg,#1b1b1b,var(--panel));border:1px solid var(--line);border-radius:15px}
+.statusbar{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:17px;margin:15px 0}
+.status{font-weight:800;font-size:16px}.online{color:var(--green)}.offline{color:var(--red)}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:15px}
+.panel{padding:19px;min-width:0}
+.panel h2{font-size:13px;margin:0 0 12px;color:var(--gold2)}
+.value{font-size:22px;font-weight:850;overflow-wrap:anywhere}
+.small{font-size:11px;color:var(--muted);margin-top:5px}
+.privacy{margin-top:15px;border:1px solid #66532e;background:#211a10;border-radius:15px;padding:20px}
+.privacy h2{margin:0 0 8px;color:var(--gold2);font-size:14px}
+.privacy p{margin:0;color:#c7bda8;font-size:12px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.error{color:var(--red);font-size:12px;margin-top:12px;overflow-wrap:anywhere}
+footer{border-top:1px solid var(--line);margin-top:28px;padding:18px 0;color:#777;font-size:11px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+@media(max-width:700px){.wrap{padding:13px}.grid{grid-template-columns:1fr}.panel{padding:16px}.statusbar{align-items:flex-start}}
 </style>
 </head>
 <body>
@@ -81,434 +54,136 @@ footer{border-top:1px solid var(--line);margin-top:25px;padding:18px 0;color:#77
 <header>
 <div class="eyebrow">TRENDY CORE • CONTROL CENTER</div>
 <h1>Live <span style="color:var(--gold2)">Dashboard.</span></h1>
-<p class="muted">Manage your connected WhatsApp session and conversations.</p>
+<p class="muted">Manage your WhatsApp connection and session securely.</p>
 </header>
 
 <div class="statusbar">
-<div><div class="muted" style="font-size:11px">WHATSAPP CONNECTION</div><div id="connection" class="status">Checking connection…</div></div>
+<div>
+<div class="muted" style="font-size:11px">WHATSAPP CONNECTION</div>
+<div id="connection" class="status">Checking connection…</div>
+<div id="checked" class="small">Waiting for API response</div>
+</div>
 <a class="btn primary" href="./connect.html">＋ Connect WhatsApp</a>
 </div>
 
-<div id="alert" class="error hidden"></div>
-
-<div class="layout">
+<div class="grid">
 <section class="panel">
-<div class="panelhead"><h2>💬 Conversations</h2><span id="chatcount" class="muted">0</span></div>
-<input id="chatsearch" class="searchbox" placeholder="⌕ Search conversations…" autocomplete="off">
-<div id="chatlist" class="chatlist"><div class="empty">Loading conversations…</div></div>
-<div class="notice">Personal chats only. Group conversations are not supported yet.</div>
+<h2>SESSION STATUS</h2>
+<div class="value" id="sessionStatus">Checking…</div>
+<div class="small">Your personal WhatsApp connection</div>
 </section>
-
-<section class="panel chatpanel">
-<div class="chathead">
-<div class="avatar" id="selectedavatar">T</div>
-<div class="chatmeta"><div class="chatname" id="selectedname">Select a conversation</div><div class="preview" id="selectednumber">Your WhatsApp chats will appear here.</div></div>
-</div>
-<div class="chattools"><button class="btn" id="pinchat" type="button">📌 Pin</button><button class="btn" id="labelchat" type="button">🏷️ Label</button><button class="btn" id="profilechat" type="button">👤 Details</button><button class="btn" id="clearchat" type="button">🗑️ Clear</button></div>
-<div id="contactdetails" class="contactdetails"></div>
-<div class="quickbar"><select id="quickreply" aria-label="Quick replies"><option value="">Quick replies…</option><option value="Hello! How can I help you?">Greeting</option><option value="Thank you for reaching out.">Thank you</option><option value="Please give me a moment.">One moment</option><option value="I will get back to you shortly.">I’ll get back to you</option></select></div>
-<div class="messages" id="messages"><div class="empty">Select a conversation to view messages.</div></div>
-<form class="composer" id="sendform">
-<input id="messageinput" placeholder="Connect WhatsApp and select a chat…" maxlength="4000" autocomplete="off" disabled>
-<button class="btn primary" id="sendbutton" disabled>Send</button>
-</form>
-<div class="notice">Messages are kept temporarily in memory (latest 100). This is not permanent chat history.</div>
+<section class="panel">
+<h2>CONTROL CENTER</h2>
+<div class="value">Protected</div>
+<div class="small">Authenticated session access</div>
+</section>
+<section class="panel">
+<h2>PRIVACY MODE</h2>
+<div class="value">Enabled</div>
+<div class="small">No conversation viewer</div>
 </section>
 </div>
 
-<footer><span>© TrendyBot 2.0 • Trendy Core</span><span>Built for speed. Designed for everyone.</span></footer>
+<section class="privacy">
+<h2>🔒 Your conversations are private</h2>
+<p>This dashboard does not display your chats, message previews, contact names, or phone numbers. It does not provide a feature for reading or sending your WhatsApp messages. Your dashboard is for managing your connection only.</p>
+<div class="actions">
+<button class="btn" id="refresh">↻ Refresh status</button>
+<button class="btn" id="disconnect">Disconnect WhatsApp</button>
+</div>
+<div id="alert" class="error" role="alert"></div>
+</section>
+
+<footer>
+<span>© TrendyBot 2.0 • Trendy Core</span>
+<span>Built for speed. Designed for everyone.</span>
+</footer>
 </div>
 
 <script>
 const SUPABASE_URL='https://aqxmqymvsoyrxbgcuvam.supabase.co';
 const SUPABASE_KEY='sb_publishable_RIGjv2RpnCqqwvpfmH7xng_aw5LwR-l';
-const API_BASE_KEY='trendyApiBase';
-const {createClient}=supabase;
-const authClient=createClient(SUPABASE_URL,SUPABASE_KEY);
-
+const authClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const sessionId=sessionStorage.getItem('trendySessionId')||localStorage.getItem('trendySessionId');
 const sessionToken=sessionStorage.getItem('trendyAccessToken')||localStorage.getItem('trendyAccessToken');
-
-let selectedChat=null;
-let allMessages=[];
-let connected=false;
-let pollTimer=null;
-let busy=false;
-
 const $=id=>document.getElementById(id);
+const API_BASE_KEY='trendyApiBase';
+let busy=false;
+let connected=false;
 
 function apiBase(){
  const base=(window.TRENDY_API_BASE||localStorage.getItem(API_BASE_KEY)||'https://trendybot-connect-gateway.trendycreator380.workers.dev').trim();
  return base.replace(/\/+$/,'');
 }
-
-function showError(message){
- $('alert').textContent=message;
- $('alert').classList.remove('hidden');
-}
-function clearError(){
- $('alert').textContent='';
- $('alert').classList.add('hidden');
-}
-
+function showError(message){$('alert').textContent=message||'';}
 async function getUserToken(){
  const {data,error}=await authClient.auth.getSession();
- if(error||!data.session?.access_token) throw new Error('Your login session has expired. Please sign in again.');
+ if(error||!data.session?.access_token)throw new Error('Your login session has expired. Please sign in again.');
  const user=data.session.user;
- if(!(user?.email_confirmed_at||user?.confirmed_at)) throw new Error('Please verify your email before using the dashboard.');
+ if(!(user?.email_confirmed_at||user?.confirmed_at))throw new Error('Please verify your email before using the dashboard.');
  return data.session.access_token;
 }
-
 async function api(path,options={}){
- const userToken=await getUserToken();
- const headers={
-  Authorization:'Bearer '+userToken,
-  'X-Session-Token':sessionToken||'',
-  ...(options.body?{'Content-Type':'application/json'}:{})
- };
- const response=await fetch(apiBase()+path,{...options,headers:{...headers,...options.headers}});
+ const token=await getUserToken();
+ const response=await fetch(apiBase()+path,{
+  ...options,
+  headers:{
+   Authorization:'Bearer '+token,
+   'X-Session-Token':sessionToken||'',
+   ...(options.body?{'Content-Type':'application/json'}:{}),
+   ...options.headers
+  }
+ });
  let result;
- try{result=await response.json()}catch{throw new Error('The API returned an invalid response.')}
- if(!response.ok||result.success===false) throw new Error(result.message||'Request failed ('+response.status+').');
+ try{result=await response.json();}catch{throw new Error('The API returned an invalid response.');}
+ if(!response.ok||result.success===false)throw new Error(result.error||result.message||'Request failed ('+response.status+').');
  return result;
 }
-
-function isPersonalChat(jid){
- return typeof jid==='string'&&
-   (jid.endsWith('@s.whatsapp.net')||jid.endsWith('@lid'));
+function setConnection(status){
+ connected=status==='connected';
+ $('connection').textContent=connected?'● WhatsApp connected':'● WhatsApp '+status;
+ $('connection').className='status '+(connected?'online':'offline');
+ $('sessionStatus').textContent=status.charAt(0).toUpperCase()+status.slice(1);
+ $('disconnect').disabled=!connected;
 }
-function phoneFromJid(jid){
- if(!jid||!jid.endsWith('@s.whatsapp.net')) return '';
- return jid.slice(0,jid.indexOf('@')).replace(/\D/g,'');
-}
-function timeLabel(timestamp){
- const date=new Date(Number(timestamp)*1000);
- return Number.isNaN(date.getTime())?'':date.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-}
-function chatTitle(jid,items){
- const latest=[...items].reverse().find(m=>m.pushName);
- return latest?.pushName||phoneFromJid(jid)||'WhatsApp chat';
-}
-function safeText(node,value){node.textContent=value??'';}
-
-
-const PREF_KEY='trendyDashboardPrefsV1';
-function loadPrefs(){
- try{return JSON.parse(localStorage.getItem(PREF_KEY))||{};}catch{return {};}
-}
-const prefs=loadPrefs();
-prefs.pins=Array.isArray(prefs.pins)?prefs.pins:[];
-prefs.labels=prefs.labels&&typeof prefs.labels==='object'?prefs.labels:{};
-prefs.readAt=prefs.readAt&&typeof prefs.readAt==='object'?prefs.readAt:{};
-prefs.initializedChats=prefs.initializedChats&&typeof prefs.initializedChats==='object'?prefs.initializedChats:{};
-prefs.clearedBefore=prefs.clearedBefore&&typeof prefs.clearedBefore==='object'?prefs.clearedBefore:{};
-
-function savePrefs(){
- localStorage.setItem(PREF_KEY,JSON.stringify(prefs));
-}
-function visibleChatMessages(jid){
- const cutoff=Number(prefs.clearedBefore[jid]||0);
- return allMessages.filter(m=>m.chat===jid&&Number(m.timestamp)>cutoff);
-}
-function unreadCount(jid,items){
- const last=Number(prefs.readAt[jid]||0);
- return items.filter(m=>!m.fromMe&&Number(m.timestamp)>last).length;
-}
-function initializeReadMarkers(){
- let changed=false;
- const grouped=new Map();
- for(const m of allMessages){
-  if(!isPersonalChat(m.chat)||m.isStatus)continue;
-  grouped.set(m.chat,Math.max(grouped.get(m.chat)||0,Number(m.timestamp)||0));
- }
- for(const [jid,last] of grouped){
-  if(!prefs.initializedChats[jid]){
-   prefs.readAt[jid]=last;
-   prefs.initializedChats[jid]=true;
-   changed=true;
-  }
- }
- if(changed)savePrefs();
-}
-function markChatRead(jid,items){
- prefs.readAt[jid]=Math.max(Number(prefs.readAt[jid]||0),...items.map(m=>Number(m.timestamp)||0));
- prefs.initializedChats[jid]=true;
- savePrefs();
-}
-function togglePin(){
- if(!selectedChat)return;
- prefs.pins=prefs.pins.includes(selectedChat)
-  ?prefs.pins.filter(x=>x!==selectedChat)
-  :[...prefs.pins,selectedChat];
- savePrefs();
- renderChats();
- updateChatTools();
-}
-function editChatLabel(){
- if(!selectedChat)return;
- const value=prompt('Enter a contact label. Leave blank to remove it:',prefs.labels[selectedChat]||'');
- if(value===null)return;
- if(value.trim())prefs.labels[selectedChat]=value.trim().slice(0,40);
- else delete prefs.labels[selectedChat];
- savePrefs();
- renderChats();
- updateChatTools();
-}
-function updateChatTools(){
- const active=Boolean(selectedChat);
- ['pinchat','labelchat','profilechat','clearchat'].forEach(id=>$(id).disabled=!active);
- $('pinchat').textContent=active&&prefs.pins.includes(selectedChat)?'📌 Unpin':'📌 Pin';
-}
-function toggleContactDetails(){
- if(!selectedChat)return;
- const box=$('contactdetails');
- if(box.classList.contains('show')){
-  box.classList.remove('show');
-  return;
- }
- const items=visibleChatMessages(selectedChat);
- const title=chatTitle(selectedChat,items);
- box.replaceChildren();
- const heading=document.createElement('strong');
- heading.textContent=title;
- const number=document.createElement('div');
- number.textContent='WhatsApp: '+phoneFromJid(selectedChat);
- const label=document.createElement('div');
- label.textContent='Label: '+(prefs.labels[selectedChat]||'None');
- const count=document.createElement('div');
- count.textContent='Messages currently available: '+items.length;
- box.append(heading,number,label,count);
- box.classList.add('show');
-}
-function clearSelectedConversation(){
- if(!selectedChat)return;
- if(!confirm('Clear this conversation from the dashboard? This does NOT delete messages from WhatsApp.'))return;
- const jid=selectedChat;
- prefs.clearedBefore[jid]=Math.max(
-  Number(prefs.clearedBefore[jid]||0),
-  ...allMessages.filter(m=>m.chat===jid).map(m=>Number(m.timestamp)||0)
- );
- prefs.readAt[jid]=prefs.clearedBefore[jid];
- savePrefs();
- selectedChat=null;
- $('selectedname').textContent='Select a conversation';
- $('selectednumber').textContent='Your WhatsApp chats will appear here.';
- $('selectedavatar').textContent='T';
- $('contactdetails').classList.remove('show');
- $('messageinput').disabled=true;
- $('sendbutton').disabled=true;
- renderChats();
- renderMessages();
- updateChatTools();
-}
-
-function renderChats(){
- const grouped=new Map();
- for(const m of allMessages){
-  if(!isPersonalChat(m.chat)||m.isStatus) continue;
-  if(!grouped.has(m.chat)) grouped.set(m.chat,[]);
-  grouped.get(m.chat).push(m);
- }
- const query=$('chatsearch').value.trim().toLowerCase();
-  const chats=[...grouped.entries()]
-   .sort((a,b)=>(Number(prefs.pins.includes(b[0]))-Number(prefs.pins.includes(a[0])))||((b[1].at(-1)?.timestamp||0)-(a[1].at(-1)?.timestamp||0)))
-   .filter(([jid,items])=>{
-    const title=chatTitle(jid,items);
-    const preview=items.at(-1)?.text||'';
-    return (title+' '+phoneFromJid(jid)+' '+(prefs.labels[jid]||'')+' '+preview).toLowerCase().includes(query);
-   });
- $('chatcount').textContent=chats.length;
- const list=$('chatlist');
- list.replaceChildren();
-
- if(!chats.length){
-  const empty=document.createElement('div');
-  empty.className='empty';
-  empty.textContent=connected?'No messages received yet. New personal conversations will appear here.':'Connect WhatsApp to load conversations.';
-  list.appendChild(empty);
-  return;
- }
-
- for(const [jid,items] of chats){
-  const title=chatTitle(jid,items);
-  const latest=items.at(-1);
-  const button=document.createElement('button');
-  button.className='chatitem'+(selectedChat===jid?' active':'');
-  const avatar=document.createElement('div');
-  avatar.className='avatar';
-  avatar.textContent=title.slice(0,1).toUpperCase();
-  const meta=document.createElement('div');
-  meta.className='chatmeta';
-  const name=document.createElement('div');
-  name.className='chatname';
-  name.textContent=(prefs.labels[jid]?prefs.labels[jid]+' · ':'')+title;
-    if(prefs.pins.includes(jid)){
-     const pin=document.createElement('span');
-     pin.className='pinmark';
-     pin.textContent='📌';
-     name.prepend(pin);
-    }
-    const unread=unreadCount(jid,items);
-    if(unread){
-     const badge=document.createElement('span');
-     badge.className='unreadbadge';
-     badge.textContent=unread>99?'99+':String(unread);
-     name.appendChild(badge);
-    }
-  const preview=document.createElement('div');
-  preview.className='preview';
-  preview.textContent=(latest.fromMe?'You: ':'')+(latest.text||'['+latest.messageType+']');
-  const time=document.createElement('div');
-  time.className='time';
-  time.textContent=timeLabel(latest.timestamp);
-  meta.append(name,preview);
-  button.append(avatar,meta,time);
-  button.addEventListener('click',()=>selectChat(jid));
-  list.appendChild(button);
- }
-}
-
-function renderMessages(){
- const box=$('messages');
- box.replaceChildren();
- if(!selectedChat){
-  const empty=document.createElement('div');
-  empty.className='empty';
-  empty.textContent='Select a conversation to view messages.';
-  box.appendChild(empty);
-  return;
- }
- const items=visibleChatMessages(selectedChat);
- if(!items.length){
-  const empty=document.createElement('div');
-  empty.className='empty';
-  empty.textContent='No messages in this conversation yet.';
-  box.appendChild(empty);
-  return;
- }
- for(const m of items){
-  const bubble=document.createElement('div');
-  bubble.className='bubble'+(m.fromMe?' out':'');
-  const content=document.createElement('div');
-  content.textContent=m.text||'['+m.messageType+']';
-  const time=document.createElement('small');
-  time.textContent=(m.fromMe?'You · ':'')+timeLabel(m.timestamp);
-  bubble.append(content,time);
-  box.appendChild(bubble);
- }
- box.scrollTop=box.scrollHeight;
-}
-
-function selectChat(jid){
- selectedChat=jid;
- const items=allMessages.filter(m=>m.chat===jid);
-  markChatRead(jid,items);
- const title=chatTitle(jid,items);
- safeText($('selectedname'),title);
- safeText($('selectednumber'),phoneFromJid(jid));
- $('selectedavatar').textContent=title.slice(0,1).toUpperCase();
- $('messageinput').disabled=!connected||!phoneFromJid(jid);
- $('messageinput').placeholder=connected?'Write a message…':'WhatsApp is not connected';
- $('sendbutton').disabled=!connected||!phoneFromJid(jid);
- renderChats();
- renderMessages();
-}
-
 async function refresh(){
  if(busy)return;
  busy=true;
+ $('refresh').disabled=true;
  try{
-  clearError();
+  showError('');
   if(!sessionId||!sessionToken){
-   $('connection').textContent='No connected session found';
-   $('connection').className='status offline';
-   showError('No saved WhatsApp session was found in this browser. Please connect WhatsApp first.');
-   $('chatlist').replaceChildren();
-   const empty=document.createElement('div');
-   empty.className='empty';
-   empty.textContent='No session available.';
-   $('chatlist').appendChild(empty);
-   $('messageinput').disabled=true;
-   $('sendbutton').disabled=true;
+   setConnection('not connected');
+   showError('No saved WhatsApp session was found. Please connect WhatsApp first.');
    return;
   }
-
-  const [statusResult,messageResult]=await Promise.all([
-   api('/api/sessions/'+encodeURIComponent(sessionId)),
-   api('/api/sessions/'+encodeURIComponent(sessionId)+'/messages')
-  ]);
-
-  const state=messageResult.status||statusResult.session?.status||'disconnected';
-  connected=state==='connected';
-  $('connection').textContent=connected?'● WhatsApp connected':'● WhatsApp '+state;
-  $('connection').className='status '+(connected?'online':'offline');
-
-  allMessages=Array.isArray(messageResult.messages)?messageResult.messages:[];
-    initializeReadMarkers();
-  const available=new Set(allMessages.filter(m=>isPersonalChat(m.chat)&&!m.isStatus).map(m=>m.chat));
-  if(selectedChat&&!available.has(selectedChat)) selectedChat=null;
-
-  renderChats();
-  if(selectedChat){
-   const items=allMessages.filter(m=>m.chat===selectedChat);
-   if(items.length){
-    const title=chatTitle(selectedChat,items);
-    safeText($('selectedname'),title);
-    safeText($('selectednumber'),phoneFromJid(selectedChat));
-   }
-  }
-  $('messageinput').disabled=!connected||!selectedChat||!phoneFromJid(selectedChat);
-  $('messageinput').placeholder=connected?'Write a message…':'WhatsApp is not connected';
-  $('sendbutton').disabled=!connected||!selectedChat||!phoneFromJid(selectedChat);
-  renderMessages();
-  updateChatTools();
+  const result=await api('/api/sessions/'+encodeURIComponent(sessionId));
+  const status=result.session?.status||'disconnected';
+  setConnection(status);
+  $('checked').textContent='Last checked: '+new Date().toLocaleTimeString();
  }catch(error){
   showError(error.message);
   if(/login session|verify your email/i.test(error.message)){
    setTimeout(()=>window.location.replace('./index.html'),1800);
   }
- }finally{busy=false;}
+ }finally{
+  busy=false;
+  $('refresh').disabled=false;
+ }
 }
-
-
-$('chatsearch').addEventListener('input',renderChats);
-$('pinchat').addEventListener('click',togglePin);
-$('labelchat').addEventListener('click',editChatLabel);
-$('profilechat').addEventListener('click',toggleContactDetails);
-$('clearchat').addEventListener('click',clearSelectedConversation);
-$('quickreply').addEventListener('change',()=>{
- const value=$('quickreply').value;
- if(value){
-  $('messageinput').value=value;
-  $('messageinput').focus();
-  $('quickreply').value='';
- }
-});
-updateChatTools();
-
-$('sendform').addEventListener('submit',async event=>{
- event.preventDefault();
- const text=$('messageinput').value.trim();
- const phoneNumber=phoneFromJid(selectedChat);
- if(!text||!phoneNumber||!connected)return;
-
- $('sendbutton').disabled=true;
- $('sendbutton').textContent='Sending…';
+$('refresh').addEventListener('click',refresh);
+$('disconnect').addEventListener('click',async()=>{
+ if(!connected||busy)return;
+ if(!confirm('Disconnect this WhatsApp session?'))return;
+ $('disconnect').disabled=true;
  try{
-  clearError();
-  await api('/api/sessions/'+encodeURIComponent(sessionId)+'/messages',{
-   method:'POST',
-   body:JSON.stringify({phoneNumber,text})
-  });
-  $('messageinput').value='';
+  await api('/api/sessions/'+encodeURIComponent(sessionId)+'/disconnect',{method:'POST'});
   await refresh();
- }catch(error){showError(error.message);}
- finally{
-  $('sendbutton').textContent='Send';
-  $('sendbutton').disabled=!connected||!selectedChat||!phoneFromJid(selectedChat);
+ }catch(error){
+  showError(error.message);
+  $('disconnect').disabled=!connected;
  }
 });
-
 $('signout').addEventListener('click',async()=>{
  await authClient.auth.signOut();
  sessionStorage.removeItem('trendySessionId');
@@ -517,26 +192,14 @@ $('signout').addEventListener('click',async()=>{
  localStorage.removeItem('trendyAccessToken');
  window.location.replace('./index.html');
 });
-
 (async()=>{
  try{
   const {data,error}=await authClient.auth.getSession();
-  if(error||!data.session?.user) throw new Error('Please sign in to access your dashboard.');
+  if(error||!data.session?.user)throw new Error('Please sign in to access your dashboard.');
   const user=data.session.user;
-  if(!(user.email_confirmed_at||user.confirmed_at)) throw new Error('Please verify your email before using the dashboard.');
-  if(!sessionId||!sessionToken){
-   $('connection').textContent='WhatsApp not connected';
-   $('connection').className='status offline';
-   showError('Your login is active, but no WhatsApp session is saved in this browser. Select Connect WhatsApp to continue.');
-   $('chatlist').replaceChildren();
-   const empty=document.createElement('div');
-   empty.className='empty';
-   empty.textContent='No connected session. Connect WhatsApp to get started.';
-   $('chatlist').appendChild(empty);
-   return;
-  }
+  if(!(user.email_confirmed_at||user.confirmed_at))throw new Error('Please verify your email before using the dashboard.');
   await refresh();
-  pollTimer=setInterval(refresh,4000);
+  setInterval(refresh,15000);
  }catch(error){
   showError(error.message);
   setTimeout(()=>window.location.replace('./index.html'),2200);
