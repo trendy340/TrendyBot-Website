@@ -4,125 +4,263 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#090909">
-<title>TrendyBot 2.0 — Dashboard</title>
+<title>TrendyBot 2.0 — Control Center</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--bg:#090909;--panel:#151515;--gold:#d8b56a;--gold2:#f1d99e;--muted:#999;--line:#292929;--green:#72d6a0;--red:#ff7777}
+:root{
+ --bg:#090909;--panel:#151515;--panel2:#1b1b1b;
+ --gold:#d8b56a;--gold2:#f1d99e;--muted:#999;
+ --line:#292929;--green:#72d6a0;--red:#ff7777;
+}
 *{box-sizing:border-box}
-body{margin:0;background:radial-gradient(ellipse at 75% -10%,#342716 0,transparent 38%),var(--bg);color:#f5f1e8;font:14px/1.5 Inter,system-ui,Arial,sans-serif}
+body{
+ margin:0;background:radial-gradient(ellipse at 75% -10%,#342716 0,transparent 38%),var(--bg);
+ color:#f5f1e8;font:14px/1.5 Inter,system-ui,Arial,sans-serif;
+}
 button,a{font:inherit;cursor:pointer}
 a{color:inherit;text-decoration:none}
+button:disabled{opacity:.5;cursor:not-allowed}
 .wrap{max-width:1100px;margin:auto;padding:20px}
-nav{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0 20px;border-bottom:1px solid var(--line)}
-.brand{font-weight:900;letter-spacing:.13em}.brand span{color:var(--gold)}
+nav{
+ display:flex;justify-content:space-between;align-items:center;
+ gap:12px;padding:12px 0 20px;border-bottom:1px solid var(--line);
+}
+.brand{font-weight:900;letter-spacing:.13em}
+.brand span{color:var(--gold)}
 .navlinks{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
-.btn{border:1px solid #66532e;background:#211a10;color:var(--gold2);border-radius:9px;padding:9px 13px;font-size:12px;font-weight:700}
+.btn{
+ border:1px solid #66532e;background:#211a10;color:var(--gold2);
+ border-radius:9px;padding:9px 13px;font-size:12px;font-weight:700;
+}
 .btn.primary{background:linear-gradient(120deg,#b88c42,#f1d99e);color:#17120a;border:0}
-.btn:disabled{opacity:.5;cursor:not-allowed}
-header{padding:30px 0 20px}
+header{padding:30px 0 15px}
 .eyebrow{color:var(--gold);font-size:10px;letter-spacing:.22em;font-weight:800}
 h1{font-size:clamp(28px,5vw,43px);line-height:1.1;margin:7px 0}
 .muted{color:var(--muted)}
-.statusbar,.panel{background:linear-gradient(145deg,#1b1b1b,var(--panel));border:1px solid var(--line);border-radius:15px}
-.statusbar{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:17px;margin:15px 0}
-.status{font-weight:800;font-size:16px}.online{color:var(--green)}.offline{color:var(--red)}
-.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:15px}
+.statusbar,.panel{
+ background:linear-gradient(145deg,#1b1b1b,var(--panel));
+ border:1px solid var(--line);border-radius:15px;
+}
+.statusbar{
+ display:flex;justify-content:space-between;align-items:center;
+ gap:14px;flex-wrap:wrap;padding:17px;margin:15px 0;
+}
+.status{font-weight:800;font-size:16px}
+.online{color:var(--green)}.offline{color:var(--red)}
+.pulse-wrap{display:flex;align-items:center;gap:15px}
+.pulse{
+ width:110px;height:35px;overflow:hidden;opacity:.9;
+}
+.pulse svg{width:100%;height:100%}
+.pulse path{
+ fill:none;stroke:var(--green);stroke-width:2;
+ stroke-dasharray:180;stroke-dashoffset:180;
+ animation:ecg 2.5s linear infinite;
+}
+@keyframes ecg{to{stroke-dashoffset:0}}
+.grid{
+ display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+ gap:13px;margin-top:15px;
+}
 .panel{padding:19px;min-width:0}
-.panel h2{font-size:13px;margin:0 0 12px;color:var(--gold2)}
-.value{font-size:22px;font-weight:850;overflow-wrap:anywhere}
+.panel h2{font-size:12px;margin:0 0 13px;color:var(--gold2);letter-spacing:.06em}
+.value{font-size:23px;font-weight:850;overflow-wrap:anywhere}
 .small{font-size:11px;color:var(--muted);margin-top:5px}
-.privacy{margin-top:15px;border:1px solid #66532e;background:#211a10;border-radius:15px;padding:20px}
+.section-grid{
+ display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:15px;
+}
+.rank-list,.activity-list,.switch-list{display:flex;flex-direction:column;gap:10px}
+.rank-item,.activity-item,.switch-item{
+ display:flex;align-items:center;justify-content:space-between;
+ gap:12px;padding:11px 12px;background:#101010;
+ border:1px solid #292929;border-radius:10px;
+}
+.rank-left{display:flex;align-items:center;gap:11px;min-width:0}
+.rank-number{color:var(--gold);font-weight:900;min-width:22px}
+.rank-name{font-weight:700;overflow-wrap:anywhere}
+.rank-count{color:var(--gold2);font-weight:800;white-space:nowrap}
+.switch-item{align-items:center}
+.switch-info{min-width:0}
+.switch-info strong{display:block;font-size:13px}
+.switch-info span{font-size:11px;color:var(--muted)}
+.toggle{position:relative;width:43px;height:24px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-track{
+ position:absolute;inset:0;border-radius:20px;background:#444;
+ transition:.2s;cursor:pointer;
+}
+.toggle-track:before{
+ content:"";position:absolute;width:18px;height:18px;
+ left:3px;top:3px;border-radius:50%;background:#eee;transition:.2s;
+}
+.toggle input:checked+.toggle-track{background:#987333}
+.toggle input:checked+.toggle-track:before{transform:translateX(19px);background:#fff4d6}
+.toggle input:disabled+.toggle-track{opacity:.5;cursor:not-allowed}
+.activity-item{align-items:flex-start}
+.activity-command{font-weight:800;color:var(--gold2)}
+.activity-time{font-size:11px;color:var(--muted);white-space:nowrap}
+.empty{padding:16px;text-align:center;color:var(--muted);font-size:12px}
+.privacy{
+ margin-top:15px;border:1px solid #66532e;background:#211a10;
+ border-radius:15px;padding:20px;
+}
 .privacy h2{margin:0 0 8px;color:var(--gold2);font-size:14px}
 .privacy p{margin:0;color:#c7bda8;font-size:12px}
 .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
 .error{color:var(--red);font-size:12px;margin-top:12px;overflow-wrap:anywhere}
-footer{border-top:1px solid var(--line);margin-top:28px;padding:18px 0;color:#777;font-size:11px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
-@media(max-width:700px){.wrap{padding:13px}.grid{grid-template-columns:1fr}.panel{padding:16px}.statusbar{align-items:flex-start}}
+footer{
+ border-top:1px solid var(--line);margin-top:28px;padding:18px 0;
+ color:#777;font-size:11px;display:flex;justify-content:space-between;
+ gap:10px;flex-wrap:wrap;
+}
+@media(max-width:800px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){
+ .wrap{padding:13px}.grid,.section-grid{grid-template-columns:1fr}
+ .panel{padding:16px}.statusbar{align-items:flex-start}
+ .pulse{width:75px}
+}
 </style>
 </head>
 <body>
 <div class="wrap">
+
 <nav>
-<a class="brand" href="./index.html">TRENDY<span>BOT</span> 2.0</a>
-<div class="navlinks">
-<a class="btn" href="./preview.html">Public Preview</a>
-<a class="btn" href="./connect.html">Connect WhatsApp</a>
-<button class="btn" id="signout">Sign out</button>
-</div>
+ <a class="brand" href="./index.html">TRENDY<span>BOT</span> 2.0</a>
+ <div class="navlinks">
+  <a class="btn" href="./preview.html">Public Preview</a>
+  <a class="btn" href="./connect.html">Connect WhatsApp</a>
+  <button class="btn" id="signout">Sign out</button>
+ </div>
 </nav>
 
 <header>
-<div class="eyebrow">TRENDY CORE • CONTROL CENTER</div>
-<h1>Live <span style="color:var(--gold2)">Dashboard.</span></h1>
-<p class="muted">Manage your WhatsApp connection and session securely.</p>
+ <div class="eyebrow">TRENDY CORE • CONTROL CENTER</div>
+ <h1>Live <span style="color:var(--gold2)">Dashboard.</span></h1>
+ <p class="muted">Your personal WhatsApp connection and performance center.</p>
 </header>
 
-<div class="statusbar">
-<div>
-<div class="muted" style="font-size:11px">WHATSAPP CONNECTION</div>
-<div id="connection" class="status">Checking connection…</div>
-<div id="checked" class="small">Waiting for API response</div>
-</div>
-<a class="btn primary" href="./connect.html">＋ Connect WhatsApp</a>
-</div>
+<section class="statusbar">
+ <div>
+  <div class="muted" style="font-size:11px">WHATSAPP CONNECTION</div>
+  <div id="connection" class="status">Checking connection…</div>
+  <div id="checked" class="small">Waiting for API response</div>
+ </div>
+ <div class="pulse-wrap">
+  <div class="pulse">
+   <svg viewBox="0 0 110 35" preserveAspectRatio="none">
+    <path d="M0 18 L25 18 L32 18 L39 5 L46 30 L54 12 L61 18 L110 18"/>
+   </svg>
+  </div>
+  <a class="btn primary" href="./connect.html">＋ Connect WhatsApp</a>
+ </div>
+</section>
 
 <div class="grid">
-<section class="panel">
-<h2>SESSION STATUS</h2>
-<div class="value" id="sessionStatus">Checking…</div>
-<div class="small">Your personal WhatsApp connection</div>
-</section>
-<section class="panel">
-<h2>CONTROL CENTER</h2>
-<div class="value">Protected</div>
-<div class="small">Authenticated session access</div>
-</section>
-<section class="panel">
-<h2>PRIVACY MODE</h2>
-<div class="value">Enabled</div>
-<div class="small">No conversation viewer</div>
-</section>
+ <section class="panel">
+  <h2>COMMANDS TODAY</h2>
+  <div class="value" id="commandsToday">—</div>
+  <div class="small">Commands processed today</div>
+ </section>
+ <section class="panel">
+  <h2>PEOPLE SERVED</h2>
+  <div class="value" id="usersServed">—</div>
+  <div class="small">Unique people today</div>
+ </section>
+ <section class="panel">
+  <h2>AVG. RESPONSE TIME</h2>
+  <div class="value" id="responseTime">—</div>
+  <div class="small">Average command processing time</div>
+ </section>
+ <section class="panel">
+  <h2>MOST USED COMMAND</h2>
+  <div class="value" id="mostUsed">—</div>
+  <div class="small">Today's leading command</div>
+ </section>
+</div>
+
+<div class="section-grid">
+ <section class="panel">
+  <h2>⚡ SYSTEM PULSE</h2>
+  <div class="value" id="uptime">—</div>
+  <div class="small">API process uptime</div>
+  <div class="small" id="lastRestart">Last restart: —</div>
+  <div class="small" id="sessionStatus">Session: checking…</div>
+ </section>
+
+ <section class="panel">
+  <h2>🏆 TOP COMMANDS TODAY</h2>
+  <div class="rank-list" id="topCommands">
+   <div class="empty">Loading command statistics…</div>
+  </div>
+ </section>
+</div>
+
+<div class="section-grid">
+ <section class="panel">
+  <h2>🎛️ SESSION CONTROLS</h2>
+  <div class="switch-list" id="featureSwitches">
+   <div class="empty">Loading your controls…</div>
+  </div>
+  <div class="small">Changes apply to this WhatsApp session.</div>
+ </section>
+
+ <section class="panel">
+  <h2>◷ RECENT ACTIVITY</h2>
+  <div class="activity-list" id="activity">
+   <div class="empty">Loading recent activity…</div>
+  </div>
+  <div class="small">Only command names and timestamps are displayed.</div>
+ </section>
 </div>
 
 <section class="privacy">
-<h2>🔒 Your conversations are private</h2>
-<p>This dashboard does not display your chats, message previews, contact names, or phone numbers. It does not provide a feature for reading or sending your WhatsApp messages. Your dashboard is for managing your connection only.</p>
-<div class="actions">
-<button class="btn" id="refresh">↻ Refresh status</button>
-<button class="btn" id="disconnect">Disconnect WhatsApp</button>
-</div>
-<div id="alert" class="error" role="alert"></div>
+ <h2>🔒 Your conversations are private</h2>
+ <p>This dashboard does not display your chats, message previews, contact names or phone numbers. It provides connection management, feature controls and anonymous usage statistics only.</p>
+ <div class="actions">
+  <button class="btn" id="refresh">↻ Refresh dashboard</button>
+  <button class="btn" id="disconnect">Disconnect WhatsApp</button>
+ </div>
+ <div id="alert" class="error" role="alert"></div>
 </section>
 
 <footer>
-<span>© TrendyBot 2.0 • Trendy Core</span>
-<span>Built for speed. Designed for everyone.</span>
+ <span>© TrendyBot 2.0 • Trendy Core</span>
+ <span>Built for speed. Designed for everyone.</span>
 </footer>
 </div>
 
 <script>
 const SUPABASE_URL='https://aqxmqymvsoyrxbgcuvam.supabase.co';
-const SUPABASE_KEY='sb_publishable_RIGjv2RpnCqqwvpfmH7xng_aw5LwR-l';
+const SUPABASE_KEY='sb_publishable_RIGjv2RpnCqqwvpfmH7xng_aw5Lw-rL';
 const authClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
 const sessionId=sessionStorage.getItem('trendySessionId')||localStorage.getItem('trendySessionId');
 const sessionToken=sessionStorage.getItem('trendyAccessToken')||localStorage.getItem('trendyAccessToken');
 const $=id=>document.getElementById(id);
 const API_BASE_KEY='trendyApiBase';
+
 let busy=false;
 let connected=false;
+let featureBusy=false;
 
 function apiBase(){
- const base=(window.TRENDY_API_BASE||localStorage.getItem(API_BASE_KEY)||'https://trendybot-connect-gateway.trendycreator380.workers.dev').trim();
+ const base=(window.TRENDY_API_BASE||localStorage.getItem(API_BASE_KEY)||
+ 'https://trendybot-connect-gateway.trendycreator380.workers.dev').trim();
  return base.replace(/\/+$/,'');
 }
+
 function showError(message){$('alert').textContent=message||'';}
+
 async function getUserToken(){
  const {data,error}=await authClient.auth.getSession();
- if(error||!data.session?.access_token)throw new Error('Your login session has expired. Please sign in again.');
+ if(error||!data.session?.access_token)
+  throw new Error('Your login session has expired. Please sign in again.');
  const user=data.session.user;
- if(!(user?.email_confirmed_at||user?.confirmed_at))throw new Error('Please verify your email before using the dashboard.');
+ if(!(user?.email_confirmed_at||user?.confirmed_at))
+  throw new Error('Please verify your email before using the dashboard.');
  return data.session.access_token;
 }
+
 async function api(path,options={}){
  const token=await getUserToken();
  const response=await fetch(apiBase()+path,{
@@ -135,31 +273,212 @@ async function api(path,options={}){
   }
  });
  let result;
- try{result=await response.json();}catch{throw new Error('The API returned an invalid response.');}
- if(!response.ok||result.success===false)throw new Error(result.error||result.message||'Request failed ('+response.status+').');
+ try{result=await response.json();}
+ catch{throw new Error('The API returned an invalid response.');}
+ if(!response.ok||result.success===false)
+  throw new Error(result.error||result.message||'Request failed ('+response.status+').');
  return result;
 }
+
 function setConnection(status){
  connected=status==='connected';
  $('connection').textContent=connected?'● WhatsApp connected':'● WhatsApp '+status;
  $('connection').className='status '+(connected?'online':'offline');
- $('sessionStatus').textContent=status.charAt(0).toUpperCase()+status.slice(1);
+ $('sessionStatus').textContent='Session: '+status;
  $('disconnect').disabled=!connected;
 }
+
+function formatDuration(seconds){
+ if(!Number.isFinite(Number(seconds)))return '—';
+ let value=Math.max(0,Math.floor(Number(seconds)));
+ const days=Math.floor(value/86400);
+ const hours=Math.floor((value%86400)/3600);
+ const minutes=Math.floor((value%3600)/60);
+ const secs=value%60;
+ return days+'d '+hours+'h '+minutes+'m '+secs+'s';
+}
+
+function formatResponse(ms){
+ if(!Number.isFinite(Number(ms)))return '—';
+ const value=Math.max(0,Number(ms));
+ return value>=1000?(value/1000).toFixed(2)+'s':Math.round(value)+'ms';
+}
+
+function formatCommand(name){
+ if(!name)return '—';
+ return String(name).replace(/^\./,'');
+}
+
+function relativeTime(timestamp){
+ const date=new Date(timestamp);
+ if(Number.isNaN(date.getTime()))return 'Unknown time';
+ const seconds=Math.round((date.getTime()-Date.now())/1000);
+ const abs=Math.abs(seconds);
+ const units=[
+  ['day',86400],['hour',3600],['minute',60],['second',1]
+ ];
+ const formatter=new Intl.RelativeTimeFormat(undefined,{numeric:'auto'});
+ for(const [unit,size] of units){
+  if(abs>=size||unit==='second')
+   return formatter.format(Math.round(seconds/size),unit);
+ }
+}
+
+function clearStats(){
+ $('commandsToday').textContent='—';
+ $('usersServed').textContent='—';
+ $('responseTime').textContent='—';
+ $('mostUsed').textContent='—';
+ $('uptime').textContent='—';
+ $('lastRestart').textContent='Last restart: —';
+ $('topCommands').innerHTML='<div class="empty">No live statistics available.</div>';
+ $('activity').innerHTML='<div class="empty">No recent activity available.</div>';
+ $('featureSwitches').innerHTML='<div class="empty">Controls unavailable while disconnected.</div>';
+}
+
+function renderStats(stats){
+ $('commandsToday').textContent=Number(stats.commandsToday||0).toLocaleString();
+ $('usersServed').textContent=Number(stats.usersServed||0).toLocaleString();
+ $('responseTime').textContent=formatResponse(stats.responseTimeMs);
+ $('uptime').textContent=formatDuration(stats.uptimeSeconds);
+
+ if(stats.lastRestart){
+  const date=new Date(stats.lastRestart);
+  $('lastRestart').textContent='Last restart: '+(
+   Number.isNaN(date.getTime())?'Unknown':date.toLocaleString()
+  );
+ }else{
+  $('lastRestart').textContent='Last restart: unavailable';
+ }
+
+ const top=Array.isArray(stats.topCommands)?stats.topCommands:[];
+ $('mostUsed').textContent=top.length?formatCommand(top[0].name):'—';
+
+ if(!top.length){
+  $('topCommands').innerHTML='<div class="empty">No commands recorded today.</div>';
+ }else{
+  $('topCommands').replaceChildren();
+  top.slice(0,5).forEach((item,index)=>{
+   const row=document.createElement('div');
+   row.className='rank-item';
+   const left=document.createElement('div');
+   left.className='rank-left';
+   const number=document.createElement('span');
+   number.className='rank-number';
+   number.textContent='#'+(index+1);
+   const name=document.createElement('span');
+   name.className='rank-name';
+   name.textContent='.'+formatCommand(item.name);
+   const count=document.createElement('span');
+   count.className='rank-count';
+   count.textContent=Number(item.count||0).toLocaleString();
+   left.append(number,name);
+   row.append(left,count);
+   $('topCommands').append(row);
+  });
+ }
+
+ const timeline=Array.isArray(stats.timeline)?stats.timeline:[];
+ if(!timeline.length){
+  $('activity').innerHTML='<div class="empty">No recent command activity.</div>';
+ }else{
+  $('activity').replaceChildren();
+  timeline.slice(0,12).forEach(item=>{
+   const row=document.createElement('div');
+   row.className='activity-item';
+   const command=document.createElement('span');
+   command.className='activity-command';
+   command.textContent='.'+formatCommand(item.command);
+   const time=document.createElement('span');
+   time.className='activity-time';
+   time.textContent=relativeTime(item.ts);
+   row.append(command,time);
+   $('activity').append(row);
+  });
+ }
+}
+
+function renderCommands(commands){
+ const allowed=['autoviewstatus','antidelete','anticall'];
+ const list=Array.isArray(commands)?commands.filter(item=>allowed.includes(item.name)):[];
+ $('featureSwitches').replaceChildren();
+
+ if(!list.length){
+  $('featureSwitches').innerHTML='<div class="empty">No feature controls were returned by the API.</div>';
+  return;
+ }
+
+ list.forEach(item=>{
+  const row=document.createElement('div');
+  row.className='switch-item';
+
+  const info=document.createElement('div');
+  info.className='switch-info';
+  const title=document.createElement('strong');
+  title.textContent=item.label;
+  const desc=document.createElement('span');
+  desc.textContent=item.desc||'Manage this feature for your session.';
+  info.append(title,desc);
+
+  const label=document.createElement('label');
+  label.className='toggle';
+  const input=document.createElement('input');
+  input.type='checkbox';
+  input.checked=item.enabled===true;
+  input.dataset.feature=item.name;
+  input.setAttribute('aria-label',item.label);
+  input.disabled=featureBusy;
+
+  const track=document.createElement('span');
+  track.className='toggle-track';
+  label.append(input,track);
+  row.append(info,label);
+  $('featureSwitches').append(row);
+ });
+}
+
+async function loadStats(){
+ const result=await api('/api/sessions/'+encodeURIComponent(sessionId)+'/stats');
+ if(!result.stats)throw new Error('The API did not return dashboard statistics.');
+ renderStats(result.stats);
+}
+
+async function loadCommands(){
+ const result=await api('/api/sessions/'+encodeURIComponent(sessionId)+'/commands');
+ renderCommands(result.commands);
+}
+
 async function refresh(){
  if(busy)return;
  busy=true;
  $('refresh').disabled=true;
+
  try{
   showError('');
+
   if(!sessionId||!sessionToken){
    setConnection('not connected');
+   clearStats();
    showError('No saved WhatsApp session was found. Please connect WhatsApp first.');
    return;
   }
+
   const result=await api('/api/sessions/'+encodeURIComponent(sessionId));
   const status=result.session?.status||'disconnected';
   setConnection(status);
+
+  if(status!=='connected'){
+   clearStats();
+   $('checked').textContent='Last checked: '+new Date().toLocaleTimeString();
+   return;
+  }
+
+  const results=await Promise.allSettled([loadStats(),loadCommands()]);
+  const failures=results.filter(item=>item.status==='rejected');
+  if(failures.length){
+   showError(failures.map(item=>item.reason?.message||'Dashboard data unavailable').join(' • '));
+  }
+
   $('checked').textContent='Last checked: '+new Date().toLocaleTimeString();
  }catch(error){
   showError(error.message);
@@ -171,19 +490,60 @@ async function refresh(){
   $('refresh').disabled=false;
  }
 }
+
+$('featureSwitches').addEventListener('change',async event=>{
+ const input=event.target;
+ if(!input.matches('input[data-feature]')||featureBusy)return;
+
+ const feature=input.dataset.feature;
+ const enabled=input.checked;
+ const previous=!enabled;
+
+ featureBusy=true;
+ renderSwitchBusy();
+
+ try{
+  showError('');
+  await api('/api/sessions/'+encodeURIComponent(sessionId)+'/commands/'+encodeURIComponent(feature),{
+   method:'POST',
+   body:JSON.stringify({enabled})
+  });
+  await loadCommands();
+ }catch(error){
+  input.checked=previous;
+  showError(error.message);
+  await loadCommands().catch(()=>{});
+ }finally{
+  featureBusy=false;
+  renderSwitchBusy();
+ }
+});
+
+function renderSwitchBusy(){
+ $('featureSwitches').querySelectorAll('input[data-feature]').forEach(input=>{
+  input.disabled=featureBusy;
+ });
+}
+
 $('refresh').addEventListener('click',refresh);
+
 $('disconnect').addEventListener('click',async()=>{
  if(!connected||busy)return;
  if(!confirm('Disconnect this WhatsApp session?'))return;
+
  $('disconnect').disabled=true;
  try{
   await api('/api/sessions/'+encodeURIComponent(sessionId)+'/disconnect',{method:'POST'});
-  await refresh();
+  setConnection('disconnected');
+  clearStats();
+  $('checked').textContent='Disconnected';
+  showError('');
  }catch(error){
   showError(error.message);
   $('disconnect').disabled=!connected;
  }
 });
+
 $('signout').addEventListener('click',async()=>{
  await authClient.auth.signOut();
  sessionStorage.removeItem('trendySessionId');
@@ -192,12 +552,24 @@ $('signout').addEventListener('click',async()=>{
  localStorage.removeItem('trendyAccessToken');
  window.location.replace('./index.html');
 });
+
 (async()=>{
  try{
   const {data,error}=await authClient.auth.getSession();
-  if(error||!data.session?.user)throw new Error('Please sign in to access your dashboard.');
+  if(error||!data.session?.user)
+   throw new Error('Please sign in to access the dashboard.');
+
   const user=data.session.user;
-  if(!(user.email_confirmed_at||user.confirmed_at))throw new Error('Please verify your email before using the dashboard.');
+  if(!(user.email_confirmed_at||user.confirmed_at))
+   throw new Error('Please verify your email before using the dashboard.');
+
+  if(!sessionId||!sessionToken){
+   setConnection('not connected');
+   clearStats();
+   showError('No saved WhatsApp session was found. Please connect WhatsApp first.');
+   return;
+  }
+
   await refresh();
   setInterval(refresh,15000);
  }catch(error){
