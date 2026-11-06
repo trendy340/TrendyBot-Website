@@ -53,6 +53,18 @@ h1{font-size:clamp(27px,5vw,42px);line-height:1.1;margin:7px 0}
 .hidden{display:none!important}
 footer{border-top:1px solid var(--line);margin-top:25px;padding:18px 0;color:#777;font-size:11px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
 @media(max-width:760px){.wrap{padding:13px}.layout{grid-template-columns:1fr}.chatlist{max-height:230px}.chatpanel{min-height:470px}.messages{min-height:300px;max-height:430px}.navlinks{gap:7px}.btn{padding:8px 10px}}
+
+.searchbox{display:block;width:calc(100% - 24px);margin:12px;background:#090909;border:1px solid #383838;color:white;border-radius:9px;padding:11px;outline:none}
+.searchbox:focus{border-color:var(--gold)}
+.chattools{display:flex;gap:7px;flex-wrap:wrap;padding:10px 13px;border-bottom:1px solid var(--line)}
+.chattools .btn{padding:7px 9px}
+.chattools .btn:disabled{opacity:.4;cursor:not-allowed}
+.quickbar{padding:9px 13px 0}
+.quickbar select{width:100%;background:#111;color:var(--gold2);border:1px solid #383838;border-radius:8px;padding:9px}
+.contactdetails{display:none;margin:10px 13px;padding:12px;background:#211a10;border:1px solid #66532e;border-radius:9px;color:#e9dfc8;font-size:12px;overflow-wrap:anywhere}
+.contactdetails.show{display:block}
+.unreadbadge{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:20px;background:#b88c42;color:#17120a;font-size:10px;font-weight:900}
+
 </style>
 </head>
 <body>
@@ -82,6 +94,7 @@ footer{border-top:1px solid var(--line);margin-top:25px;padding:18px 0;color:#77
 <div class="layout">
 <section class="panel">
 <div class="panelhead"><h2>💬 Conversations</h2><span id="chatcount" class="muted">0</span></div>
+<input id="chatsearch" class="searchbox" placeholder="⌕ Search conversations…" autocomplete="off">
 <div id="chatlist" class="chatlist"><div class="empty">Loading conversations…</div></div>
 <div class="notice">Personal chats only. Group conversations are not supported yet.</div>
 </section>
@@ -91,6 +104,9 @@ footer{border-top:1px solid var(--line);margin-top:25px;padding:18px 0;color:#77
 <div class="avatar" id="selectedavatar">T</div>
 <div class="chatmeta"><div class="chatname" id="selectedname">Select a conversation</div><div class="preview" id="selectednumber">Your WhatsApp chats will appear here.</div></div>
 </div>
+<div class="chattools"><button class="btn" id="pinchat" type="button">📌 Pin</button><button class="btn" id="labelchat" type="button">🏷️ Label</button><button class="btn" id="profilechat" type="button">👤 Details</button><button class="btn" id="clearchat" type="button">🗑️ Clear</button></div>
+<div id="contactdetails" class="contactdetails"></div>
+<div class="quickbar"><select id="quickreply" aria-label="Quick replies"><option value="">Quick replies…</option><option value="Hello! How can I help you?">Greeting</option><option value="Thank you for reaching out.">Thank you</option><option value="Please give me a moment.">One moment</option><option value="I will get back to you shortly.">I’ll get back to you</option></select></div>
 <div class="messages" id="messages"><div class="empty">Select a conversation to view messages.</div></div>
 <form class="composer" id="sendform">
 <input id="messageinput" placeholder="Connect WhatsApp and select a chat…" maxlength="4000" autocomplete="off" disabled>
@@ -122,7 +138,7 @@ let busy=false;
 const $=id=>document.getElementById(id);
 
 function apiBase(){
- const base=(window.TRENDY_API_BASE||localStorage.getItem(API_BASE_KEY)||'https://presently-ethical-agenda-loc.trycloudflare.com').trim();
+ const base=(window.TRENDY_API_BASE||localStorage.getItem(API_BASE_KEY)||'https://trendybot-connect-gateway.trendycreator380.workers.dev').trim();
  return base.replace(/\/+$/,'');
 }
 
@@ -171,6 +187,117 @@ function chatTitle(jid,items){
 }
 function safeText(node,value){node.textContent=value??'';}
 
+
+const PREF_KEY='trendyDashboardPrefsV1';
+function loadPrefs(){
+ try{return JSON.parse(localStorage.getItem(PREF_KEY))||{};}catch{return {};}
+}
+const prefs=loadPrefs();
+prefs.pins=Array.isArray(prefs.pins)?prefs.pins:[];
+prefs.labels=prefs.labels&&typeof prefs.labels==='object'?prefs.labels:{};
+prefs.readAt=prefs.readAt&&typeof prefs.readAt==='object'?prefs.readAt:{};
+prefs.initializedChats=prefs.initializedChats&&typeof prefs.initializedChats==='object'?prefs.initializedChats:{};
+prefs.clearedBefore=prefs.clearedBefore&&typeof prefs.clearedBefore==='object'?prefs.clearedBefore:{};
+
+function savePrefs(){
+ localStorage.setItem(PREF_KEY,JSON.stringify(prefs));
+}
+function visibleChatMessages(jid){
+ const cutoff=Number(prefs.clearedBefore[jid]||0);
+ return allMessages.filter(m=>m.chat===jid&&Number(m.timestamp)>cutoff);
+}
+function unreadCount(jid,items){
+ const last=Number(prefs.readAt[jid]||0);
+ return items.filter(m=>!m.fromMe&&Number(m.timestamp)>last).length;
+}
+function initializeReadMarkers(){
+ let changed=false;
+ const grouped=new Map();
+ for(const m of allMessages){
+  if(!m.chat?.endsWith('@s.whatsapp.net')||m.isStatus)continue;
+  grouped.set(m.chat,Math.max(grouped.get(m.chat)||0,Number(m.timestamp)||0));
+ }
+ for(const [jid,last] of grouped){
+  if(!prefs.initializedChats[jid]){
+   prefs.readAt[jid]=last;
+   prefs.initializedChats[jid]=true;
+   changed=true;
+  }
+ }
+ if(changed)savePrefs();
+}
+function markChatRead(jid,items){
+ prefs.readAt[jid]=Math.max(Number(prefs.readAt[jid]||0),...items.map(m=>Number(m.timestamp)||0));
+ prefs.initializedChats[jid]=true;
+ savePrefs();
+}
+function togglePin(){
+ if(!selectedChat)return;
+ prefs.pins=prefs.pins.includes(selectedChat)
+  ?prefs.pins.filter(x=>x!==selectedChat)
+  :[...prefs.pins,selectedChat];
+ savePrefs();
+ renderChats();
+ updateChatTools();
+}
+function editChatLabel(){
+ if(!selectedChat)return;
+ const value=prompt('Enter a contact label. Leave blank to remove it:',prefs.labels[selectedChat]||'');
+ if(value===null)return;
+ if(value.trim())prefs.labels[selectedChat]=value.trim().slice(0,40);
+ else delete prefs.labels[selectedChat];
+ savePrefs();
+ renderChats();
+ updateChatTools();
+}
+function updateChatTools(){
+ const active=Boolean(selectedChat);
+ ['pinchat','labelchat','profilechat','clearchat'].forEach(id=>$(id).disabled=!active);
+ $('pinchat').textContent=active&&prefs.pins.includes(selectedChat)?'📌 Unpin':'📌 Pin';
+}
+function toggleContactDetails(){
+ if(!selectedChat)return;
+ const box=$('contactdetails');
+ if(box.classList.contains('show')){
+  box.classList.remove('show');
+  return;
+ }
+ const items=visibleChatMessages(selectedChat);
+ const title=chatTitle(selectedChat,items);
+ box.replaceChildren();
+ const heading=document.createElement('strong');
+ heading.textContent=title;
+ const number=document.createElement('div');
+ number.textContent='WhatsApp: '+phoneFromJid(selectedChat);
+ const label=document.createElement('div');
+ label.textContent='Label: '+(prefs.labels[selectedChat]||'None');
+ const count=document.createElement('div');
+ count.textContent='Messages currently available: '+items.length;
+ box.append(heading,number,label,count);
+ box.classList.add('show');
+}
+function clearSelectedConversation(){
+ if(!selectedChat)return;
+ if(!confirm('Clear this conversation from the dashboard? This does NOT delete messages from WhatsApp.'))return;
+ const jid=selectedChat;
+ prefs.clearedBefore[jid]=Math.max(
+  Number(prefs.clearedBefore[jid]||0),
+  ...allMessages.filter(m=>m.chat===jid).map(m=>Number(m.timestamp)||0)
+ );
+ prefs.readAt[jid]=prefs.clearedBefore[jid];
+ savePrefs();
+ selectedChat=null;
+ $('selectedname').textContent='Select a conversation';
+ $('selectednumber').textContent='Your WhatsApp chats will appear here.';
+ $('selectedavatar').textContent='T';
+ $('contactdetails').classList.remove('show');
+ $('messageinput').disabled=true;
+ $('sendbutton').disabled=true;
+ renderChats();
+ renderMessages();
+ updateChatTools();
+}
+
 function renderChats(){
  const grouped=new Map();
  for(const m of allMessages){
@@ -178,7 +305,14 @@ function renderChats(){
   if(!grouped.has(m.chat)) grouped.set(m.chat,[]);
   grouped.get(m.chat).push(m);
  }
- const chats=[...grouped.entries()].sort((a,b)=>(b[1].at(-1)?.timestamp||0)-(a[1].at(-1)?.timestamp||0));
+ const query=$('chatsearch').value.trim().toLowerCase();
+  const chats=[...grouped.entries()]
+   .sort((a,b)=>(Number(prefs.pins.includes(b[0]))-Number(prefs.pins.includes(a[0])))||((b[1].at(-1)?.timestamp||0)-(a[1].at(-1)?.timestamp||0)))
+   .filter(([jid,items])=>{
+    const title=chatTitle(jid,items);
+    const preview=items.at(-1)?.text||'';
+    return (title+' '+phoneFromJid(jid)+' '+(prefs.labels[jid]||'')+' '+preview).toLowerCase().includes(query);
+   });
  $('chatcount').textContent=chats.length;
  const list=$('chatlist');
  list.replaceChildren();
@@ -203,7 +337,20 @@ function renderChats(){
   meta.className='chatmeta';
   const name=document.createElement('div');
   name.className='chatname';
-  name.textContent=title;
+  name.textContent=(prefs.labels[jid]?prefs.labels[jid]+' · ':'')+title;
+    if(prefs.pins.includes(jid)){
+     const pin=document.createElement('span');
+     pin.className='pinmark';
+     pin.textContent='📌';
+     name.prepend(pin);
+    }
+    const unread=unreadCount(jid,items);
+    if(unread){
+     const badge=document.createElement('span');
+     badge.className='unreadbadge';
+     badge.textContent=unread>99?'99+':String(unread);
+     name.appendChild(badge);
+    }
   const preview=document.createElement('div');
   preview.className='preview';
   preview.textContent=(latest.fromMe?'You: ':'')+(latest.text||'['+latest.messageType+']');
@@ -227,7 +374,7 @@ function renderMessages(){
   box.appendChild(empty);
   return;
  }
- const items=allMessages.filter(m=>m.chat===selectedChat);
+ const items=visibleChatMessages(selectedChat);
  if(!items.length){
   const empty=document.createElement('div');
   empty.className='empty';
@@ -251,6 +398,7 @@ function renderMessages(){
 function selectChat(jid){
  selectedChat=jid;
  const items=allMessages.filter(m=>m.chat===jid);
+  markChatRead(jid,items);
  const title=chatTitle(jid,items);
  safeText($('selectedname'),title);
  safeText($('selectednumber'),phoneFromJid(jid));
@@ -292,6 +440,7 @@ async function refresh(){
   $('connection').className='status '+(connected?'online':'offline');
 
   allMessages=Array.isArray(messageResult.messages)?messageResult.messages:[];
+    initializeReadMarkers();
   const available=new Set(allMessages.filter(m=>m.chat?.endsWith('@s.whatsapp.net')&&!m.isStatus).map(m=>m.chat));
   if(selectedChat&&!available.has(selectedChat)) selectedChat=null;
 
@@ -308,6 +457,7 @@ async function refresh(){
   $('messageinput').placeholder=connected?'Write a message…':'WhatsApp is not connected';
   $('sendbutton').disabled=!connected||!selectedChat||!phoneFromJid(selectedChat);
   renderMessages();
+  updateChatTools();
  }catch(error){
   showError(error.message);
   if(/login session|verify your email/i.test(error.message)){
@@ -315,6 +465,22 @@ async function refresh(){
   }
  }finally{busy=false;}
 }
+
+
+$('chatsearch').addEventListener('input',renderChats);
+$('pinchat').addEventListener('click',togglePin);
+$('labelchat').addEventListener('click',editChatLabel);
+$('profilechat').addEventListener('click',toggleContactDetails);
+$('clearchat').addEventListener('click',clearSelectedConversation);
+$('quickreply').addEventListener('change',()=>{
+ const value=$('quickreply').value;
+ if(value){
+  $('messageinput').value=value;
+  $('messageinput').focus();
+  $('quickreply').value='';
+ }
+});
+updateChatTools();
 
 $('sendform').addEventListener('submit',async event=>{
  event.preventDefault();
