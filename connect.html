@@ -78,7 +78,11 @@ function apiBase(){
 async function request(url,options={}){
  const response=await fetch(url,options);
  let data={};try{data=await response.json()}catch{}
- if(!response.ok||data.success===false)throw new Error(data.message||data.error||`Request failed (${response.status})`);
+ if(!response.ok||data.success===false){
+  const error=new Error(data.message||data.error||`Request failed (${response.status})`);
+  error.status=response.status;
+  throw error;
+ }
  return data;
 }
 async function createSession(base){
@@ -131,6 +135,10 @@ async function pollStatus(base,c){
 
  const poll=async()=>{
   if(stopped)return;
+  if(++attempts>=150){
+   stop();status('Connection request timed out. Please try again.');
+   return;
+  }
   try{
    const headers=await authHeaders(c);
    const data=await request(base+'/api/sessions/'+encodeURIComponent(c.sessionId),{headers});
@@ -190,11 +198,14 @@ async function pollStatus(base,c){
     session.qr?'Scan this QR code with WhatsApp.':
     'Waiting for WhatsApp connection details…');
 
-   if(++attempts>=150){
-    stop();status('Connection request timed out. Please try again.');
+ }catch(e){
+   if(stopped)return;
+   if(e.status && e.status < 500){
+    stop();
+    status('Connection check failed: '+e.message);
+    return;
    }
-  }catch(e){
-   stop();status('Connection check failed: '+e.message);
+   status('Connection check temporarily unavailable. Retrying…');
   }
  };
 

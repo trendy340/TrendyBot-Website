@@ -234,8 +234,8 @@ const SUPABASE_URL='https://aqxmqymvsoyrxbgcuvam.supabase.co';
 const SUPABASE_KEY='sb_publishable_RIGjv2RpnCqqwvpfmH7xng_aw5Lw-rL';
 const authClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-const sessionId=sessionStorage.getItem('trendySessionId')||localStorage.getItem('trendySessionId');
-const sessionToken=sessionStorage.getItem('trendyAccessToken')||localStorage.getItem('trendyAccessToken');
+let sessionId=sessionStorage.getItem('trendySessionId')||localStorage.getItem('trendySessionId');
+let sessionToken=sessionStorage.getItem('trendyAccessToken')||localStorage.getItem('trendyAccessToken');
 const $=id=>document.getElementById(id);
 const API_BASE_KEY='trendyApiBase';
 
@@ -275,8 +275,32 @@ async function api(path,options={}){
  let result;
  try{result=await response.json();}
  catch{throw new Error('The API returned an invalid response.');}
- if(!response.ok||result.success===false)
-  throw new Error(result.error||result.message||'Request failed ('+response.status+').');
+ if(!response.ok||result.success===false){
+  const error=new Error(result.error||result.message||'Request failed ('+response.status+').');
+  error.status=response.status;
+  throw error;
+ }
+ return result;
+}
+
+async function recoverSession(){
+ const token=await getUserToken();
+ const response=await fetch(apiBase()+'/api/sessions/recover',{
+  method:'POST',
+  headers:{Authorization:'Bearer '+token}
+ });
+ let result;
+ try{result=await response.json();}
+ catch{throw new Error('The session recovery API returned an invalid response.');}
+ if(!response.ok||result.success===false){
+  throw new Error(result.error||'Could not recover your WhatsApp session.');
+ }
+ sessionId=result.sessionId;
+ sessionToken=result.accessToken;
+ sessionStorage.setItem('trendySessionId',sessionId);
+ sessionStorage.setItem('trendyAccessToken',sessionToken);
+ localStorage.setItem('trendySessionId',sessionId);
+ localStorage.setItem('trendyAccessToken',sessionToken);
  return result;
 }
 
@@ -456,14 +480,22 @@ async function refresh(){
  try{
   showError('');
 
+  let recovered=false;
+
   if(!sessionId||!sessionToken){
-   setConnection('not connected');
-   clearStats();
-   showError('No saved WhatsApp session was found. Please connect WhatsApp first.');
-   return;
+   await recoverSession();
+   recovered=true;
   }
 
-  const result=await api('/api/sessions/'+encodeURIComponent(sessionId));
+  let result;
+  try{
+   result=await api('/api/sessions/'+encodeURIComponent(sessionId));
+  }catch(error){
+   if(error.status!==401||recovered)throw error;
+   await recoverSession();
+   recovered=true;
+   result=await api('/api/sessions/'+encodeURIComponent(sessionId));
+  }
   const status=result.session?.status||'disconnected';
   setConnection(status);
 
@@ -546,10 +578,6 @@ $('disconnect').addEventListener('click',async()=>{
 
 $('signout').addEventListener('click',async()=>{
  await authClient.auth.signOut();
- sessionStorage.removeItem('trendySessionId');
- sessionStorage.removeItem('trendyAccessToken');
- localStorage.removeItem('trendySessionId');
- localStorage.removeItem('trendyAccessToken');
  window.location.replace('./index.html');
 });
 
