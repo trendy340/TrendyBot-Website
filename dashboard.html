@@ -450,43 +450,74 @@ function renderStats(stats){
  }
 }
 
-function renderCommands(commands){
- const allowed=['autoviewstatus','antidelete','anticall'];
+function renderCommands(commands, mode='public'){
+ const allowed=[
+  'autoviewstatus','antidelete','anticall',
+  'typing','recording','alwaysonline','autoread','autoreact'
+ ];
  const list=Array.isArray(commands)?commands.filter(item=>allowed.includes(item.name)):[];
  $('featureSwitches').replaceChildren();
 
  if(!list.length){
   $('featureSwitches').innerHTML='<div class="empty">No feature controls were returned by the API.</div>';
-  return;
+ }else{
+  list.forEach(item=>{
+   const row=document.createElement('div');
+   row.className='switch-item';
+
+   const info=document.createElement('div');
+   info.className='switch-info';
+   const title=document.createElement('strong');
+   title.textContent=item.label;
+   const desc=document.createElement('span');
+   desc.textContent=item.desc||'Manage this feature for your session.';
+   info.append(title,desc);
+
+   const label=document.createElement('label');
+   label.className='toggle';
+   const input=document.createElement('input');
+   input.type='checkbox';
+   input.checked=item.enabled===true;
+   input.dataset.feature=item.name;
+   input.setAttribute('aria-label',item.label);
+   input.disabled=featureBusy;
+
+   const track=document.createElement('span');
+   track.className='toggle-track';
+   label.append(input,track);
+   row.append(info,label);
+   $('featureSwitches').append(row);
+  });
  }
 
- list.forEach(item=>{
-  const row=document.createElement('div');
-  row.className='switch-item';
+ const modeRow=document.createElement('div');
+ modeRow.className='switch-item';
 
-  const info=document.createElement('div');
-  info.className='switch-info';
-  const title=document.createElement('strong');
-  title.textContent=item.label;
-  const desc=document.createElement('span');
-  desc.textContent=item.desc||'Manage this feature for your session.';
-  info.append(title,desc);
+ const modeInfo=document.createElement('div');
+ modeInfo.className='switch-info';
+ const modeTitle=document.createElement('strong');
+ modeTitle.textContent='Bot Mode';
+ const modeDesc=document.createElement('span');
+ modeDesc.textContent='Public: everyone can use commands. Private: only you can use them.';
+ modeInfo.append(modeTitle,modeDesc);
 
-  const label=document.createElement('label');
-  label.className='toggle';
-  const input=document.createElement('input');
-  input.type='checkbox';
-  input.checked=item.enabled===true;
-  input.dataset.feature=item.name;
-  input.setAttribute('aria-label',item.label);
-  input.disabled=featureBusy;
+ const modeSelect=document.createElement('select');
+ modeSelect.dataset.mode='true';
+ modeSelect.dataset.previousMode=mode==='private'?'private':'public';
+ modeSelect.setAttribute('aria-label','Bot mode');
+ modeSelect.disabled=featureBusy;
+ modeSelect.style.cssText='background:#101010;color:var(--gold2);border:1px solid var(--line);border-radius:8px;padding:9px 10px;font:inherit;font-size:12px;max-width:125px';
 
-  const track=document.createElement('span');
-  track.className='toggle-track';
-  label.append(input,track);
-  row.append(info,label);
-  $('featureSwitches').append(row);
+ [['public','Public'],['private','Private']].forEach(([value,label])=>{
+  const option=document.createElement('option');
+  option.value=value;
+  option.textContent=label;
+  modeSelect.append(option);
  });
+
+ modeSelect.value=mode==='private'?'private':'public';
+ modeRow.append(modeInfo,modeSelect);
+ $('featureSwitches').append(modeRow);
 }
 
 async function loadStats(){
@@ -497,7 +528,7 @@ async function loadStats(){
 
 async function loadCommands(){
  const result=await api('/api/sessions/'+encodeURIComponent(sessionId)+'/commands');
- renderCommands(result.commands);
+ renderCommands(result.commands,result.mode);
 }
 
 async function refresh(){
@@ -553,7 +584,34 @@ async function refresh(){
 
 $('featureSwitches').addEventListener('change',async event=>{
  const input=event.target;
- if(!input.matches('input[data-feature]')||featureBusy)return;
+ if(featureBusy)return;
+
+ if(input.matches('select[data-mode]')){
+  const mode=input.value;
+  const previous=input.dataset.previousMode||'public';
+
+  featureBusy=true;
+  renderSwitchBusy();
+
+  try{
+   showError('');
+   await api('/api/sessions/'+encodeURIComponent(sessionId)+'/commands/mode',{
+    method:'POST',
+    body:JSON.stringify({mode})
+   });
+   await loadCommands();
+  }catch(error){
+   input.value=previous;
+   showError(error.message);
+   await loadCommands().catch(()=>{});
+  }finally{
+   featureBusy=false;
+   renderSwitchBusy();
+  }
+  return;
+ }
+
+ if(!input.matches('input[data-feature]'))return;
 
  const feature=input.dataset.feature;
  const enabled=input.checked;
@@ -580,7 +638,7 @@ $('featureSwitches').addEventListener('change',async event=>{
 });
 
 function renderSwitchBusy(){
- $('featureSwitches').querySelectorAll('input[data-feature]').forEach(input=>{
+ $('featureSwitches').querySelectorAll('input[data-feature],select[data-mode]').forEach(input=>{
   input.disabled=featureBusy;
  });
 }
