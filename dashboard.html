@@ -113,11 +113,39 @@ footer{
  color:#777;font-size:11px;display:flex;justify-content:space-between;
  gap:10px;flex-wrap:wrap;
 }
-@media(max-width:800px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:800px){
+ .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
 @media(max-width:600px){
- .wrap{padding:13px}.grid,.section-grid{grid-template-columns:1fr}
- .panel{padding:16px}.statusbar{align-items:flex-start}
- .pulse{width:75px}
+ body{overflow-x:hidden}
+ .wrap{width:100%;padding:11px}
+ nav{align-items:flex-start;flex-direction:column;gap:10px;padding:9px 0 13px}
+ .brand{font-size:13px}
+ .navlinks{width:100%;gap:7px}
+ .btn{padding:8px 10px;font-size:11px}
+ header{padding:19px 0 11px}
+ .eyebrow{font-size:9px}
+ h1{font-size:29px}
+ .statusbar{padding:12px;gap:9px;margin:11px 0}
+ .status{font-size:14px}
+ .pulse-wrap{gap:8px}
+ .pulse{width:62px;height:28px}
+ .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:11px}
+ .section-grid{grid-template-columns:1fr;gap:10px;margin-top:11px}
+ .panel{padding:12px;border-radius:12px}
+ .panel h2{font-size:10px;margin-bottom:9px}
+ .value{font-size:19px}
+ .small{font-size:10px}
+ .rank-item,.activity-item,.switch-item{gap:8px;padding:9px}
+ .rank-left{gap:7px}
+ .rank-name{font-size:12px}
+ .rank-count{font-size:11px;white-space:normal;text-align:right}
+ .activity-time{white-space:normal;text-align:right}
+ .switch-info strong{font-size:12px}
+ .privacy{padding:14px;margin-top:11px;border-radius:12px}
+ .privacy h2{font-size:13px}
+ .actions{gap:7px;margin-top:13px}
+ footer{margin-top:20px;padding:14px 0;font-size:10px}
 }
 </style>
 </head>
