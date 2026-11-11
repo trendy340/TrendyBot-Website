@@ -99,6 +99,23 @@ footer{border-top:1px solid var(--line);margin-top:38px;padding-top:20px;display
  #systemDot{animation:none}
 }
 
+
+/* TRENDY_SHARED_HAMBURGER_MENU */
+#tb-menu-root{position:fixed;right:20px;bottom:20px;z-index:99999;font-family:Inter,system-ui,Arial,sans-serif;color:#f5f1e8}
+#tb-menu-toggle{width:54px;height:54px;border:1px solid #d8b56a;border-radius:16px;background:linear-gradient(145deg,#211a10,#101010);color:#f1d99e;font-size:25px;cursor:pointer;box-shadow:0 8px 28px #0009;display:grid;place-items:center}
+#tb-menu-toggle:hover{filter:brightness(1.2)}
+#tb-menu-panel{position:absolute;right:0;bottom:66px;width:min(290px,calc(100vw - 32px));padding:15px;background:#111;border:1px solid rgba(216,181,106,.4);border-radius:16px;box-shadow:0 18px 55px #000b}
+#tb-menu-panel[hidden]{display:none}
+.tb-menu-heading{font-size:10px;letter-spacing:.2em;color:#d8b56a;font-weight:900;margin:2px 8px 12px}
+.tb-menu-links{display:grid;gap:5px}
+.tb-menu-links a,.tb-menu-signout{display:block;width:100%;padding:11px 12px;border:1px solid transparent;border-radius:9px;background:transparent;color:#eee4ce;text-align:left;text-decoration:none;font:600 13px Inter,system-ui,Arial,sans-serif;cursor:pointer}
+.tb-menu-links a:hover,.tb-menu-signout:hover{background:#211a10;border-color:#66532e}
+#tb-menu-account{margin:12px 0 5px;padding:12px;border:1px solid #393126;border-radius:10px;background:#18140e}
+#tb-menu-name{font-weight:800;color:#f1d99e;font-size:13px;overflow-wrap:anywhere}
+#tb-menu-email{font-size:11px;color:#a9a49a;margin-top:4px;overflow-wrap:anywhere}
+#tb-menu-signout{margin-top:8px;color:#f1d99e}
+@media(max-width:480px){#tb-menu-root{right:14px;bottom:14px}#tb-menu-toggle{width:50px;height:50px}}
+
 </style>
 
     <!-- TrendyBot social sharing preview -->
@@ -133,8 +150,27 @@ footer{border-top:1px solid var(--line);margin-top:38px;padding-top:20px;display
 }
 </style>
 
-</head>
-<body><div class="wrap">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head>
+<body>
+<div id="tb-menu-root">
+  <button id="tb-menu-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="tb-menu-panel">☰</button>
+  <section id="tb-menu-panel" hidden aria-label="Website navigation">
+    <div class="tb-menu-heading">TRENDYBOT 2.0</div>
+    <nav class="tb-menu-links">
+      <a href="./index.html">Home</a>
+      <a href="./preview.html">Public Preview</a>
+      <a href="./dashboard.html">Live Dashboard</a>
+      <a href="./connect.html">Connect WhatsApp</a>
+      <a id="tb-menu-account-link" href="./index.html">Sign In / Create Account</a>
+    </nav>
+    <div id="tb-menu-account" hidden>
+      <div id="tb-menu-name"></div>
+      <div id="tb-menu-email"></div>
+      <button id="tb-menu-signout" class="tb-menu-signout" type="button">Sign Out</button>
+    </div>
+  </section>
+</div>
+<div class="wrap">
 <nav><a class="brand" href="./index.html">TRENDY<span>BOT</span> 2.0</a><div class="navlinks"><a href="./index.html">Home</a><a href="#activity">Activity</a><a href="#commands">Commands</a><a href="./dashboard.html">Live Dashboard →</a></div></nav>
 <header class="hero"><div><div class="eyebrow">Trendy Core • Control Center</div><div class="welcome-neon" aria-label="Welcome to TrendyBot"><span id="welcomeTyping"></span><span class="typing-cursor" aria-hidden="true"></span></div><h1>Public <span class="gold">Dashboard.</span></h1><p class="sub">A quick look at the TrendyBot 2.0 ecosystem, its capabilities and activity.</p></div><div class="hero-actions"><a class="start-btn" href="https://trendybot-website.pages.dev/">GET STARTED <span>→</span></a><div class="badge" id="apiBadge">● CONNECTING</div><div class="live-clock" id="liveClock"><div class="clock-label">YOUR LOCAL TIME</div><div class="clock-time" id="clockTime">--:--:--</div><div class="clock-date" id="clockDate">Loading date…</div><div class="clock-zone" id="clockZone"></div></div></div></header>
 <img class="trendy-visible-banner"
@@ -421,4 +457,105 @@ footer{border-top:1px solid var(--line);margin-top:38px;padding-top:20px;display
 })();
 </script>
 
+<script>
+
+/* TRENDY_SHARED_MENU_AUTH */
+(() => {
+  const root = document.getElementById('tb-menu-root');
+  if (!root) return;
+
+  const toggle = document.getElementById('tb-menu-toggle');
+  const panel = document.getElementById('tb-menu-panel');
+  const accountLink = document.getElementById('tb-menu-account-link');
+  const accountBox = document.getElementById('tb-menu-account');
+  const nameNode = document.getElementById('tb-menu-name');
+  const emailNode = document.getElementById('tb-menu-email');
+  const signout = document.getElementById('tb-menu-signout');
+
+  let menuAuth = null;
+  try {
+    if (typeof client !== 'undefined') menuAuth = client;
+    else if (typeof authClient !== 'undefined') menuAuth = authClient;
+  } catch (_) {}
+
+  if (!menuAuth && window.supabase) {
+    const url = 'https://aqxmqymvsoyrxbgcuvam.supabase.co';
+    const key = 'sb_publishable_RIGjv2RpnCqqwvpfmH7xng_aw5Lw-rL';
+    menuAuth = window.supabase.createClient(url, key);
+  }
+
+  const closeMenu = () => {
+    panel.hidden = true;
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-label', 'Open navigation menu');
+  };
+
+  toggle.addEventListener('click', () => {
+    const opening = panel.hidden;
+    panel.hidden = !opening;
+    toggle.setAttribute('aria-expanded', String(opening));
+    toggle.setAttribute('aria-label', opening ? 'Close navigation menu' : 'Open navigation menu');
+  });
+
+  document.addEventListener('click', event => {
+    if (!root.contains(event.target)) closeMenu();
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') closeMenu();
+  });
+
+  async function updateAccount() {
+    if (!menuAuth) return;
+    try {
+      const { data, error } = await menuAuth.auth.getSession();
+      if (error) throw error;
+      const user = data.session && data.session.user;
+
+      if (!user) {
+        accountLink.hidden = false;
+        accountBox.hidden = true;
+        return;
+      }
+
+      const metadata = user.user_metadata || {};
+      const displayName = metadata.full_name || metadata.name ||
+        metadata.preferred_username || user.email || 'Signed-in account';
+
+      nameNode.textContent = displayName;
+      emailNode.textContent = user.email || '';
+      accountLink.hidden = true;
+      accountBox.hidden = false;
+    } catch (error) {
+      console.warn('[Trendy menu] Account status unavailable:', error.message);
+      accountLink.hidden = false;
+      accountBox.hidden = true;
+    }
+  }
+
+  signout.addEventListener('click', async () => {
+    signout.disabled = true;
+    signout.textContent = 'Signing out...';
+    try {
+      if (!menuAuth) throw new Error('Authentication is unavailable.');
+      const { error } = await menuAuth.auth.signOut();
+      if (error) throw error;
+      window.location.replace('./index.html');
+    } catch (error) {
+      console.error('[Trendy menu] Sign out failed:', error);
+      signout.disabled = false;
+      signout.textContent = 'Sign Out';
+      alert(error.message || 'Unable to sign out. Please try again.');
+    }
+  });
+
+  updateAccount();
+  if (menuAuth) {
+    menuAuth.auth.onAuthStateChange(() => {
+      updateAccount();
+    });
+  }
+})();
+
+</script>
 </body></html>

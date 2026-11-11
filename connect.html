@@ -2,7 +2,43 @@
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#090909"><title>Connect WhatsApp — TrendyBot 2.0</title>
 <style>
 :root{--bg:#090909;--gold:#d8b56a;--gold2:#f1d99e;--muted:#a29c91;--line:#302b22}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% -15%,#382a15 0,transparent 45%),var(--bg);color:#f7f2e8;font:15px/1.55 Inter,system-ui,Arial,sans-serif}.wrap{max-width:900px;margin:auto;padding:26px 20px 60px}nav{display:flex;justify-content:space-between;align-items:center;padding:8px 0 24px;border-bottom:1px solid #292929}.brand{font-weight:900;letter-spacing:.14em}.brand span{color:var(--gold)}nav a,.back{color:var(--gold2);text-decoration:none;font-size:13px}.hero{text-align:center;padding:45px 0 25px}.eyebrow{font-size:11px;letter-spacing:.23em;text-transform:uppercase;color:var(--gold);font-weight:800}h1{font-size:clamp(34px,7vw,52px);letter-spacing:-.045em;line-height:1.08;margin:12px 0}.hero p{color:var(--muted);max-width:590px;margin:0 auto}.card{max-width:650px;margin:0 auto;background:linear-gradient(145deg,#1a1a1a,#101010);border:1px solid var(--line);border-radius:20px;padding:25px;box-shadow:0 20px 70px #0008}.tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px}.tab{border:1px solid #3a352b;background:#101010;color:#c9c2b6;border-radius:12px;padding:13px;cursor:pointer;font-weight:700}.tab.active{border-color:var(--gold);background:#241d11;color:var(--gold2)}label{display:block;font-size:12px;color:#d7c9a8;margin:0 0 8px}input{width:100%;padding:15px;border-radius:10px;border:1px solid #403a30;background:#090909;color:white;font-size:16px;outline:none}input:focus{border-color:var(--gold)}.hint{font-size:12px;color:var(--muted);margin:8px 0 18px}.action{width:100%;padding:14px;border:0;border-radius:10px;background:linear-gradient(100deg,#b68c43,#f0d99e);color:#17120a;font-weight:900;font-size:14px;cursor:pointer}.qrbox{height:185px;border:1px dashed #5c4b2c;border-radius:12px;display:grid;place-items:center;text-align:center;color:#aaa;padding:18px;margin:12px 0 18px;background:#0c0c0c}.qrmark{font-size:40px;color:var(--gold2)}.status{display:none;margin-top:14px;padding:13px;border:1px solid #65512e;background:#211a10;color:#ead6a8;border-radius:10px;font-size:13px}.steps{max-width:650px;margin:20px auto 0;padding:18px 22px;border:1px solid #292929;border-radius:15px;background:#101010}.steps h2{font-size:15px;margin:0 0 10px}.steps ol{margin:0;padding-left:20px;color:#aaa;font-size:13px}.steps li{margin:7px 0}.disclaimer{max-width:650px;margin:14px auto 0;color:#827d73;font-size:11px;text-align:center}footer{text-align:center;color:#716b60;font-size:11px;margin-top:35px}@media(max-width:520px){.wrap{padding-inline:14px}.card{padding:18px}.tab{font-size:12px;padding:11px}}
-</style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script></head><body><main class="wrap">
+
+/* TRENDY_SHARED_HAMBURGER_MENU */
+#tb-menu-root{position:fixed;right:20px;bottom:20px;z-index:99999;font-family:Inter,system-ui,Arial,sans-serif;color:#f5f1e8}
+#tb-menu-toggle{width:54px;height:54px;border:1px solid #d8b56a;border-radius:16px;background:linear-gradient(145deg,#211a10,#101010);color:#f1d99e;font-size:25px;cursor:pointer;box-shadow:0 8px 28px #0009;display:grid;place-items:center}
+#tb-menu-toggle:hover{filter:brightness(1.2)}
+#tb-menu-panel{position:absolute;right:0;bottom:66px;width:min(290px,calc(100vw - 32px));padding:15px;background:#111;border:1px solid rgba(216,181,106,.4);border-radius:16px;box-shadow:0 18px 55px #000b}
+#tb-menu-panel[hidden]{display:none}
+.tb-menu-heading{font-size:10px;letter-spacing:.2em;color:#d8b56a;font-weight:900;margin:2px 8px 12px}
+.tb-menu-links{display:grid;gap:5px}
+.tb-menu-links a,.tb-menu-signout{display:block;width:100%;padding:11px 12px;border:1px solid transparent;border-radius:9px;background:transparent;color:#eee4ce;text-align:left;text-decoration:none;font:600 13px Inter,system-ui,Arial,sans-serif;cursor:pointer}
+.tb-menu-links a:hover,.tb-menu-signout:hover{background:#211a10;border-color:#66532e}
+#tb-menu-account{margin:12px 0 5px;padding:12px;border:1px solid #393126;border-radius:10px;background:#18140e}
+#tb-menu-name{font-weight:800;color:#f1d99e;font-size:13px;overflow-wrap:anywhere}
+#tb-menu-email{font-size:11px;color:#a9a49a;margin-top:4px;overflow-wrap:anywhere}
+#tb-menu-signout{margin-top:8px;color:#f1d99e}
+@media(max-width:480px){#tb-menu-root{right:14px;bottom:14px}#tb-menu-toggle{width:50px;height:50px}}
+
+</style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script></head><body>
+<div id="tb-menu-root">
+  <button id="tb-menu-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="tb-menu-panel">☰</button>
+  <section id="tb-menu-panel" hidden aria-label="Website navigation">
+    <div class="tb-menu-heading">TRENDYBOT 2.0</div>
+    <nav class="tb-menu-links">
+      <a href="./index.html">Home</a>
+      <a href="./preview.html">Public Preview</a>
+      <a href="./dashboard.html">Live Dashboard</a>
+      <a href="./connect.html">Connect WhatsApp</a>
+      <a id="tb-menu-account-link" href="./index.html">Sign In / Create Account</a>
+    </nav>
+    <div id="tb-menu-account" hidden>
+      <div id="tb-menu-name"></div>
+      <div id="tb-menu-email"></div>
+      <button id="tb-menu-signout" class="tb-menu-signout" type="button">Sign Out</button>
+    </div>
+  </section>
+</div>
+<main class="wrap">
 <nav><a class="brand" href="./index.html">TRENDY<span>BOT</span> 2.0</a><a href="./dashboard.html">Public Dashboard</a></nav>
 <header class="hero"><div class="eyebrow">Trendy Core • WhatsApp onboarding</div><h1>Connect <span style="color:var(--gold2)">your WhatsApp.</span></h1><p>Choose your preferred linking method. Your WhatsApp account will connect as a companion device when the secure connection service is enabled.</p></header>
 <section class="card"><div class="tabs"><button class="tab active" id="pairTab" type="button">⌨ Pairing code</button><button class="tab" id="qrTab" type="button">▦ QR code</button></div>
@@ -215,5 +251,106 @@ async function pollStatus(base,c){
 
 document.getElementById('pairBtn').addEventListener('click',async()=>{try{await startConnection('pairing')}catch(e){status(e.message)}});
 document.getElementById('qrBtn').addEventListener('click',async()=>{try{show('qr');await startConnection('qr')}catch(e){status(e.message)}});
+</script>
+<script>
+
+/* TRENDY_SHARED_MENU_AUTH */
+(() => {
+  const root = document.getElementById('tb-menu-root');
+  if (!root) return;
+
+  const toggle = document.getElementById('tb-menu-toggle');
+  const panel = document.getElementById('tb-menu-panel');
+  const accountLink = document.getElementById('tb-menu-account-link');
+  const accountBox = document.getElementById('tb-menu-account');
+  const nameNode = document.getElementById('tb-menu-name');
+  const emailNode = document.getElementById('tb-menu-email');
+  const signout = document.getElementById('tb-menu-signout');
+
+  let menuAuth = null;
+  try {
+    if (typeof client !== 'undefined') menuAuth = client;
+    else if (typeof authClient !== 'undefined') menuAuth = authClient;
+  } catch (_) {}
+
+  if (!menuAuth && window.supabase) {
+    const url = 'https://aqxmqymvsoyrxbgcuvam.supabase.co';
+    const key = 'sb_publishable_RIGjv2RpnCqqwvpfmH7xng_aw5Lw-rL';
+    menuAuth = window.supabase.createClient(url, key);
+  }
+
+  const closeMenu = () => {
+    panel.hidden = true;
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-label', 'Open navigation menu');
+  };
+
+  toggle.addEventListener('click', () => {
+    const opening = panel.hidden;
+    panel.hidden = !opening;
+    toggle.setAttribute('aria-expanded', String(opening));
+    toggle.setAttribute('aria-label', opening ? 'Close navigation menu' : 'Open navigation menu');
+  });
+
+  document.addEventListener('click', event => {
+    if (!root.contains(event.target)) closeMenu();
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') closeMenu();
+  });
+
+  async function updateAccount() {
+    if (!menuAuth) return;
+    try {
+      const { data, error } = await menuAuth.auth.getSession();
+      if (error) throw error;
+      const user = data.session && data.session.user;
+
+      if (!user) {
+        accountLink.hidden = false;
+        accountBox.hidden = true;
+        return;
+      }
+
+      const metadata = user.user_metadata || {};
+      const displayName = metadata.full_name || metadata.name ||
+        metadata.preferred_username || user.email || 'Signed-in account';
+
+      nameNode.textContent = displayName;
+      emailNode.textContent = user.email || '';
+      accountLink.hidden = true;
+      accountBox.hidden = false;
+    } catch (error) {
+      console.warn('[Trendy menu] Account status unavailable:', error.message);
+      accountLink.hidden = false;
+      accountBox.hidden = true;
+    }
+  }
+
+  signout.addEventListener('click', async () => {
+    signout.disabled = true;
+    signout.textContent = 'Signing out...';
+    try {
+      if (!menuAuth) throw new Error('Authentication is unavailable.');
+      const { error } = await menuAuth.auth.signOut();
+      if (error) throw error;
+      window.location.replace('./index.html');
+    } catch (error) {
+      console.error('[Trendy menu] Sign out failed:', error);
+      signout.disabled = false;
+      signout.textContent = 'Sign Out';
+      alert(error.message || 'Unable to sign out. Please try again.');
+    }
+  });
+
+  updateAccount();
+  if (menuAuth) {
+    menuAuth.auth.onAuthStateChange(() => {
+      updateAccount();
+    });
+  }
+})();
+
 </script>
 </body></html>
