@@ -73,6 +73,12 @@ input:focus{border-color:var(--gold)}
 input::placeholder{color:#666}
 .submit{width:100%;border:0;border-radius:30px;padding:14px;background:linear-gradient(120deg,#b88c42,#f1d99e);color:#17120a;font-size:12px;font-weight:900;letter-spacing:.1em;cursor:pointer;margin-top:7px}
 .submit:disabled{opacity:.55;cursor:wait}
+.oauth-divider{display:flex;align-items:center;gap:13px;margin:20px 0;color:#81796d;font-size:10px;font-weight:700;letter-spacing:.12em}
+.oauth-divider:before,.oauth-divider:after{content:"";height:1px;flex:1;background:rgba(255,255,255,.12)}
+.google-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:12px;padding:13px;border:1px solid #444;border-radius:30px;background:#090909;color:#f4f0e8;font-size:12px;font-weight:800;letter-spacing:.04em;cursor:pointer;transition:border-color .2s,background .2s}
+.google-btn:hover{border-color:var(--gold);background:#17140f}
+.google-btn:disabled{opacity:.55;cursor:wait}
+.google-btn svg{width:19px;height:19px;flex:none}
 .forgot{display:block;text-align:right;color:var(--gold2);font-size:11px;margin:0 0 16px;cursor:pointer;background:none;border:0;width:100%}
 .message{display:none;margin-top:16px;padding:12px;border-radius:10px;font-size:12px;line-height:1.6;overflow-wrap:anywhere}
 .message.success{display:block;background:rgba(65,150,100,.12);border:1px solid rgba(100,210,140,.25);color:#a9e5bd}
@@ -155,6 +161,16 @@ footer{text-align:center;padding:22px;color:#777166;font-size:10px;border-top:1p
 <button class="forgot" id="forgotBtn" type="button" hidden>Forgot your password?</button>
 <button class="submit" id="submitBtn" type="submit">CREATE MY ACCOUNT →</button>
 </form>
+<div class="oauth-divider">OR CONTINUE WITH</div>
+<button class="google-btn" id="googleBtn" type="button">
+<svg viewBox="0 0 48 48" aria-hidden="true">
+<path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+<path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.72 7.18l7.62 5.91c4.45-4.11 7.14-10.17 7.14-17.56z"/>
+<path fill="#FBBC05" d="M10.53 28.59A14.4 14.4 0 0 1 9.75 24c0-1.59.27-3.13.76-4.59l-7.98-6.19A23.9 23.9 0 0 0 0 24c0 3.88.93 7.55 2.56 10.78l7.97-6.19z"/>
+<path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.91-5.89l-7.62-5.91c-2.12 1.42-4.84 2.27-8.29 2.27-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+</svg>
+<span>CONTINUE WITH GOOGLE</span>
+</button>
 <div class="message" id="message" role="status" aria-live="polite"></div>
 <div class="terms">By continuing, you agree to use TrendyBot responsibly.<br>Protected by Supabase authentication.</div>
 </section>
@@ -240,6 +256,23 @@ form.addEventListener('submit',async(event)=>{
  }finally{
   submitBtn.disabled=false;
   submitBtn.textContent=mode==='signup'?'CREATE MY ACCOUNT →':'SIGN IN →';
+ }
+});
+
+const googleBtn=document.getElementById('googleBtn');
+googleBtn.addEventListener('click',async()=>{
+ googleBtn.disabled=true;
+ googleBtn.querySelector('span').textContent='CONNECTING TO GOOGLE...';
+ try{
+  const {error}=await client.auth.signInWithOAuth({
+   provider:'google',
+   options:{redirectTo:window.location.origin+'/'}
+  });
+  if(error) throw error;
+ }catch(error){
+  showMessage(error.message||'Google sign-in is unavailable. Please try again.','error');
+  googleBtn.disabled=false;
+  googleBtn.querySelector('span').textContent='CONTINUE WITH GOOGLE';
  }
 });
 
