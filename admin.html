@@ -19,7 +19,7 @@
 #tb-menu-signout{margin-top:8px;color:#f1d99e}
 @media(max-width:480px){#tb-menu-root{right:14px;bottom:14px}#tb-menu-toggle{width:50px;height:50px}}
 
-</style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><link rel="icon" href="/favicon.ico" sizes="any">
+</style><link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
@@ -43,105 +43,5 @@
     </div>
   </section>
 </div>
-<main class="box"><div class="brand">TRENDY<span>BOT</span> 2.0</div><div class="eyebrow">Private owner area</div><h1>Admin console</h1><p class="muted">This page is a protected-area placeholder. Owner tools are intentionally not enabled until access protection and the secure API are configured.</p><div class="alert"><b>Security setup required.</b><br>Do not use this page for administration until Cloudflare Access is protecting this route. A hidden link or browser-side password is not secure authentication.</div><h3>Before enabling owner controls</h3><ol class="steps"><li>Create a Cloudflare Access application for this exact admin route.</li><li>Allow only your verified owner email address.</li><li>Connect a Cloudflare Worker API with server-side authentication.</li><li>Store API secrets as environment secrets, never in HTML or GitHub.</li><li>Only then connect monitoring and administrative actions.</li></ol><a class="back" href="./dashboard.html">← Back to public dashboard</a></main><script>
-
-/* TRENDY_SHARED_MENU_AUTH */
-(() => {
-  const root = document.getElementById('tb-menu-root');
-  if (!root) return;
-
-  const toggle = document.getElementById('tb-menu-toggle');
-  const panel = document.getElementById('tb-menu-panel');
-  const accountLink = document.getElementById('tb-menu-account-link');
-  const accountBox = document.getElementById('tb-menu-account');
-  const nameNode = document.getElementById('tb-menu-name');
-  const emailNode = document.getElementById('tb-menu-email');
-  const signout = document.getElementById('tb-menu-signout');
-
-  let menuAuth = null;
-  try {
-    if (typeof client !== 'undefined') menuAuth = client;
-    else if (typeof authClient !== 'undefined') menuAuth = authClient;
-  } catch (_) {}
-
-  if (!menuAuth && window.supabase) {
-    const url = 'https://aqxmqymvsoyrxbgcuvam.supabase.co';
-    const key = 'sb_publishable_RIGjv2RpnCqqwvpfmH7xng_aw5Lw-rL';
-    menuAuth = window.supabase.createClient(url, key);
-  }
-
-  const closeMenu = () => {
-    panel.hidden = true;
-    toggle.setAttribute('aria-expanded', 'false');
-    toggle.setAttribute('aria-label', 'Open navigation menu');
-  };
-
-  toggle.addEventListener('click', () => {
-    const opening = panel.hidden;
-    panel.hidden = !opening;
-    toggle.setAttribute('aria-expanded', String(opening));
-    toggle.setAttribute('aria-label', opening ? 'Close navigation menu' : 'Open navigation menu');
-  });
-
-  document.addEventListener('click', event => {
-    if (!root.contains(event.target)) closeMenu();
-  });
-
-  document.addEventListener('keydown', event => {
-    if (event.key === 'Escape') closeMenu();
-  });
-
-  async function updateAccount() {
-    if (!menuAuth) return;
-    try {
-      const { data, error } = await menuAuth.auth.getSession();
-      if (error) throw error;
-      const user = data.session && data.session.user;
-
-      if (!user) {
-        accountLink.hidden = false;
-        accountBox.hidden = true;
-        return;
-      }
-
-      const metadata = user.user_metadata || {};
-      const displayName = metadata.full_name || metadata.name ||
-        metadata.preferred_username || user.email || 'Signed-in account';
-
-      nameNode.textContent = displayName;
-      emailNode.textContent = user.email || '';
-      accountLink.hidden = true;
-      accountBox.hidden = false;
-    } catch (error) {
-      console.warn('[Trendy menu] Account status unavailable:', error.message);
-      accountLink.hidden = false;
-      accountBox.hidden = true;
-    }
-  }
-
-  signout.addEventListener('click', async () => {
-    signout.disabled = true;
-    signout.textContent = 'Signing out...';
-    try {
-      if (!menuAuth) throw new Error('Authentication is unavailable.');
-      const { error } = await menuAuth.auth.signOut();
-      if (error) throw error;
-      window.location.replace('./index.html');
-    } catch (error) {
-      console.error('[Trendy menu] Sign out failed:', error);
-      signout.disabled = false;
-      signout.textContent = 'Sign Out';
-      alert(error.message || 'Unable to sign out. Please try again.');
-    }
-  });
-
-  updateAccount();
-  if (menuAuth) {
-    menuAuth.auth.onAuthStateChange(() => {
-      updateAccount();
-    });
-  }
-})();
-
-</script>
+<main class="box"><div class="brand">TRENDY<span>BOT</span> 2.0</div><div class="eyebrow">Private owner area</div><h1>Admin console</h1><p class="muted">This page is a protected-area placeholder. Owner tools are intentionally not enabled until access protection and the secure API are configured.</p><div class="alert"><b>Security setup required.</b><br>Do not use this page for administration until Cloudflare Access is protecting this route. A hidden link or browser-side password is not secure authentication.</div><h3>Before enabling owner controls</h3><ol class="steps"><li>Create a Cloudflare Access application for this exact admin route.</li><li>Allow only your verified owner email address.</li><li>Connect a Cloudflare Worker API with server-side authentication.</li><li>Store API secrets as environment secrets, never in HTML or GitHub.</li><li>Only then connect monitoring and administrative actions.</li></ol><a class="back" href="./dashboard.html">← Back to public dashboard</a></main><script src="./auth-client.js"></script>
 </body></html>

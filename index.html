@@ -75,10 +75,13 @@ input::placeholder{color:#666}
 .submit:disabled{opacity:.55;cursor:wait}
 .oauth-divider{display:flex;align-items:center;gap:13px;margin:20px 0;color:#81796d;font-size:10px;font-weight:700;letter-spacing:.12em}
 .oauth-divider:before,.oauth-divider:after{content:"";height:1px;flex:1;background:rgba(255,255,255,.12)}
-.google-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:12px;padding:13px;border:1px solid #444;border-radius:30px;background:#090909;color:#f4f0e8;font-size:12px;font-weight:800;letter-spacing:.04em;cursor:pointer;transition:border-color .2s,background .2s}
+.google-btn{width:100%;min-height:48px;display:flex;align-items:center;justify-content:center;padding:5px;border:1px solid #444;border-radius:30px;background:#090909;overflow:hidden;transition:border-color .2s,background .2s}
+.google-btn #googleButtonMount{width:100%;display:flex;justify-content:center;min-height:40px}
+.google-btn #googleButtonMount>div{max-width:100%}
+
 .google-btn:hover{border-color:var(--gold);background:#17140f}
-.google-btn:disabled{opacity:.55;cursor:wait}
-.google-btn svg{width:19px;height:19px;flex:none}
+
+
 .forgot{display:block;text-align:right;color:var(--gold2);font-size:11px;margin:0 0 16px;cursor:pointer;background:none;border:0;width:100%}
 .message{display:none;margin-top:16px;padding:12px;border-radius:10px;font-size:12px;line-height:1.6;overflow-wrap:anywhere}
 .message.success{display:block;background:rgba(65,150,100,.12);border:1px solid rgba(100,210,140,.25);color:#a9e5bd}
@@ -197,145 +200,289 @@ footer{text-align:center;padding:22px;color:#777166;font-size:10px;border-top:1p
 </div>
 <div class="field">
 <label for="password">PASSWORD</label>
-<input id="password" type="password" autocomplete="new-password" minlength="8" placeholder="At least 8 characters" required>
+<input id="password" type="password" autocomplete="new-password" minlength="10" placeholder="At least 10 characters" required>
 </div>
 <button class="forgot" id="forgotBtn" type="button" hidden>Forgot your password?</button>
 <button class="submit" id="submitBtn" type="submit">CREATE MY ACCOUNT →</button>
+<div class="field" id="resetConfirmField" hidden>
+<label for="resetConfirmPassword">CONFIRM NEW PASSWORD</label>
+<input id="resetConfirmPassword" type="password" autocomplete="new-password" minlength="10" placeholder="Enter your new password again">
+</div>
 </form>
 <div class="oauth-divider">OR CONTINUE WITH</div>
-<button class="google-btn" id="googleBtn" type="button">
-<svg viewBox="0 0 48 48" aria-hidden="true">
-<path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-<path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.72 7.18l7.62 5.91c4.45-4.11 7.14-10.17 7.14-17.56z"/>
-<path fill="#FBBC05" d="M10.53 28.59A14.4 14.4 0 0 1 9.75 24c0-1.59.27-3.13.76-4.59l-7.98-6.19A23.9 23.9 0 0 0 0 24c0 3.88.93 7.55 2.56 10.78l7.97-6.19z"/>
-<path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.91-5.89l-7.62-5.91c-2.12 1.42-4.84 2.27-8.29 2.27-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-</svg>
-<span>CONTINUE WITH GOOGLE</span>
-</button>
+<div class="google-btn" id="googleBtn"><div id="googleButtonMount"></div></div>
 <div class="message" id="message" role="status" aria-live="polite"></div>
-<div class="terms">By continuing, you agree to use TrendyBot responsibly.<br>Protected by Supabase authentication.</div>
+<div class="terms">By continuing, you agree to use TrendyBot responsibly.<br>Protected by independent Neon authentication.</div>
 </section>
 </div>
 </main>
 <footer>© <span id="year"></span> TRENDYBOT 2.0 · TRENDY CORE — ALWAYS READY</footer>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://accounts.google.com/gsi/client"></script>
+
 <script>
-const SUPABASE_URL='https://aqxmqymvsoyrxbgcuvam.supabase.co';
-const SUPABASE_KEY='sb_publishable_RIGjv2RpnCqqwvpfmH7xng_aw5LwR-l';
-const {createClient}=supabase;
-const client=createClient(SUPABASE_URL,SUPABASE_KEY);
 const form=document.getElementById('authForm');
 const signupTab=document.getElementById('signupTab');
 const signinTab=document.getElementById('signinTab');
+const tabs=document.querySelector('.tabs');
 const confirmField=document.getElementById('confirmField');
 const confirmEmail=document.getElementById('confirmEmail');
 const email=document.getElementById('email');
+const emailField=email.parentElement;
 const password=document.getElementById('password');
+const passwordLabel=password.parentElement.querySelector('label');
+const resetConfirmField=document.getElementById('resetConfirmField');
+const resetConfirmPassword=document.getElementById('resetConfirmPassword');
 const submitBtn=document.getElementById('submitBtn');
 const forgotBtn=document.getElementById('forgotBtn');
 const message=document.getElementById('message');
+const oauthDivider=document.querySelector('.oauth-divider');
+const googleBtn=document.getElementById('googleBtn');
 let mode='signup';
+let resetToken='';
 
 document.getElementById('year').textContent=new Date().getFullYear();
+
+function getApiBase(){
+ const saved=localStorage.getItem('trendyApiBase')||'';
+ return (
+  window.TRENDY_API_BASE ||
+  (saved&&!saved.includes('.trycloudflare.com')?saved:'') ||
+  'https://trendybot-connect-gateway.trendycreator380.workers.dev'
+ ).trim().replace(/\/+$/,'');
+}
 
 function showMessage(text,type){
  message.textContent=text;
  message.className='message '+type;
 }
+
+async function authRequest(endpoint,body){
+ const response=await fetch(getApiBase()+'/api/auth/'+endpoint,{
+  method:'POST',
+  headers:{'Content-Type':'application/json'},
+  cache:'no-store',
+  body:JSON.stringify(body)
+ });
+ const data=await response.json().catch(()=>({}));
+ if(!response.ok||!data.success){
+  throw new Error(data.error||'The request could not be completed. Please try again.');
+ }
+ return data;
+}
+
 function setMode(next){
  mode=next;
+ const resetting=mode==='reset';
+ tabs.hidden=resetting;
  signupTab.classList.toggle('active',mode==='signup');
  signinTab.classList.toggle('active',mode==='signin');
  confirmField.hidden=mode!=='signup';
  confirmEmail.required=mode==='signup';
- password.autocomplete=mode==='signup'?'new-password':'current-password';
+ emailField.hidden=resetting;
+ email.required=!resetting;
+ resetConfirmField.hidden=!resetting;
+ resetConfirmPassword.required=resetting;
+ password.required=true;
+ passwordLabel.textContent=resetting?'NEW PASSWORD':'PASSWORD';
+ password.autocomplete=mode==='signup'||resetting?'new-password':'current-password';
+ password.minLength=10;
+ password.placeholder='At least 10 characters';
  forgotBtn.hidden=mode!=='signin';
- submitBtn.textContent=mode==='signup'?'CREATE MY ACCOUNT →':'SIGN IN →';
+ oauthDivider.hidden=resetting;
+ googleBtn.hidden=resetting;
+ submitBtn.textContent=
+  mode==='signup'?'CREATE MY ACCOUNT →':
+  resetting?'RESET PASSWORD →':'SIGN IN →';
  message.className='message';
  message.textContent='';
 }
+
 signupTab.addEventListener('click',()=>setMode('signup'));
 signinTab.addEventListener('click',()=>setMode('signin'));
 
 form.addEventListener('submit',async(event)=>{
  event.preventDefault();
  message.className='message';
+
  const address=email.value.trim().toLowerCase();
  const secret=password.value;
- if(mode==='signup' && confirmEmail.value.trim().toLowerCase()!==address){
-  showMessage('Your email addresses do not match. Please check them.','error');return;
+
+ if(mode==='signup'&&confirmEmail.value.trim().toLowerCase()!==address){
+  showMessage('Your email addresses do not match. Please check them.','error');
+  return;
  }
- if(secret.length<8){
-  showMessage('Your password must contain at least 8 characters.','error');return;
+
+ if(secret.length<10){
+  showMessage('Your password must contain at least 10 characters.','error');
+  return;
  }
+
+ if(new TextEncoder().encode(secret).length>72){
+  showMessage('Your password is too long. Please use no more than 72 UTF-8 bytes.','error');
+  return;
+ }
+
+ if(mode==='reset'&&secret!==resetConfirmPassword.value){
+  showMessage('Your new passwords do not match.','error');
+  return;
+ }
+
  submitBtn.disabled=true;
- submitBtn.textContent=mode==='signup'?'CREATING ACCOUNT...':'SIGNING IN...';
+ submitBtn.textContent=
+  mode==='signup'?'CREATING ACCOUNT...':
+  mode==='reset'?'RESETTING PASSWORD...':'SIGNING IN...';
+
  try{
   if(mode==='signup'){
-   const {data,error}=await client.auth.signUp({
-    email:address,
-    password:secret,
-    options:{emailRedirectTo:window.location.origin+'/'}
-   });
-   if(error) throw error;
-   if(data.session){
-    showMessage('Account created! Opening WhatsApp connection...','success');
-    window.location.replace('/connect.html');
-   }else{
-    showMessage('Account created! Check your inbox for the Supabase verification email, then return here to sign in.','success');
-   }
+   const data=await authRequest('register',{email:address,password:secret});
    form.reset();
-  }else{
-   const {data,error}=await client.auth.signInWithPassword({email:address,password:secret});
-   if(error) throw error;
-   if(!data.session) throw new Error('Sign-in did not create a session. Please try again.');
+   setMode('signin');
+   showMessage(data.message||'Account created. Check your email for a verification link.','success');
+
+  }else if(mode==='signin'){
+   const data=await authRequest('login',{email:address,password:secret});
+   if(!data.token) throw new Error('Sign-in did not return an account session.');
+   localStorage.setItem('trendyAuthToken',data.token);
+   window.dispatchEvent(new Event('trendy-auth-changed'));
    showMessage('Sign-in successful! Opening secure WhatsApp connection...','success');
-   window.location.replace('/connect.html');
+   window.location.replace('./connect.html');
+
+  }else{
+   await authRequest('reset-password',{token:resetToken,password:secret});
+   resetToken='';
+   form.reset();
+   setMode('signin');
+   showMessage('Password updated. Please sign in with your new password.','success');
   }
  }catch(error){
   showMessage(error.message||'Something went wrong. Please try again.','error');
  }finally{
   submitBtn.disabled=false;
-  submitBtn.textContent=mode==='signup'?'CREATE MY ACCOUNT →':'SIGN IN →';
+  submitBtn.textContent=
+   mode==='signup'?'CREATE MY ACCOUNT →':
+   mode==='reset'?'RESET PASSWORD →':'SIGN IN →';
  }
 });
 
-const googleBtn=document.getElementById('googleBtn');
-googleBtn.addEventListener('click',async()=>{
- googleBtn.disabled=true;
- googleBtn.querySelector('span').textContent='CONNECTING TO GOOGLE...';
- try{
-  const {error}=await client.auth.signInWithOAuth({
-   provider:'google',
-   options:{redirectTo:window.location.origin+'/'}
+
+// TRENDY_NEON_GOOGLE_LOGIN
+const googleMount = document.getElementById('googleButtonMount');
+const GOOGLE_CLIENT_ID = '858876011200-3ec6aj9hl6vim83fjmi3q90coobkv7d5.apps.googleusercontent.com';
+
+async function handleGoogleCredential(response) {
+  if (!response || !response.credential) {
+    showMessage('Google did not return a valid sign-in credential.', 'error');
+    return;
+  }
+
+  googleMount.style.pointerEvents = 'none';
+  googleMount.style.opacity = '0.55';
+
+  try {
+    const savedApiBase = localStorage.getItem('trendyApiBase') || '';
+    const apiBase = (
+      window.TRENDY_API_BASE ||
+      (savedApiBase && !savedApiBase.includes('.trycloudflare.com') ? savedApiBase : '') ||
+      'https://trendybot-connect-gateway.trendycreator380.workers.dev'
+    ).trim().replace(/\/+$/, '');
+
+    const result = await fetch(apiBase + '/api/auth/google', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ credential: response.credential })
+    });
+
+    const data = await result.json().catch(() => ({}));
+
+    if (!result.ok || !data.success || !data.token) {
+      throw new Error(
+        data.error || 'Google sign-in failed. Please try again.'
+      );
+    }
+
+    localStorage.setItem('trendyAuthToken', data.token);
+    window.dispatchEvent(new Event('trendy-auth-changed'));
+
+    showMessage('Google sign-in successful! Opening secure connection...', 'success');
+    window.location.replace('./connect.html');
+
+  } catch (error) {
+    showMessage(
+      error.message || 'Unable to connect to the account service.',
+      'error'
+    );
+    googleMount.style.pointerEvents = '';
+    googleMount.style.opacity = '';
+  }
+}
+
+if (window.google?.accounts?.id) {
+  window.google.accounts.id.initialize({
+    client_id: GOOGLE_CLIENT_ID,
+    callback: handleGoogleCredential
   });
-  if(error) throw error;
- }catch(error){
-  showMessage(error.message||'Google sign-in is unavailable. Please try again.','error');
-  googleBtn.disabled=false;
-  googleBtn.querySelector('span').textContent='CONTINUE WITH GOOGLE';
- }
-});
+
+  const buttonWidth = Math.min(
+    400,
+    Math.floor(googleMount.getBoundingClientRect().width || 320)
+  );
+
+  window.google.accounts.id.renderButton(googleMount, {
+    type: 'standard',
+    theme: 'filled_black',
+    size: 'large',
+    text: 'continue_with',
+    shape: 'pill',
+    logo_alignment: 'left',
+    width: buttonWidth
+  });
+} else {
+  showMessage('Google sign-in could not load. Please refresh the page.', 'error');
+}
 
 forgotBtn.addEventListener('click',async()=>{
  const address=email.value.trim().toLowerCase();
- if(!address){showMessage('Enter your email address first.','error');email.focus();return;}
+ if(!address){
+  showMessage('Enter your email address first.','error');
+  email.focus();
+  return;
+ }
  forgotBtn.disabled=true;
  try{
-  const {error}=await client.auth.resetPasswordForEmail(address,{redirectTo:window.location.origin+'/'});
-  if(error) throw error;
-  showMessage('If an account exists for this address, a password recovery email will be sent.','success');
+  const data=await authRequest('forgot-password',{email:address});
+  showMessage(data.message||'If an eligible account exists, a password reset link will be sent.','success');
  }catch(error){
   showMessage(error.message||'Unable to request password recovery.','error');
- }finally{forgotBtn.disabled=false;}
+ }finally{
+  forgotBtn.disabled=false;
+ }
 });
 
+// Process email links before any account navigation.
 (async()=>{
- const {data}=await client.auth.getSession();
- if(data.session){
+ const url=new URL(window.location.href);
+ const verificationToken=url.searchParams.get('verify');
+ const passwordToken=url.searchParams.get('reset');
+
+ if(verificationToken){
+  url.searchParams.delete('verify');
+  window.history.replaceState({},'',url.pathname+url.search+url.hash);
   setMode('signin');
-  showMessage('Account session found. Opening WhatsApp connection...','success');
-  window.location.replace('/connect.html');
+  try{
+   const data=await authRequest('verify-email',{token:verificationToken});
+   showMessage(data.message||'Email verified. You can now sign in.','success');
+  }catch(error){
+   showMessage(error.message||'Unable to verify your email.','error');
+  }
+  return;
+ }
+
+ if(passwordToken){
+  resetToken=passwordToken;
+  url.searchParams.delete('reset');
+  window.history.replaceState({},'',url.pathname+url.search+url.hash);
+  setMode('reset');
+  showMessage('Choose a new password for your account.','success');
  }
 })();
 </script>
@@ -382,106 +529,6 @@ forgotBtn.addEventListener('click',async()=>{
 })();
 </script>
 
-<script>
-
-/* TRENDY_SHARED_MENU_AUTH */
-(() => {
-  const root = document.getElementById('tb-menu-root');
-  if (!root) return;
-
-  const toggle = document.getElementById('tb-menu-toggle');
-  const panel = document.getElementById('tb-menu-panel');
-  const accountLink = document.getElementById('tb-menu-account-link');
-  const accountBox = document.getElementById('tb-menu-account');
-  const nameNode = document.getElementById('tb-menu-name');
-  const emailNode = document.getElementById('tb-menu-email');
-  const signout = document.getElementById('tb-menu-signout');
-
-  let menuAuth = null;
-  try {
-    if (typeof client !== 'undefined') menuAuth = client;
-    else if (typeof authClient !== 'undefined') menuAuth = authClient;
-  } catch (_) {}
-
-  if (!menuAuth && window.supabase) {
-    const url = 'https://aqxmqymvsoyrxbgcuvam.supabase.co';
-    const key = 'sb_publishable_RIGjv2RpnCqqwvpfmH7xng_aw5Lw-rL';
-    menuAuth = window.supabase.createClient(url, key);
-  }
-
-  const closeMenu = () => {
-    panel.hidden = true;
-    toggle.setAttribute('aria-expanded', 'false');
-    toggle.setAttribute('aria-label', 'Open navigation menu');
-  };
-
-  toggle.addEventListener('click', () => {
-    const opening = panel.hidden;
-    panel.hidden = !opening;
-    toggle.setAttribute('aria-expanded', String(opening));
-    toggle.setAttribute('aria-label', opening ? 'Close navigation menu' : 'Open navigation menu');
-  });
-
-  document.addEventListener('click', event => {
-    if (!root.contains(event.target)) closeMenu();
-  });
-
-  document.addEventListener('keydown', event => {
-    if (event.key === 'Escape') closeMenu();
-  });
-
-  async function updateAccount() {
-    if (!menuAuth) return;
-    try {
-      const { data, error } = await menuAuth.auth.getSession();
-      if (error) throw error;
-      const user = data.session && data.session.user;
-
-      if (!user) {
-        accountLink.hidden = false;
-        accountBox.hidden = true;
-        return;
-      }
-
-      const metadata = user.user_metadata || {};
-      const displayName = metadata.full_name || metadata.name ||
-        metadata.preferred_username || user.email || 'Signed-in account';
-
-      nameNode.textContent = displayName;
-      emailNode.textContent = user.email || '';
-      accountLink.hidden = true;
-      accountBox.hidden = false;
-    } catch (error) {
-      console.warn('[Trendy menu] Account status unavailable:', error.message);
-      accountLink.hidden = false;
-      accountBox.hidden = true;
-    }
-  }
-
-  signout.addEventListener('click', async () => {
-    signout.disabled = true;
-    signout.textContent = 'Signing out...';
-    try {
-      if (!menuAuth) throw new Error('Authentication is unavailable.');
-      const { error } = await menuAuth.auth.signOut();
-      if (error) throw error;
-      window.location.replace('./index.html');
-    } catch (error) {
-      console.error('[Trendy menu] Sign out failed:', error);
-      signout.disabled = false;
-      signout.textContent = 'Sign Out';
-      alert(error.message || 'Unable to sign out. Please try again.');
-    }
-  });
-
-  updateAccount();
-  if (menuAuth) {
-    menuAuth.auth.onAuthStateChange(() => {
-      updateAccount();
-    });
-  }
-})();
-
-</script>
+<script src="./auth-client.js"></script>
 </body>
 </html>

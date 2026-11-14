@@ -19,7 +19,7 @@
 #tb-menu-signout{margin-top:8px;color:#f1d99e}
 @media(max-width:480px){#tb-menu-root{right:14px;bottom:14px}#tb-menu-toggle{width:50px;height:50px}}
 
-</style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script><link rel="icon" href="/favicon.ico" sizes="any">
+</style><script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script><link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
@@ -53,35 +53,21 @@
 <section class="steps"><h2>How linking will work</h2><ol><li>Choose pairing code or QR code above.</li><li>Open WhatsApp on your phone and go to <b>Linked Devices</b>.</li><li>Choose <b>Link a Device</b>, then scan the QR or choose phone-number linking and enter the code.</li><li>Keep this page open until the connection status confirms success.</li></ol></section>
 <p class="disclaimer">Security note: Never share a pairing code or QR code with anyone. It grants access to link a device to your WhatsApp account. Only link a session you control.</p><footer>© TrendyBot 2.0 • Trendy Core — Always Ready.</footer></main>
 
+<script src="./auth-client.js"></script>
 <script>
 const API_BASE_KEY='trendyApiBase';
-const SUPABASE_URL='https://aqxmqymvsoyrxbgcuvam.supabase.co';
-const SUPABASE_KEY='sb_publishable_RIGjv2RpnCqqwvpfmH7xng_aw5LwR-l';
-const {createClient}=supabase;
-const authClient=createClient(SUPABASE_URL,SUPABASE_KEY);
 document.body.style.visibility='hidden';
 (async()=>{
  try{
-  const {data,error}=await authClient.auth.getSession();
-  const user=data?.session?.user;
-  if(error||!user||!(user.email_confirmed_at||user.confirmed_at)){
-   window.location.replace('./index.html');
-   return;
-  }
+  await window.TrendyAuth.getAccessToken();
   document.body.style.visibility='visible';
  }catch{
   window.location.replace('./index.html');
  }
 })();
 
-
 async function getVerifiedAccessToken(){
- const {data,error}=await authClient.auth.getSession();
- if(error||!data.session)throw new Error('Please sign in to your TrendyBot account first.');
- const user=data.session.user;
- if(!user||!(user.email_confirmed_at||user.confirmed_at))
-  throw new Error('Please verify your email address before connecting WhatsApp.');
- return data.session.access_token;
+ return window.TrendyAuth.getAccessToken();
 }
 
 async function authHeaders(c,withJson=false){
@@ -256,106 +242,5 @@ async function pollStatus(base,c){
 
 document.getElementById('pairBtn').addEventListener('click',async()=>{try{await startConnection('pairing')}catch(e){status(e.message)}});
 document.getElementById('qrBtn').addEventListener('click',async()=>{try{show('qr');await startConnection('qr')}catch(e){status(e.message)}});
-</script>
-<script>
-
-/* TRENDY_SHARED_MENU_AUTH */
-(() => {
-  const root = document.getElementById('tb-menu-root');
-  if (!root) return;
-
-  const toggle = document.getElementById('tb-menu-toggle');
-  const panel = document.getElementById('tb-menu-panel');
-  const accountLink = document.getElementById('tb-menu-account-link');
-  const accountBox = document.getElementById('tb-menu-account');
-  const nameNode = document.getElementById('tb-menu-name');
-  const emailNode = document.getElementById('tb-menu-email');
-  const signout = document.getElementById('tb-menu-signout');
-
-  let menuAuth = null;
-  try {
-    if (typeof client !== 'undefined') menuAuth = client;
-    else if (typeof authClient !== 'undefined') menuAuth = authClient;
-  } catch (_) {}
-
-  if (!menuAuth && window.supabase) {
-    const url = 'https://aqxmqymvsoyrxbgcuvam.supabase.co';
-    const key = 'sb_publishable_RIGjv2RpnCqqwvpfmH7xng_aw5Lw-rL';
-    menuAuth = window.supabase.createClient(url, key);
-  }
-
-  const closeMenu = () => {
-    panel.hidden = true;
-    toggle.setAttribute('aria-expanded', 'false');
-    toggle.setAttribute('aria-label', 'Open navigation menu');
-  };
-
-  toggle.addEventListener('click', () => {
-    const opening = panel.hidden;
-    panel.hidden = !opening;
-    toggle.setAttribute('aria-expanded', String(opening));
-    toggle.setAttribute('aria-label', opening ? 'Close navigation menu' : 'Open navigation menu');
-  });
-
-  document.addEventListener('click', event => {
-    if (!root.contains(event.target)) closeMenu();
-  });
-
-  document.addEventListener('keydown', event => {
-    if (event.key === 'Escape') closeMenu();
-  });
-
-  async function updateAccount() {
-    if (!menuAuth) return;
-    try {
-      const { data, error } = await menuAuth.auth.getSession();
-      if (error) throw error;
-      const user = data.session && data.session.user;
-
-      if (!user) {
-        accountLink.hidden = false;
-        accountBox.hidden = true;
-        return;
-      }
-
-      const metadata = user.user_metadata || {};
-      const displayName = metadata.full_name || metadata.name ||
-        metadata.preferred_username || user.email || 'Signed-in account';
-
-      nameNode.textContent = displayName;
-      emailNode.textContent = user.email || '';
-      accountLink.hidden = true;
-      accountBox.hidden = false;
-    } catch (error) {
-      console.warn('[Trendy menu] Account status unavailable:', error.message);
-      accountLink.hidden = false;
-      accountBox.hidden = true;
-    }
-  }
-
-  signout.addEventListener('click', async () => {
-    signout.disabled = true;
-    signout.textContent = 'Signing out...';
-    try {
-      if (!menuAuth) throw new Error('Authentication is unavailable.');
-      const { error } = await menuAuth.auth.signOut();
-      if (error) throw error;
-      window.location.replace('./index.html');
-    } catch (error) {
-      console.error('[Trendy menu] Sign out failed:', error);
-      signout.disabled = false;
-      signout.textContent = 'Sign Out';
-      alert(error.message || 'Unable to sign out. Please try again.');
-    }
-  });
-
-  updateAccount();
-  if (menuAuth) {
-    menuAuth.auth.onAuthStateChange(() => {
-      updateAccount();
-    });
-  }
-})();
-
 </script>
 </body></html>

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#090909">
 <title>TrendyBot 2.0 — Control Center</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 :root{
  --bg:#090909;--panel:#151515;--panel2:#1b1b1b;
@@ -298,11 +298,8 @@ footer{
 </footer>
 </div>
 
+<script src="./auth-client.js"></script>
 <script>
-const SUPABASE_URL='https://aqxmqymvsoyrxbgcuvam.supabase.co';
-const SUPABASE_KEY='sb_publishable_RIGjv2RpnCqqwvpfmH7xng_aw5Lw-rL';
-const authClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-
 let sessionId=sessionStorage.getItem('trendySessionId')||localStorage.getItem('trendySessionId');
 let sessionToken=sessionStorage.getItem('trendyAccessToken')||localStorage.getItem('trendyAccessToken');
 const $=id=>document.getElementById(id);
@@ -321,13 +318,7 @@ function apiBase(){
 function showError(message){$('alert').textContent=message||'';}
 
 async function getUserToken(){
- const {data,error}=await authClient.auth.getSession();
- if(error||!data.session?.access_token)
-  throw new Error('Your login session has expired. Please sign in again.');
- const user=data.session.user;
- if(!(user?.email_confirmed_at||user?.confirmed_at))
-  throw new Error('Please verify your email before using the dashboard.');
- return data.session.access_token;
+ return window.TrendyAuth.getAccessToken();
 }
 
 async function api(path,options={}){
@@ -704,19 +695,13 @@ $('disconnect').addEventListener('click',async()=>{
 });
 
 $('signout').addEventListener('click',async()=>{
- await authClient.auth.signOut();
+ await window.TrendyAuth.signOut();
  window.location.replace('./index.html');
 });
 
 (async()=>{
  try{
-  const {data,error}=await authClient.auth.getSession();
-  if(error||!data.session?.user)
-   throw new Error('Please sign in to access the dashboard.');
-
-  const user=data.session.user;
-  if(!(user.email_confirmed_at||user.confirmed_at))
-   throw new Error('Please verify your email before using the dashboard.');
+  await window.TrendyAuth.getAccessToken();
 
   if(!sessionId||!sessionToken){
    setConnection('not connected');
@@ -732,107 +717,6 @@ $('signout').addEventListener('click',async()=>{
   setTimeout(()=>window.location.replace('./index.html'),2200);
  }
 })();
-</script>
-<script>
-
-/* TRENDY_SHARED_MENU_AUTH */
-(() => {
-  const root = document.getElementById('tb-menu-root');
-  if (!root) return;
-
-  const toggle = document.getElementById('tb-menu-toggle');
-  const panel = document.getElementById('tb-menu-panel');
-  const accountLink = document.getElementById('tb-menu-account-link');
-  const accountBox = document.getElementById('tb-menu-account');
-  const nameNode = document.getElementById('tb-menu-name');
-  const emailNode = document.getElementById('tb-menu-email');
-  const signout = document.getElementById('tb-menu-signout');
-
-  let menuAuth = null;
-  try {
-    if (typeof client !== 'undefined') menuAuth = client;
-    else if (typeof authClient !== 'undefined') menuAuth = authClient;
-  } catch (_) {}
-
-  if (!menuAuth && window.supabase) {
-    const url = 'https://aqxmqymvsoyrxbgcuvam.supabase.co';
-    const key = 'sb_publishable_RIGjv2RpnCqqwvpfmH7xng_aw5Lw-rL';
-    menuAuth = window.supabase.createClient(url, key);
-  }
-
-  const closeMenu = () => {
-    panel.hidden = true;
-    toggle.setAttribute('aria-expanded', 'false');
-    toggle.setAttribute('aria-label', 'Open navigation menu');
-  };
-
-  toggle.addEventListener('click', () => {
-    const opening = panel.hidden;
-    panel.hidden = !opening;
-    toggle.setAttribute('aria-expanded', String(opening));
-    toggle.setAttribute('aria-label', opening ? 'Close navigation menu' : 'Open navigation menu');
-  });
-
-  document.addEventListener('click', event => {
-    if (!root.contains(event.target)) closeMenu();
-  });
-
-  document.addEventListener('keydown', event => {
-    if (event.key === 'Escape') closeMenu();
-  });
-
-  async function updateAccount() {
-    if (!menuAuth) return;
-    try {
-      const { data, error } = await menuAuth.auth.getSession();
-      if (error) throw error;
-      const user = data.session && data.session.user;
-
-      if (!user) {
-        accountLink.hidden = false;
-        accountBox.hidden = true;
-        return;
-      }
-
-      const metadata = user.user_metadata || {};
-      const displayName = metadata.full_name || metadata.name ||
-        metadata.preferred_username || user.email || 'Signed-in account';
-
-      nameNode.textContent = displayName;
-      emailNode.textContent = user.email || '';
-      accountLink.hidden = true;
-      accountBox.hidden = false;
-    } catch (error) {
-      console.warn('[Trendy menu] Account status unavailable:', error.message);
-      accountLink.hidden = false;
-      accountBox.hidden = true;
-    }
-  }
-
-  signout.addEventListener('click', async () => {
-    signout.disabled = true;
-    signout.textContent = 'Signing out...';
-    try {
-      if (!menuAuth) throw new Error('Authentication is unavailable.');
-      const { error } = await menuAuth.auth.signOut();
-      if (error) throw error;
-      window.location.replace('./index.html');
-    } catch (error) {
-      console.error('[Trendy menu] Sign out failed:', error);
-      signout.disabled = false;
-      signout.textContent = 'Sign Out';
-      alert(error.message || 'Unable to sign out. Please try again.');
-    }
-  });
-
-  updateAccount();
-  if (menuAuth) {
-    menuAuth.auth.onAuthStateChange(() => {
-      updateAccount();
-    });
-  }
-})();
-
 </script>
 </body>
 </html>
