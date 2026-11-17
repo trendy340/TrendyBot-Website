@@ -164,6 +164,35 @@ footer{
 #tb-menu-signout{margin-top:8px;color:#f1d99e}
 @media(max-width:480px){#tb-menu-root{right:14px;bottom:14px}#tb-menu-toggle{width:50px;height:50px}}
 
+
+.autoreply-panel{margin-top:12px}
+.autoreply-heading,.autoreply-list-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.autoreply-heading h2{margin-bottom:5px}
+.autoreply-toggle{display:flex;align-items:center;gap:8px;font-size:12px;white-space:nowrap}
+.autoreply-toggle input{accent-color:var(--gold);width:17px;height:17px}
+.autoreply-note{margin:12px 0;padding:10px;border:1px solid var(--line);border-radius:9px;background:var(--panel2)}
+.autoreply-form{margin:13px 0}
+.autoreply-fields{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:12px}
+.autoreply-fields label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted)}
+.autoreply-fields input,.autoreply-fields textarea{width:100%;box-sizing:border-box;background:var(--panel2);color:inherit;border:1px solid var(--line);border-radius:8px;padding:10px;font:inherit;font-size:13px}
+.autoreply-fields textarea{resize:vertical;min-height:76px}
+.autoreply-form>.btn{margin-top:10px}
+.autoreply-list-heading{margin:17px 0 9px}
+.autoreply-rules{display:grid;gap:8px}
+.autoreply-rule{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:11px;border:1px solid var(--line);border-radius:9px;background:var(--panel2);min-width:0}
+.autoreply-rule-content{min-width:0;overflow-wrap:anywhere}
+.autoreply-rule-content strong{display:block;color:var(--gold2);font-size:13px;margin-bottom:5px}
+.autoreply-rule-content p{font-size:12px;color:var(--muted);white-space:pre-wrap;overflow-wrap:anywhere;margin:0}
+.autoreply-rule .btn{flex-shrink:0}
+.autoreply-feedback{margin-top:10px;min-height:16px;color:var(--green)}
+.autoreply-feedback.error{color:var(--red)}
+@media(max-width:600px){
+ .autoreply-fields{grid-template-columns:1fr;gap:10px}
+ .autoreply-heading{align-items:flex-start}
+ .autoreply-rule{gap:8px;padding:9px}
+ .autoreply-rule .btn{padding:7px 9px}
+}
+
 </style>
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
@@ -281,6 +310,49 @@ footer{
   <div class="small">Only command names and timestamps are displayed.</div>
  </section>
 </div>
+
+
+<section class="panel autoreply-panel" id="autoReplyPanel">
+ <div class="autoreply-heading">
+  <div>
+   <h2>✦ AUTO-REPLY MANAGER</h2>
+   <div class="small">Create keyword responses for your private WhatsApp chats.</div>
+  </div>
+  <label class="autoreply-toggle">
+   <input type="checkbox" id="autoReplyEnabled">
+   <span>Enabled</span>
+  </label>
+ </div>
+
+ <div class="small autoreply-note">
+  Matching is case-insensitive and uses substring matching. Each WhatsApp session has its own rules.
+ </div>
+
+ <form id="autoReplyForm" class="autoreply-form">
+  <div class="autoreply-fields">
+   <label>
+    <span>Keyword</span>
+    <input id="autoReplyKeyword" type="text" maxlength="80"
+     placeholder="e.g. price" required>
+   </label>
+   <label>
+    <span>Automatic response</span>
+    <textarea id="autoReplyResponse" maxlength="1500" rows="3"
+     placeholder="Enter the reply TrendyBot should send…" required></textarea>
+   </label>
+  </div>
+  <button class="btn" id="autoReplySave" type="submit">＋ Save keyword</button>
+ </form>
+
+ <div class="autoreply-list-heading">
+  <strong>Saved keywords</strong>
+  <span class="small" id="autoReplyCount">Loading…</span>
+ </div>
+ <div class="autoreply-rules" id="autoReplyRules" aria-live="polite">
+  <div class="empty">Loading auto-reply rules…</div>
+ </div>
+ <div class="small autoreply-feedback" id="autoReplyFeedback" role="status" aria-live="polite"></div>
+</section>
 
 <section class="privacy">
  <h2>🔒 Your conversations are private</h2>
@@ -563,6 +635,150 @@ async function loadCommands(){
  renderCommands(result.commands,result.mode);
 }
 
+
+let autoReplyBusy = false;
+
+function setAutoReplyFeedback(message, isError=false){
+ const feedback=$('autoReplyFeedback');
+ feedback.textContent=message||'';
+ feedback.classList.toggle('error',Boolean(isError));
+}
+
+function renderAutoReplies(settings){
+ const rules=Array.isArray(settings?.rules)?settings.rules:[];
+ $('autoReplyEnabled').checked=settings?.enabled===true;
+ $('autoReplyCount').textContent=rules.length+' / 100 rules';
+
+ const container=$('autoReplyRules');
+ container.replaceChildren();
+
+ if(!rules.length){
+  const empty=document.createElement('div');
+  empty.className='empty';
+  empty.textContent='No keyword responses saved yet.';
+  container.append(empty);
+  return;
+ }
+
+ rules.forEach(rule=>{
+  const row=document.createElement('div');
+  row.className='autoreply-rule';
+
+  const content=document.createElement('div');
+  content.className='autoreply-rule-content';
+
+  const keyword=document.createElement('strong');
+  keyword.textContent=rule.keyword||'Unnamed keyword';
+
+  const response=document.createElement('p');
+  response.textContent=rule.response||'';
+
+  const remove=document.createElement('button');
+  remove.type='button';
+  remove.className='btn';
+  remove.textContent='Remove';
+  remove.setAttribute('aria-label','Remove keyword '+(rule.keyword||''));
+  remove.addEventListener('click',()=>removeAutoReply(rule.keyword,remove));
+
+  content.append(keyword,response);
+  row.append(content,remove);
+  container.append(row);
+ });
+}
+
+async function loadAutoReplies(){
+ const result=await api('/api/sessions/'+encodeURIComponent(sessionId)+'/autoreplies');
+ if(!result.settings)throw new Error('The API did not return auto-reply settings.');
+ renderAutoReplies(result.settings);
+}
+
+function setAutoReplyBusy(value){
+ autoReplyBusy=Boolean(value);
+ $('autoReplyEnabled').disabled=autoReplyBusy;
+ $('autoReplySave').disabled=autoReplyBusy;
+ $('autoReplyRules').querySelectorAll('button').forEach(button=>{
+  button.disabled=autoReplyBusy;
+ });
+}
+
+async function removeAutoReply(keyword,button){
+ if(autoReplyBusy)return;
+ if(!confirm('Remove the auto-reply keyword "'+keyword+'"?'))return;
+
+ setAutoReplyBusy(true);
+ button.disabled=true;
+ setAutoReplyFeedback('');
+
+ try{
+  const result=await api('/api/sessions/'+encodeURIComponent(sessionId)+'/autoreplies',{
+   method:'DELETE',
+   body:JSON.stringify({keyword})
+  });
+  renderAutoReplies(result);
+  setAutoReplyFeedback(result.removed?'Keyword removed.':'That keyword was not found.');
+ }catch(error){
+  setAutoReplyFeedback(error.message||'Could not remove this keyword.',true);
+ }finally{
+  setAutoReplyBusy(false);
+ }
+}
+
+$('autoReplyForm').addEventListener('submit',async event=>{
+ event.preventDefault();
+ if(autoReplyBusy)return;
+
+ const keyword=$('autoReplyKeyword').value.trim();
+ const response=$('autoReplyResponse').value.trim();
+
+ if(!keyword||!response){
+  setAutoReplyFeedback('Enter both a keyword and a response.',true);
+  return;
+ }
+
+ setAutoReplyBusy(true);
+ setAutoReplyFeedback('');
+
+ try{
+  const result=await api('/api/sessions/'+encodeURIComponent(sessionId)+'/autoreplies',{
+   method:'POST',
+   body:JSON.stringify({keyword,response})
+  });
+
+  renderAutoReplies(result.settings);
+  $('autoReplyKeyword').value='';
+  $('autoReplyResponse').value='';
+  setAutoReplyFeedback('Keyword saved successfully.');
+ }catch(error){
+  setAutoReplyFeedback(error.message||'Could not save this keyword.',true);
+ }finally{
+  setAutoReplyBusy(false);
+ }
+});
+
+$('autoReplyEnabled').addEventListener('change',async event=>{
+ if(autoReplyBusy)return;
+
+ const input=event.target;
+ const enabled=input.checked;
+ input.checked=!enabled;
+ setAutoReplyBusy(true);
+ setAutoReplyFeedback('');
+
+ try{
+  const result=await api('/api/sessions/'+encodeURIComponent(sessionId)+'/autoreplies/enabled',{
+   method:'POST',
+   body:JSON.stringify({enabled})
+  });
+  renderAutoReplies(result.settings);
+  setAutoReplyFeedback(enabled?'Auto-replies enabled.':'Auto-replies disabled.');
+ }catch(error){
+  setAutoReplyFeedback(error.message||'Could not update auto-reply settings.',true);
+  await loadAutoReplies().catch(()=>{});
+ }finally{
+  setAutoReplyBusy(false);
+ }
+});
+
 async function refresh(){
  if(busy)return;
  busy=true;
@@ -596,7 +812,7 @@ async function refresh(){
    return;
   }
 
-  const results=await Promise.allSettled([loadStats(),loadCommands()]);
+  const results=await Promise.allSettled([loadStats(),loadCommands(),loadAutoReplies()]);
   const failures=results.filter(item=>item.status==='rejected');
   if(failures.length){
    showError(failures.map(item=>item.reason?.message||'Dashboard data unavailable').join(' • '));
