@@ -186,6 +186,15 @@ footer{
 .autoreply-rule .btn{flex-shrink:0}
 .autoreply-feedback{margin-top:10px;min-height:16px;color:var(--green)}
 .autoreply-feedback.error{color:var(--red)}
+.away-message-panel{margin-top:12px}
+.away-message-fields{display:grid;gap:10px;margin:14px 0}
+.away-message-fields label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted)}
+.away-message-fields textarea{width:100%;box-sizing:border-box;background:var(--panel2);color:inherit;border:1px solid var(--line);border-radius:8px;padding:10px;font:inherit;font-size:13px;resize:vertical;min-height:100px}
+.away-message-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.away-message-feedback{margin-top:10px;min-height:16px;color:var(--green)}
+.away-message-feedback.error{color:var(--red)}
+.away-message-toggle{display:flex;align-items:center;gap:8px;font-size:12px;white-space:nowrap}
+.away-message-toggle input{accent-color:var(--gold);width:17px;height:17px}
 @media(max-width:600px){
  .autoreply-fields{grid-template-columns:1fr;gap:10px}
  .autoreply-heading{align-items:flex-start}
@@ -352,6 +361,33 @@ footer{
   <div class="empty">Loading auto-reply rules…</div>
  </div>
  <div class="small autoreply-feedback" id="autoReplyFeedback" role="status" aria-live="polite"></div>
+</section>
+
+<section class="panel away-message-panel" id="awayMessagePanel">
+ <div class="autoreply-heading">
+  <div>
+   <h2>◷ AWAY MESSAGE MANAGER</h2>
+   <div class="small">Automatically greet private contacts when you're away.</div>
+  </div>
+  <label class="away-message-toggle">
+   <input type="checkbox" id="awayMessageEnabled">
+   <span>Enabled</span>
+  </label>
+ </div>
+ <div class="small autoreply-note">
+  Each contact receives your away message at most once every 24 hours. Cooldowns are separate for each WhatsApp session and survive restarts. Keyword auto-replies take priority.
+ </div>
+ <div class="away-message-fields">
+  <label>
+   <span>Your away message</span>
+   <textarea id="awayMessageText" maxlength="1500" rows="4" placeholder="Enter your away message…"></textarea>
+  </label>
+ </div>
+ <div class="away-message-actions">
+  <button class="btn" id="awayMessageSave" type="button">＋ Save away message</button>
+  <span class="small" id="awayMessageLength">0 / 1500</span>
+ </div>
+ <div class="away-message-feedback" id="awayMessageFeedback" role="status" aria-live="polite"></div>
 </section>
 
 <section class="privacy">
@@ -779,6 +815,82 @@ $('autoReplyEnabled').addEventListener('change',async event=>{
  }
 });
 
+
+let awayMessageBusy = false;
+
+function setAwayMessageFeedback(message, isError=false){
+ const feedback=$('awayMessageFeedback');
+ feedback.textContent=message||'';
+ feedback.classList.toggle('error',Boolean(isError));
+}
+
+function renderAwayMessage(settings){
+ $('awayMessageEnabled').checked=settings?.enabled===true;
+ $('awayMessageText').value=settings?.message||'';
+ $('awayMessageLength').textContent=$('awayMessageText').value.length+' / 1500';
+}
+
+async function loadAwayMessage(){
+ const result=await api('/api/sessions/'+encodeURIComponent(sessionId)+'/away');
+ if(!result.settings)throw new Error('The API did not return away-message settings.');
+ renderAwayMessage(result.settings);
+}
+
+$('awayMessageText').addEventListener('input',()=>{
+ $('awayMessageLength').textContent=$('awayMessageText').value.length+' / 1500';
+});
+
+$('awayMessageSave').addEventListener('click',async()=>{
+ if(awayMessageBusy)return;
+ const message=$('awayMessageText').value.trim();
+ if(!message){
+  setAwayMessageFeedback('Enter an away message before saving.',true);
+  return;
+ }
+ awayMessageBusy=true;
+ $('awayMessageSave').disabled=true;
+ $('awayMessageEnabled').disabled=true;
+ setAwayMessageFeedback('');
+ try{
+  const result=await api('/api/sessions/'+encodeURIComponent(sessionId)+'/away',{
+   method:'POST',body:JSON.stringify({message})
+  });
+  renderAwayMessage(result.settings);
+  setAwayMessageFeedback('Away message saved successfully.');
+ }catch(error){
+  setAwayMessageFeedback(error.message||'Could not save the away message.',true);
+ }finally{
+  awayMessageBusy=false;
+  $('awayMessageSave').disabled=false;
+  $('awayMessageEnabled').disabled=false;
+ }
+});
+
+$('awayMessageEnabled').addEventListener('change',async event=>{
+ if(awayMessageBusy)return;
+ const input=event.target;
+ const enabled=input.checked;
+ input.checked=!enabled;
+ awayMessageBusy=true;
+ $('awayMessageSave').disabled=true;
+ input.disabled=true;
+ setAwayMessageFeedback('');
+ try{
+  const result=await api('/api/sessions/'+encodeURIComponent(sessionId)+'/away/enabled',{
+   method:'POST',body:JSON.stringify({enabled})
+  });
+  renderAwayMessage(result.settings);
+  setAwayMessageFeedback(enabled?'Away messages enabled.':'Away messages disabled.');
+ }catch(error){
+  setAwayMessageFeedback(error.message||'Could not update away-message settings.',true);
+  await loadAwayMessage().catch(()=>{});
+ }finally{
+  awayMessageBusy=false;
+  $('awayMessageSave').disabled=false;
+  input.disabled=false;
+ }
+});
+
 async function refresh(){
  if(busy)return;
  busy=true;
@@ -812,7 +924,7 @@ async function refresh(){
    return;
   }
 
-  const results=await Promise.allSettled([loadStats(),loadCommands(),loadAutoReplies()]);
+  const results=await Promise.allSettled([loadStats(),loadCommands(),loadAutoReplies(),loadAwayMessage()]);
   const failures=results.filter(item=>item.status==='rejected');
   if(failures.length){
    showError(failures.map(item=>item.reason?.message||'Dashboard data unavailable').join(' • '));
