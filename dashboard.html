@@ -436,30 +436,21 @@ footer{
 
  <div class="welcome-button-grid">
   <div class="welcome-button-editor">
-   <strong>BUTTON 1</strong>
-   <label>Button label
-    <input id="welcomeButton1Label" type="text" maxlength="25" placeholder="e.g. Our Services">
-   </label>
+   <strong>BUTTON 1 · OUR SERVICES</strong>
+   <p class="small">Fixed button label. Edit the reply sent when a customer selects it.</p>
    <label>Button response
-    <textarea id="welcomeButton1Response" maxlength="1500" rows="3" placeholder="Reply sent when selected..."></textarea>
+    <textarea id="welcomeButton1Response" maxlength="1500" rows="3" placeholder="Describe your services..."></textarea>
    </label>
   </div>
   <div class="welcome-button-editor">
-   <strong>BUTTON 2</strong>
-   <label>Button label
-    <input id="welcomeButton2Label" type="text" maxlength="25" placeholder="e.g. View Categories">
-   </label>
-   <label>Button response
-    <textarea id="welcomeButton2Response" maxlength="1500" rows="3" placeholder="Reply sent when selected..."></textarea>
-   </label>
+   <strong>BUTTON 2 · VIEW CATEGORIES</strong>
+   <p class="small">Fixed action. Opens your live catalogue categories and products. No reply text needed.</p>
   </div>
   <div class="welcome-button-editor">
-   <strong>BUTTON 3</strong>
-   <label>Button label
-    <input id="welcomeButton3Label" type="text" maxlength="25" placeholder="e.g. Contact Support">
-   </label>
+   <strong>BUTTON 3 · CONTACT SUPPORT</strong>
+   <p class="small">Fixed button label. Edit the reply sent when a customer selects it.</p>
    <label>Button response
-    <textarea id="welcomeButton3Response" maxlength="1500" rows="3" placeholder="Reply sent when selected..."></textarea>
+    <textarea id="welcomeButton3Response" maxlength="1500" rows="3" placeholder="Explain how customers can contact support..."></textarea>
    </label>
   </div>
  </div>
@@ -986,11 +977,10 @@ function renderWelcomeMessage(settings){
  $('welcomeMessageLength').textContent=$('welcomeMessageText').value.length+' / 1500';
 
  const buttons=Array.isArray(settings?.buttons)?settings.buttons:[];
- for(let i=0;i<3;i++){
-  const button=buttons[i]||{};
-  $('welcomeButton'+(i+1)+'Label').value=button.label||'';
-  $('welcomeButton'+(i+1)+'Response').value=button.response||'';
- }
+ const byId=id=>buttons.find(button=>button?.id===id)||{};
+
+ $('welcomeButton1Response').value=byId('trendy_welcome_1').response||buttons[0]?.response||'';
+ $('welcomeButton3Response').value=byId('trendy_welcome_3').response||buttons[2]?.response||'';
 }
 
 async function loadWelcomeMessage(){
@@ -1004,10 +994,8 @@ function setWelcomeMessageBusy(value){
  $('welcomeMessageSave').disabled=welcomeMessageBusy;
  $('welcomeMessageEnabled').disabled=welcomeMessageBusy;
  $('welcomeMessageText').disabled=welcomeMessageBusy;
- for(let i=1;i<=3;i++){
-  $('welcomeButton'+i+'Label').disabled=welcomeMessageBusy;
-  $('welcomeButton'+i+'Response').disabled=welcomeMessageBusy;
- }
+ $('welcomeButton1Response').disabled=welcomeMessageBusy;
+ $('welcomeButton3Response').disabled=welcomeMessageBusy;
 }
 
 $('welcomeMessageText').addEventListener('input',()=>{
@@ -1023,18 +1011,11 @@ $('welcomeMessageSave').addEventListener('click',async()=>{
   return;
  }
 
- const buttons=[];
- for(let i=1;i<=3;i++){
-  const label=$('welcomeButton'+i+'Label').value.trim();
-  const response=$('welcomeButton'+i+'Response').value.trim();
-
-  if(!label&&!response)continue;
-  if(!label||!response){
-   setWelcomeMessageFeedback('Complete both the label and response for button '+i+', or leave both empty.',true);
-   return;
-  }
-  buttons.push({label,response});
- }
+ const buttons=[
+  {label:'Our Services',response:$('welcomeButton1Response').value.trim()},
+  {label:'View Categories',response:''},
+  {label:'Contact Support',response:$('welcomeButton3Response').value.trim()}
+ ];
 
  setWelcomeMessageBusy(true);
  setWelcomeMessageFeedback('');
@@ -1046,7 +1027,7 @@ $('welcomeMessageSave').addEventListener('click',async()=>{
   });
 
   renderWelcomeMessage(result.settings);
-  setWelcomeMessageFeedback('Welcome message and buttons saved successfully.');
+  setWelcomeMessageFeedback('Welcome message and fixed buttons saved successfully.');
  }catch(error){
   setWelcomeMessageFeedback(error.message||'Could not save the welcome message.',true);
  }finally{
