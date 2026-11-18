@@ -195,6 +195,20 @@ footer{
 .away-message-feedback.error{color:var(--red)}
 .away-message-toggle{display:flex;align-items:center;gap:8px;font-size:12px;white-space:nowrap}
 .away-message-toggle input{accent-color:var(--gold);width:17px;height:17px}
+.welcome-message-panel{margin-top:12px}
+.welcome-message-fields{display:grid;gap:12px;margin:14px 0}
+.welcome-message-fields label,.welcome-button-editor label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted)}
+.welcome-message-fields textarea,.welcome-button-editor input,.welcome-button-editor textarea{width:100%;box-sizing:border-box;background:var(--panel2);color:inherit;border:1px solid var(--line);border-radius:8px;padding:10px;font:inherit;font-size:13px}
+.welcome-message-fields textarea,.welcome-button-editor textarea{resize:vertical;min-height:76px}
+.welcome-button-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.welcome-button-editor{min-width:0;padding:12px;border:1px solid var(--line);border-radius:9px;background:var(--panel2);display:grid;gap:9px}
+.welcome-button-editor strong{font-size:12px;color:var(--gold2)}
+.welcome-message-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.welcome-message-feedback{margin-top:10px;min-height:16px;color:var(--green)}
+.welcome-message-feedback.error{color:var(--red)}
+.welcome-message-toggle{display:flex;align-items:center;gap:8px;font-size:12px;white-space:nowrap}
+.welcome-message-toggle input{accent-color:var(--gold);width:17px;height:17px}
+@media(max-width:700px){.welcome-button-grid{grid-template-columns:1fr}.welcome-message-panel .autoreply-heading{align-items:flex-start}}
 @media(max-width:600px){
  .autoreply-fields{grid-template-columns:1fr;gap:10px}
  .autoreply-heading{align-items:flex-start}
@@ -217,6 +231,7 @@ footer{
     <nav class="tb-menu-links">
       <a href="./index.html">Home</a>
       <a href="./preview.html">Public Preview</a>
+      <a href="./catalog.html">Catalog Manager</a>
       <a href="./dashboard.html">Live Dashboard</a>
       <a href="./connect.html">Connect WhatsApp</a>
       <a id="tb-menu-account-link" href="./index.html">Sign In / Create Account</a>
@@ -235,6 +250,7 @@ footer{
  <a class="brand" href="./index.html">TRENDY<span>BOT</span> 2.0</a>
  <div class="navlinks">
   <a class="btn" href="./preview.html">Public Preview</a>
+  <a class="btn" href="./catalog.html">Catalog Manager</a>
   <a class="btn" href="./connect.html">Connect WhatsApp</a>
   <button class="btn" id="signout">Sign out</button>
  </div>
@@ -388,6 +404,71 @@ footer{
   <span class="small" id="awayMessageLength">0 / 1500</span>
  </div>
  <div class="away-message-feedback" id="awayMessageFeedback" role="status" aria-live="polite"></div>
+</section>
+
+<section class="panel welcome-message-panel" id="welcomeMessagePanel">
+ <div class="autoreply-heading">
+  <div>
+   <h2>✦ WELCOME MESSAGE MANAGER</h2>
+   <div class="small">Customize the greeting and interactive options sent to new private contacts.</div>
+  </div>
+  <label class="welcome-message-toggle">
+   <input type="checkbox" id="welcomeMessageEnabled">
+   <span>Enabled</span>
+  </label>
+ </div>
+
+ <div class="small autoreply-note">
+  Each contact receives this greeting at most once every 24 hours. The cooldown is separate for each WhatsApp session and survives restarts. You can configure up to three buttons with individual replies.
+ </div>
+
+ <div class="welcome-message-fields">
+  <label>
+   <span>Welcome message</span>
+   <textarea id="welcomeMessageText" maxlength="1500" rows="4" placeholder="Welcome! Thanks for messaging us..."></textarea>
+  </label>
+ </div>
+
+ <div class="autoreply-list-heading">
+  <strong>Interactive buttons</strong>
+  <span class="small">Up to 3 options</span>
+ </div>
+
+ <div class="welcome-button-grid">
+  <div class="welcome-button-editor">
+   <strong>BUTTON 1</strong>
+   <label>Button label
+    <input id="welcomeButton1Label" type="text" maxlength="25" placeholder="e.g. Our Services">
+   </label>
+   <label>Button response
+    <textarea id="welcomeButton1Response" maxlength="1500" rows="3" placeholder="Reply sent when selected..."></textarea>
+   </label>
+  </div>
+  <div class="welcome-button-editor">
+   <strong>BUTTON 2</strong>
+   <label>Button label
+    <input id="welcomeButton2Label" type="text" maxlength="25" placeholder="e.g. View Categories">
+   </label>
+   <label>Button response
+    <textarea id="welcomeButton2Response" maxlength="1500" rows="3" placeholder="Reply sent when selected..."></textarea>
+   </label>
+  </div>
+  <div class="welcome-button-editor">
+   <strong>BUTTON 3</strong>
+   <label>Button label
+    <input id="welcomeButton3Label" type="text" maxlength="25" placeholder="e.g. Contact Support">
+   </label>
+   <label>Button response
+    <textarea id="welcomeButton3Response" maxlength="1500" rows="3" placeholder="Reply sent when selected..."></textarea>
+   </label>
+  </div>
+ </div>
+
+ <div class="welcome-message-actions" style="margin-top:14px">
+  <button class="btn" id="welcomeMessageSave" type="button">＋ Save welcome message</button>
+  <span class="small" id="welcomeMessageLength">0 / 1500</span>
+ </div>
+ <div class="welcome-message-feedback" id="welcomeMessageFeedback" role="status" aria-live="polite"></div>
 </section>
 
 <section class="privacy">
@@ -891,6 +972,114 @@ $('awayMessageEnabled').addEventListener('change',async event=>{
  }
 });
 
+let welcomeMessageBusy = false;
+
+function setWelcomeMessageFeedback(message, isError=false){
+ const feedback=$('welcomeMessageFeedback');
+ feedback.textContent=message||'';
+ feedback.classList.toggle('error',Boolean(isError));
+}
+
+function renderWelcomeMessage(settings){
+ $('welcomeMessageEnabled').checked=settings?.enabled===true;
+ $('welcomeMessageText').value=settings?.message||'';
+ $('welcomeMessageLength').textContent=$('welcomeMessageText').value.length+' / 1500';
+
+ const buttons=Array.isArray(settings?.buttons)?settings.buttons:[];
+ for(let i=0;i<3;i++){
+  const button=buttons[i]||{};
+  $('welcomeButton'+(i+1)+'Label').value=button.label||'';
+  $('welcomeButton'+(i+1)+'Response').value=button.response||'';
+ }
+}
+
+async function loadWelcomeMessage(){
+ const result=await api('/api/sessions/'+encodeURIComponent(sessionId)+'/welcome');
+ if(!result.settings)throw new Error('The API did not return welcome-message settings.');
+ renderWelcomeMessage(result.settings);
+}
+
+function setWelcomeMessageBusy(value){
+ welcomeMessageBusy=Boolean(value);
+ $('welcomeMessageSave').disabled=welcomeMessageBusy;
+ $('welcomeMessageEnabled').disabled=welcomeMessageBusy;
+ $('welcomeMessageText').disabled=welcomeMessageBusy;
+ for(let i=1;i<=3;i++){
+  $('welcomeButton'+i+'Label').disabled=welcomeMessageBusy;
+  $('welcomeButton'+i+'Response').disabled=welcomeMessageBusy;
+ }
+}
+
+$('welcomeMessageText').addEventListener('input',()=>{
+ $('welcomeMessageLength').textContent=$('welcomeMessageText').value.length+' / 1500';
+});
+
+$('welcomeMessageSave').addEventListener('click',async()=>{
+ if(welcomeMessageBusy)return;
+
+ const message=$('welcomeMessageText').value.trim();
+ if(!message){
+  setWelcomeMessageFeedback('Enter a welcome message before saving.',true);
+  return;
+ }
+
+ const buttons=[];
+ for(let i=1;i<=3;i++){
+  const label=$('welcomeButton'+i+'Label').value.trim();
+  const response=$('welcomeButton'+i+'Response').value.trim();
+
+  if(!label&&!response)continue;
+  if(!label||!response){
+   setWelcomeMessageFeedback('Complete both the label and response for button '+i+', or leave both empty.',true);
+   return;
+  }
+  buttons.push({label,response});
+ }
+
+ setWelcomeMessageBusy(true);
+ setWelcomeMessageFeedback('');
+
+ try{
+  const result=await api('/api/sessions/'+encodeURIComponent(sessionId)+'/welcome',{
+   method:'POST',
+   body:JSON.stringify({message,buttons})
+  });
+
+  renderWelcomeMessage(result.settings);
+  setWelcomeMessageFeedback('Welcome message and buttons saved successfully.');
+ }catch(error){
+  setWelcomeMessageFeedback(error.message||'Could not save the welcome message.',true);
+ }finally{
+  setWelcomeMessageBusy(false);
+ }
+});
+
+$('welcomeMessageEnabled').addEventListener('change',async event=>{
+ if(welcomeMessageBusy)return;
+
+ const input=event.target;
+ const enabled=input.checked;
+ input.checked=!enabled;
+
+ setWelcomeMessageBusy(true);
+ setWelcomeMessageFeedback('');
+
+ try{
+  const result=await api('/api/sessions/'+encodeURIComponent(sessionId)+'/welcome/enabled',{
+   method:'POST',
+   body:JSON.stringify({enabled})
+  });
+
+  renderWelcomeMessage(result.settings);
+  setWelcomeMessageFeedback(enabled?'Welcome messages enabled.':'Welcome messages disabled.');
+ }catch(error){
+  setWelcomeMessageFeedback(error.message||'Could not update welcome-message settings.',true);
+  await loadWelcomeMessage().catch(()=>{});
+ }finally{
+  setWelcomeMessageBusy(false);
+ }
+});
+
 async function refresh(){
  if(busy)return;
  busy=true;
@@ -924,7 +1113,7 @@ async function refresh(){
    return;
   }
 
-  const results=await Promise.allSettled([loadStats(),loadCommands(),loadAutoReplies(),loadAwayMessage()]);
+  const results=await Promise.allSettled([loadStats(),loadCommands(),loadAutoReplies(),loadAwayMessage(),loadWelcomeMessage()]);
   const failures=results.filter(item=>item.status==='rejected');
   if(failures.length){
    showError(failures.map(item=>item.reason?.message||'Dashboard data unavailable').join(' • '));

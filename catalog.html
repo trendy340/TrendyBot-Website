@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#111111">
+<title>Catalog Manager — TrendyBot 2.0</title>
+<style>
+:root{color-scheme:dark;--bg:#0b0b0b;--panel:#171717;--panel2:#101010;--line:#30291e;--gold:#c9a45e;--gold2:#f1d99e;--muted:#aaa397;--green:#62d69a;--red:#ff7777}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#211a10 0,#0b0b0b 48%);color:#f5f1e8;font:14px Inter,system-ui,Arial,sans-serif;min-height:100vh}.wrap{width:min(1120px,calc(100% - 32px));margin:auto}a{color:inherit;text-decoration:none}button,input,textarea,select{font:inherit}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}.brand{font-weight:900;letter-spacing:.08em}.brand span{color:var(--gold2)}.nav{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid #66532e;background:#211a10;color:var(--gold2);border-radius:9px;padding:9px 13px;font-size:12px;font-weight:750;cursor:pointer}.btn.primary{background:linear-gradient(120deg,#b88c42,#f1d99e);color:#17120a;border:0}.btn.danger{border-color:#713c36;color:#ffaaa2;background:#241311}.btn:disabled{opacity:.5;cursor:not-allowed}header{padding:28px 0 14px}.eyebrow{font-size:10px;letter-spacing:.2em;color:var(--gold);font-weight:900}h1{font-size:clamp(27px,5vw,40px);margin:7px 0}.muted,.small{color:var(--muted)}.small{font-size:11px;line-height:1.5}.notice{padding:12px 14px;border:1px solid var(--line);border-radius:11px;background:#17130d;color:#d9c9a7;margin:12px 0}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}.tab[aria-selected=true]{background:linear-gradient(120deg,#b88c42,#f1d99e);color:#17120a;border-color:transparent}.panel{background:linear-gradient(145deg,#1b1b1b,var(--panel));border:1px solid var(--line);border-radius:14px;padding:17px;margin:12px 0}.panel h2{font-size:13px;color:var(--gold2);margin:0 0 14px;letter-spacing:.05em}.layout{display:grid;grid-template-columns:minmax(260px,.8fr) minmax(0,1.5fr);gap:14px}.field{display:grid;gap:6px;margin:11px 0}.field label{font-size:12px;color:#d4c9b6}.field input,.field textarea,.field select{width:100%;background:#0d0d0d;border:1px solid #403728;border-radius:8px;padding:11px;color:#f5f1e8;outline:none}.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--gold)}.field textarea{min-height:82px;resize:vertical}.check{display:flex;align-items:center;gap:8px;margin:12px 0;color:#d4c9b6;font-size:12px}.check input{accent-color:var(--gold)}.list{display:grid;gap:8px}.item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;background:#101010;border:1px solid #302b24;border-radius:10px;min-width:0}.item-main{min-width:0;overflow-wrap:anywhere}.item strong{display:block;color:#f1d99e}.item p{margin:4px 0 0;color:var(--muted);font-size:11px;white-space:pre-wrap}.item-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.pill{display:inline-block;border:1px solid #51432b;border-radius:99px;padding:3px 8px;font-size:10px;color:var(--gold2);margin-top:6px}.empty{padding:18px;text-align:center;color:var(--muted);border:1px dashed #393126;border-radius:10px}.feedback{min-height:18px;color:var(--green);font-size:12px;margin-top:10px}.feedback.error{color:var(--red)}.hidden{display:none!important}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:650px}th,td{text-align:left;padding:11px 9px;border-bottom:1px solid #302b24;font-size:12px;vertical-align:top}th{color:var(--gold2);font-size:10px;letter-spacing:.08em}td{color:#ddd4c5}.status{font-size:10px;border-radius:99px;padding:4px 8px;border:1px solid #51432b;color:var(--gold2);white-space:nowrap}.status.pending{color:#f1d99e}.status.confirmed{color:#80dca8}.status.cancelled{color:#ff9999}.status.completed{color:#9dc5ff}.topline{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}.topline h2{margin:0}.foot{padding:20px 0;margin-top:24px;border-top:1px solid var(--line);color:#777;font-size:11px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+@media(max-width:760px){.layout{grid-template-columns:1fr}.wrap{width:calc(100% - 22px)}.panel{padding:13px}.top{align-items:flex-start}.item{align-items:flex-start;flex-direction:column}.item-actions{justify-content:flex-start}.nav{width:100%}.nav .btn{flex:1;text-align:center}}
+</style>
+<link rel="icon" href="/favicon.ico" sizes="any">
+</head>
+<body>
+<div class="wrap">
+<nav class="top"><a class="brand" href="./index.html">TRENDY<span>BOT</span> 2.0</a><div class="nav"><a class="btn" href="./dashboard.html">← Dashboard</a><a class="btn" href="./connect.html">WhatsApp session</a><button class="btn" id="signout">Sign out</button></div></nav>
+<header><div class="eyebrow">TRENDY CORE • STOREFRONT CONTROL</div><h1>Catalog <span style="color:var(--gold2)">Manager.</span></h1><p class="muted">Manage the products and categories customers see inside WhatsApp.</p></header>
+<div class="notice"><strong>Session:</strong> <span id="sessionLabel">Checking your saved WhatsApp session…</span><br><span class="small">Your catalog is isolated to this WhatsApp session. Changes here do not affect other connected sessions.</span></div>
+<div class="tabs" role="tablist"><button class="btn tab" data-tab="categories" aria-selected="true">Categories</button><button class="btn tab" data-tab="products" aria-selected="false">Products</button><button class="btn tab" data-tab="orders" aria-selected="false">Orders</button></div>
+<section id="categoriesTab">
+ <div class="layout"><section class="panel"><h2 id="categoryFormTitle">＋ CREATE CATEGORY</h2><form id="categoryForm"><input type="hidden" id="categoryId"><div class="field"><label for="categoryName">Category name</label><input id="categoryName" maxlength="80" required placeholder="e.g. Fashion"></div><div class="field"><label for="categoryDescription">Description (optional)</label><textarea id="categoryDescription" maxlength="1000" placeholder="Describe this category"></textarea></div><div class="field"><label for="categorySort">Display order</label><input id="categorySort" type="number" min="0" step="1" value="0"></div><label class="check"><input id="categoryActive" type="checkbox" checked> Category enabled</label><div class="nav"><button class="btn primary" type="submit" id="categorySave">Save category</button><button class="btn hidden" type="button" id="categoryCancel">Cancel edit</button></div><div class="feedback" id="categoryFeedback" role="status"></div></form></section>
+ <section class="panel"><div class="topline"><h2>YOUR CATEGORIES</h2><button class="btn" id="refreshCategories">↻ Refresh</button></div><div class="list" id="categoryList"><div class="empty">Loading categories…</div></div><p class="small">Categories without active products are automatically hidden from customers in WhatsApp.</p></section></div>
+</section>
+<section id="productsTab" class="hidden"><div class="layout"><section class="panel"><h2 id="productFormTitle">＋ ADD PRODUCT</h2><form id="productForm"><input type="hidden" id="productId"><div class="field"><label for="productCategory">Category</label><select id="productCategory" required><option value="">Choose a category</option></select></div><div class="field"><label for="productName">Product name</label><input id="productName" maxlength="120" required placeholder="Product name"></div><div class="field"><label for="productPrice">Price</label><input id="productPrice" type="number" min="0" step="0.01" required placeholder="0.00"></div><div class="field"><label for="productCurrency">Currency (ISO code)</label><select id="productCurrency"><option value="NGN">NGN — Nigerian naira</option><option value="USD">USD — US dollar</option><option value="GBP">GBP — Pound sterling</option><option value="EUR">EUR — Euro</option></select></div><div class="field"><label for="productDescription">Full description</label><textarea id="productDescription" maxlength="5000" placeholder="Product details customers will receive in WhatsApp"></textarea></div><div class="field"><label for="productImageFile">Choose image from phone gallery</label><input id="productImageFile" type="file" accept="image/jpeg,image/png,image/webp"><p class="small">JPG, PNG or WebP • Maximum 5 MB. The image is securely uploaded before the product is saved.</p><div id="productImagePreviewWrap" class="hidden" style="margin-top:12px"><img id="productImagePreview" alt="Product image preview" style="display:block;max-width:180px;max-height:180px;object-fit:contain;border-radius:12px;border:1px solid var(--gold2);padding:4px"></div></div><div class="field"><label for="productImageUrl">Or image URL (HTTPS)</label><input id="productImageUrl" type="url" placeholder="https://…"></div><div class="field"><label for="productSort">Display order</label><input id="productSort" type="number" min="0" step="1" value="0"></div><label class="check"><input id="productActive" type="checkbox" checked> Product active and visible to customers</label><div class="nav"><button class="btn primary" type="submit" id="productSave">Save product</button><button class="btn hidden" type="button" id="productCancel">Cancel edit</button></div><div class="feedback" id="productFeedback" role="status"></div></form></section>
+ <section class="panel"><div class="topline"><h2>YOUR PRODUCTS</h2><button class="btn" id="refreshProducts">↻ Refresh</button></div><div class="field"><label for="productFilterCategory">Filter by category</label><select id="productFilterCategory"><option value="">Choose category</option></select></div><div class="list" id="productList"><div class="empty">Choose a category to view products.</div></div></section></div></section>
+<section id="ordersTab" class="hidden"><section class="panel"><div class="topline"><h2>CUSTOMER ORDERS</h2><div class="nav"><select id="orderStatusFilter" class="btn"><option value="">All statuses</option><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="cancelled">Cancelled</option><option value="completed">Completed</option></select><button class="btn" id="refreshOrders">↻ Refresh</button></div></div><div class="table-wrap"><table><thead><tr><th>ORDER</th><th>PRODUCT</th><th>CUSTOMER</th><th>QUANTITY</th><th>AMOUNT</th><th>STATUS</th><th>UPDATE</th></tr></thead><tbody id="ordersBody"><tr><td colspan="7" class="empty">Loading orders…</td></tr></tbody></table></div><div class="feedback" id="ordersFeedback" role="status"></div></section></section>
+<div class="feedback" id="globalFeedback" role="status"></div>
+<footer class="foot"><span>© TrendyBot 2.0 • Trendy Core</span><span>Built for speed. Designed for everyone.</span></footer>
+</div>
+<script src="./auth-client.js"></script>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const sessionId=sessionStorage.getItem('trendySessionId')||localStorage.getItem('trendySessionId');
+const sessionToken=sessionStorage.getItem('trendyAccessToken')||localStorage.getItem('trendyAccessToken');
+const API_BASE_KEY='trendyApiBase';
+let categories=[];
+let products=[];
+let activeTab='categories';
+let productImagePreviewUrl=null;
+function apiBase(){return (window.TRENDY_API_BASE||localStorage.getItem(API_BASE_KEY)||'https://trendybot-connect-gateway.trendycreator380.workers.dev').trim().replace(/\/+$/,'');}
+async function api(path,options={}){
+ const token=await window.TrendyAuth.getAccessToken();
+ const response=await fetch(apiBase()+'/api/sessions/'+encodeURIComponent(sessionId)+'/catalog'+path,{...options,headers:{Authorization:'Bearer '+token,'X-Session-Token':sessionToken||'',...(options.body?{'Content-Type':'application/json'}:{}),...options.headers}});
+ let result;try{result=await response.json();}catch{throw new Error('The API returned an invalid response.');}
+ if(!response.ok||result.success===false){const e=new Error(result.error||'Request failed ('+response.status+').');e.status=response.status;throw e;}return result;
+}
+function feedback(id,message,error=false){const el=$(id);el.textContent=message||'';el.classList.toggle('error',!!error);}
+function node(tag,cls,text){const el=document.createElement(tag);if(cls)el.className=cls;if(text!==undefined)el.textContent=text;return el;}
+function money(value,currency){try{return new Intl.NumberFormat(undefined,{style:'currency',currency:currency||'NGN'}).format(Number(value));}catch{return (currency||'NGN')+' '+value;}}
+function resetCategoryForm(){ $('categoryForm').reset();$('categoryId').value='';$('categorySort').value='0';$('categoryActive').checked=true;$('categoryFormTitle').textContent='＋ CREATE CATEGORY';$('categorySave').textContent='Save category';$('categoryCancel').classList.add('hidden');feedback('categoryFeedback',''); }
+function clearProductImagePreview(){if(productImagePreviewUrl){URL.revokeObjectURL(productImagePreviewUrl);productImagePreviewUrl=null;}$('productImagePreview').removeAttribute('src');$('productImagePreviewWrap').classList.add('hidden');}
+function showProductImagePreview(src){clearProductImagePreview();if(!src)return;$('productImagePreview').src=src;$('productImagePreviewWrap').classList.remove('hidden');}
+function resetProductForm(){ $('productForm').reset();clearProductImagePreview();$('productId').value='';$('productSort').value='0';$('productActive').checked=true;$('productCurrency').value='NGN';$('productFormTitle').textContent='＋ ADD PRODUCT';$('productSave').textContent='Save product';$('productCancel').classList.add('hidden');feedback('productFeedback',''); }
+async function uploadProductImage(file){
+ const token=await window.TrendyAuth.getAccessToken();
+ const form=new FormData();
+ form.append('image',file);
+ const response=await fetch(apiBase()+'/api/sessions/'+encodeURIComponent(sessionId)+'/catalog/images',{
+  method:'POST',
+  headers:{Authorization:'Bearer '+token,'X-Session-Token':sessionToken||''},
+  body:form
+ });
+ let result;
+ try{result=await response.json();}catch{throw new Error('The image server returned an invalid response.');}
+ if(!response.ok||result.success===false)throw new Error(result.error||'Image upload failed ('+response.status+').');
+ if(!result.imageUrl)throw new Error('The image server did not return an image URL.');
+ return result.imageUrl;
+}
+function fillCategorySelects(){
+ const active=categories.filter(c=>c.is_active);
+ for(const id of ['productCategory','productFilterCategory']){const select=$(id);const previous=select.value;select.replaceChildren();select.append(node('option','',id==='productCategory'?'Choose a category':'Choose category'));for(const c of active){const o=node('option','',c.name);o.value=c.id;select.append(o);}if([...select.options].some(o=>o.value===previous))select.value=previous;}
+}
+function renderCategories(){const list=$('categoryList');list.replaceChildren();if(!categories.length){list.append(node('div','empty','No categories yet. Create your first category.'));fillCategorySelects();return;}
+ for(const c of categories){const item=node('div','item');const main=node('div','item-main');main.append(node('strong','',c.name));main.append(node('p','',c.description||'No description'));main.append(node('span','pill',`${Number(c.product_count??c.active_product_count??0)} active products • ${c.is_active?'Enabled':'Disabled'}`));const actions=node('div','item-actions');const edit=node('button','btn','Edit');edit.type='button';edit.addEventListener('click',()=>{ $('categoryId').value=c.id;$('categoryName').value=c.name;$('categoryDescription').value=c.description||'';$('categorySort').value=c.sort_order??0;$('categoryActive').checked=!!c.is_active;$('categoryFormTitle').textContent='✎ EDIT CATEGORY';$('categorySave').textContent='Update category';$('categoryCancel').classList.remove('hidden');$('categoryName').focus();});const del=node('button','btn danger','Delete');del.type='button';del.addEventListener('click',async()=>{if(!confirm(`Delete category “${c.name}” and its products?`))return;try{await api('/categories/'+encodeURIComponent(c.id),{method:'DELETE'});await loadCategories();resetCategoryForm();feedback('globalFeedback','Category deleted.');}catch(e){feedback('globalFeedback',e.message,true);}});actions.append(edit,del);item.append(main,actions);list.append(item);}
+ fillCategorySelects();}
+async function loadCategories(){const r=await api('/categories?includeInactive=true');categories=r.categories||[];renderCategories();}
+function renderProducts(){const list=$('productList');list.replaceChildren();if(!products.length){list.append(node('div','empty','No products found in this category.'));return;}
+ for(const p of products){const item=node('div','item');const main=node('div','item-main');main.append(node('strong','',p.name));main.append(node('p','',money(p.price,p.currency)));main.append(node('p','',p.description||'No description'));main.append(node('span','pill',p.is_active?'Active':'Disabled'));if(p.image_url){const image=node('img');image.src=p.image_url;image.alt=p.name+' product image';image.loading='lazy';image.style.cssText='display:block;width:100px;height:100px;object-fit:cover;border-radius:10px;margin:0 0 10px';image.addEventListener('error',()=>image.remove(),{once:true});main.append(image);}const actions=node('div','item-actions');const edit=node('button','btn','Edit');edit.type='button';edit.addEventListener('click',()=>{ $('productId').value=p.id;$('productCategory').value=p.category_id;$('productName').value=p.name;$('productPrice').value=p.price;$('productCurrency').value=p.currency||'NGN';$('productDescription').value=p.description||'';$('productImageUrl').value=p.image_url||'';clearProductImagePreview();if(p.image_url)showProductImagePreview(p.image_url);$('productSort').value=p.sort_order??0;$('productActive').checked=!!p.is_active;$('productFormTitle').textContent='✎ EDIT PRODUCT';$('productSave').textContent='Update product';$('productCancel').classList.remove('hidden');$('productName').focus();});const del=node('button','btn danger','Delete');del.type='button';del.addEventListener('click',async()=>{if(!confirm(`Delete product “${p.name}”?`))return;try{await api('/products/'+encodeURIComponent(p.id),{method:'DELETE'});await loadProducts();feedback('globalFeedback','Product deleted.');}catch(e){feedback('globalFeedback',e.message,true);}});actions.append(edit,del);item.append(main,actions);list.append(item);}
+}
+async function loadProducts(){const categoryId=$('productFilterCategory').value;if(!categoryId){products=[];renderProducts();return;}const r=await api('/categories/'+encodeURIComponent(categoryId)+'/products?includeInactive=true');products=r.products||[];renderProducts();}
+function renderOrders(orders){const body=$('ordersBody');body.replaceChildren();if(!orders.length){const tr=node('tr');const td=node('td','empty','No orders found.');td.colSpan=7;tr.append(td);body.append(tr);return;}
+ for(const o of orders){const tr=node('tr');const id=node('td','',String(o.id).slice(0,8));const product=node('td','',o.product_name);const customer=node('td','',o.customer_name||o.customer_jid||'WhatsApp customer');const qty=node('td','',String(o.quantity));const amount=node('td','',money(Number(o.product_price)*Number(o.quantity),o.product_currency));const statusCell=node('td');statusCell.append(node('span','status '+o.status,o.status));const update=node('td');const select=node('select','btn');for(const s of ['pending','confirmed','cancelled','completed']){const opt=node('option','',s);opt.value=s;select.append(opt);}select.value=o.status;const save=node('button','btn','Save');save.type='button';save.addEventListener('click',async()=>{save.disabled=true;try{await api('/orders/'+encodeURIComponent(o.id)+'/status',{method:'POST',body:JSON.stringify({status:select.value})});feedback('ordersFeedback','Order status updated.');await loadOrders();}catch(e){feedback('ordersFeedback',e.message,true);}finally{save.disabled=false;}});update.append(select,save);tr.append(id,product,customer,qty,amount,statusCell,update);body.append(tr);}
+}
+async function loadOrders(){feedback('ordersFeedback','');const status=$('orderStatusFilter').value;const query=new URLSearchParams({limit:'100',offset:'0'});if(status)query.set('status',status);const r=await api('/orders?'+query.toString());renderOrders(r.orders||[]);}
+$('categoryForm').addEventListener('submit',async e=>{e.preventDefault();const id=$('categoryId').value;const data={name:$('categoryName').value,description:$('categoryDescription').value,sortOrder:Number($('categorySort').value||0),isActive:$('categoryActive').checked};$('categorySave').disabled=true;try{await api(id?'/categories/'+encodeURIComponent(id):'/categories',{method:'POST',body:JSON.stringify(data)});resetCategoryForm();await loadCategories();feedback('categoryFeedback',id?'Category updated.':'Category created.');}catch(err){feedback('categoryFeedback',err.message,true);}finally{$('categorySave').disabled=false;}});
+$('productForm').addEventListener('submit',async e=>{
+ e.preventDefault();
+ const id=$('productId').value;
+ const file=$('productImageFile').files[0];
+ $('productSave').disabled=true;
+ try{
+  let imageUrl=$('productImageUrl').value.trim()||null;
+  if(file){
+   feedback('productFeedback','Uploading product image…');
+   imageUrl=await uploadProductImage(file);
+   $('productImageUrl').value=imageUrl;
+  }
+  const data={categoryId:$('productCategory').value,name:$('productName').value,description:$('productDescription').value,price:$('productPrice').value,currency:$('productCurrency').value,imageUrl,sortOrder:Number($('productSort').value||0),isActive:$('productActive').checked};
+  feedback('productFeedback','Saving product…');
+  await api(id?'/products/'+encodeURIComponent(id):'/products',{method:'POST',body:JSON.stringify(data)});
+  const selected=data.categoryId;
+  resetProductForm();
+  $('productCategory').value=selected;
+  $('productFilterCategory').value=selected;
+  await loadCategories();
+  await loadProducts();
+  feedback('productFeedback',id?'Product updated.':'Product created.');
+ }catch(err){
+  feedback('productFeedback',err.message,true);
+ }finally{
+  $('productSave').disabled=false;
+ }
+});
+$('productImageFile').addEventListener('change',()=>{
+ const file=$('productImageFile').files[0];
+ if(!file){showProductImagePreview($('productImageUrl').value.trim());return;}
+ const allowed=['image/jpeg','image/png','image/webp'];
+ if(!allowed.includes(file.type)){feedback('productFeedback','Choose a JPG, PNG or WebP image.',true);$('productImageFile').value='';return;}
+ if(file.size>5*1024*1024){feedback('productFeedback','Image must be 5 MB or smaller.',true);$('productImageFile').value='';return;}
+ if(productImagePreviewUrl){URL.revokeObjectURL(productImagePreviewUrl);productImagePreviewUrl=null;}
+ productImagePreviewUrl=URL.createObjectURL(file);
+ $('productImagePreview').src=productImagePreviewUrl;
+ $('productImagePreviewWrap').classList.remove('hidden');
+ feedback('productFeedback','Image selected. It will upload when you save the product.');
+});
+$('productImageUrl').addEventListener('input',()=>{
+ if(!$('productImageFile').files.length)showProductImagePreview($('productImageUrl').value.trim());
+});
+$('categoryCancel').addEventListener('click',resetCategoryForm);$('productCancel').addEventListener('click',resetProductForm);
+$('refreshCategories').addEventListener('click',()=>loadCategories().catch(e=>feedback('globalFeedback',e.message,true)));
+$('refreshProducts').addEventListener('click',()=>loadProducts().catch(e=>feedback('globalFeedback',e.message,true)));
+$('productFilterCategory').addEventListener('change',()=>loadProducts().catch(e=>feedback('globalFeedback',e.message,true)));
+$('refreshOrders').addEventListener('click',()=>loadOrders().catch(e=>feedback('ordersFeedback',e.message,true)));
+$('orderStatusFilter').addEventListener('change',()=>loadOrders().catch(e=>feedback('ordersFeedback',e.message,true)));
+document.querySelectorAll('[data-tab]').forEach(button=>button.addEventListener('click',()=>{activeTab=button.dataset.tab;document.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-selected',String(b===button)));for(const name of ['categories','products','orders'])$(name+'Tab').classList.toggle('hidden',name!==activeTab);if(activeTab==='products')loadProducts().catch(e=>feedback('globalFeedback',e.message,true));if(activeTab==='orders')loadOrders().catch(e=>feedback('ordersFeedback',e.message,true));}));
+$('signout').addEventListener('click',async()=>{try{await window.TrendyAuth.signOut();window.location.replace('./index.html');}catch(e){feedback('globalFeedback',e.message,true);}});
+(async()=>{try{await window.TrendyAuth.getAccessToken();if(!sessionId||!sessionToken){$('sessionLabel').textContent='No saved WhatsApp session';feedback('globalFeedback','Connect a WhatsApp session before managing its catalog.',true);return;}$('sessionLabel').textContent='Session credentials found';await loadCategories();$('productFilterCategory').value=$('productFilterCategory').options[1]?.value||'';if($('productFilterCategory').value)await loadProducts();}catch(e){feedback('globalFeedback',e.message,true);if(/sign in|expired|verify your email/i.test(e.message))setTimeout(()=>location.replace('./index.html'),1800);}})();
+</script>
+</body>
+</html>
