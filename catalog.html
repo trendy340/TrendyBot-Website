@@ -79,7 +79,40 @@ async function loadCategories(){const r=await api('/categories?includeInactive=t
 function renderProducts(){const list=$('productList');list.replaceChildren();if(!products.length){list.append(node('div','empty','No products found in this category.'));return;}
  for(const p of products){const item=node('div','item');const main=node('div','item-main');main.append(node('strong','',p.name));main.append(node('p','',money(p.price,p.currency)));main.append(node('p','',p.description||'No description'));main.append(node('span','pill',p.is_active?'Active':'Disabled'));if(p.image_url){const image=node('img');image.src=p.image_url;image.alt=p.name+' product image';image.loading='lazy';image.style.cssText='display:block;width:100px;height:100px;object-fit:cover;border-radius:10px;margin:0 0 10px';image.addEventListener('error',()=>image.remove(),{once:true});main.append(image);}const actions=node('div','item-actions');const edit=node('button','btn','Edit');edit.type='button';edit.addEventListener('click',()=>{ $('productId').value=p.id;$('productCategory').value=p.category_id;$('productName').value=p.name;$('productPrice').value=p.price;$('productCurrency').value=p.currency||'NGN';$('productDescription').value=p.description||'';$('productImageUrl').value=p.image_url||'';clearProductImagePreview();if(p.image_url)showProductImagePreview(p.image_url);$('productSort').value=p.sort_order??0;$('productActive').checked=!!p.is_active;$('productFormTitle').textContent='✎ EDIT PRODUCT';$('productSave').textContent='Update product';$('productCancel').classList.remove('hidden');$('productName').focus();});const del=node('button','btn danger','Delete');del.type='button';del.addEventListener('click',async()=>{if(!confirm(`Delete product “${p.name}”?`))return;try{await api('/products/'+encodeURIComponent(p.id),{method:'DELETE'});await loadProducts();feedback('globalFeedback','Product deleted.');}catch(e){feedback('globalFeedback',e.message,true);}});actions.append(edit,del);item.append(main,actions);list.append(item);}
 }
-async function loadProducts(){const categoryId=$('productFilterCategory').value;if(!categoryId){products=[];renderProducts();return;}const r=await api('/categories/'+encodeURIComponent(categoryId)+'/products?includeInactive=true');products=r.products||[];renderProducts();}
+let productLoadRequest = 0;
+
+async function loadProducts(){
+  const requestId = ++productLoadRequest;
+  const categoryId = $('productFilterCategory').value;
+
+  if(!categoryId){
+    products = [];
+    renderProducts();
+    return;
+  }
+
+  const validUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(categoryId);
+
+  if(!validUUID){
+    console.error('[Catalog] Invalid selected category:', {
+      categoryId,
+      length: categoryId.length
+    });
+    products = [];
+    renderProducts();
+    return;
+  }
+
+  const r = await api(
+    '/categories/' + encodeURIComponent(categoryId) + '/products?includeInactive=true'
+  );
+
+  if(requestId !== productLoadRequest) return;
+  if($('productFilterCategory').value !== categoryId) return;
+
+  products = r.products || [];
+  renderProducts();
+}
 function renderOrders(orders){const body=$('ordersBody');body.replaceChildren();if(!orders.length){const tr=node('tr');const td=node('td','empty','No orders found.');td.colSpan=7;tr.append(td);body.append(tr);return;}
  for(const o of orders){const tr=node('tr');const id=node('td','',String(o.id).slice(0,8));const product=node('td','',o.product_name);const customer=node('td','',o.customer_name||o.customer_jid||'WhatsApp customer');const qty=node('td','',String(o.quantity));const amount=node('td','',money(Number(o.product_price)*Number(o.quantity),o.product_currency));const statusCell=node('td');statusCell.append(node('span','status '+o.status,o.status));const update=node('td');const select=node('select','btn');for(const s of ['pending','confirmed','cancelled','completed']){const opt=node('option','',s);opt.value=s;select.append(opt);}select.value=o.status;const save=node('button','btn','Save');save.type='button';save.addEventListener('click',async()=>{save.disabled=true;try{await api('/orders/'+encodeURIComponent(o.id)+'/status',{method:'POST',body:JSON.stringify({status:select.value})});feedback('ordersFeedback','Order status updated.');await loadOrders();}catch(e){feedback('ordersFeedback',e.message,true);}finally{save.disabled=false;}});update.append(select,save);tr.append(id,product,customer,qty,amount,statusCell,update);body.append(tr);}
 }
