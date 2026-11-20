@@ -310,12 +310,6 @@ footer{
   <div class="small" id="sessionStatus">Session: checking…</div>
  </section>
 
- <section class="panel">
-  <h2>🏆 TOP COMMANDS TODAY</h2>
-  <div class="rank-list" id="topCommands">
-   <div class="empty">Loading command statistics…</div>
-  </div>
- </section>
 </div>
 
 <div class="section-grid">
@@ -333,6 +327,15 @@ footer{
    <div class="empty">Loading recent activity…</div>
   </div>
   <div class="small">Only command names and timestamps are displayed.</div>
+ </section>
+</div>
+
+<div class="section-grid" style="grid-template-columns:1fr">
+ <section class="panel">
+  <h2>🏆 TOP COMMANDS TODAY</h2>
+  <div class="rank-list" id="topCommands">
+   <div class="empty">Loading command statistics…</div>
+  </div>
  </section>
 </div>
 
@@ -889,6 +892,7 @@ $('autoReplyEnabled').addEventListener('change',async event=>{
 
 
 let awayMessageBusy = false;
+let awayMessageDirty = false;
 
 function setAwayMessageFeedback(message, isError=false){
  const feedback=$('awayMessageFeedback');
@@ -898,8 +902,10 @@ function setAwayMessageFeedback(message, isError=false){
 
 function renderAwayMessage(settings){
  $('awayMessageEnabled').checked=settings?.enabled===true;
- $('awayMessageText').value=settings?.message||'';
- $('awayMessageLength').textContent=$('awayMessageText').value.length+' / 1500';
+ if(!awayMessageDirty){
+  $('awayMessageText').value=settings?.message||'';
+  $('awayMessageLength').textContent=$('awayMessageText').value.length+' / 1500';
+ }
 }
 
 async function loadAwayMessage(){
@@ -909,6 +915,7 @@ async function loadAwayMessage(){
 }
 
 $('awayMessageText').addEventListener('input',()=>{
+ awayMessageDirty=true;
  $('awayMessageLength').textContent=$('awayMessageText').value.length+' / 1500';
 });
 
@@ -927,6 +934,7 @@ $('awayMessageSave').addEventListener('click',async()=>{
   const result=await api('/api/sessions/'+encodeURIComponent(sessionId)+'/away',{
    method:'POST',body:JSON.stringify({message})
   });
+  awayMessageDirty=false;
   renderAwayMessage(result.settings);
   setAwayMessageFeedback('Away message saved successfully.');
  }catch(error){
@@ -964,6 +972,7 @@ $('awayMessageEnabled').addEventListener('change',async event=>{
 });
 
 let welcomeMessageBusy = false;
+let welcomeMessageDirty = false;
 
 function setWelcomeMessageFeedback(message, isError=false){
  const feedback=$('welcomeMessageFeedback');
@@ -973,14 +982,16 @@ function setWelcomeMessageFeedback(message, isError=false){
 
 function renderWelcomeMessage(settings){
  $('welcomeMessageEnabled').checked=settings?.enabled===true;
- $('welcomeMessageText').value=settings?.message||'';
- $('welcomeMessageLength').textContent=$('welcomeMessageText').value.length+' / 1500';
 
  const buttons=Array.isArray(settings?.buttons)?settings.buttons:[];
  const byId=id=>buttons.find(button=>button?.id===id)||{};
 
- $('welcomeButton1Response').value=byId('trendy_welcome_1').response||buttons[0]?.response||'';
- $('welcomeButton3Response').value=byId('trendy_welcome_3').response||buttons[2]?.response||'';
+ if(!welcomeMessageDirty){
+  $('welcomeMessageText').value=settings?.message||'';
+  $('welcomeMessageLength').textContent=$('welcomeMessageText').value.length+' / 1500';
+  $('welcomeButton1Response').value=byId('trendy_welcome_1').response||buttons[0]?.response||'';
+  $('welcomeButton3Response').value=byId('trendy_welcome_3').response||buttons[2]?.response||'';
+ }
 }
 
 async function loadWelcomeMessage(){
@@ -998,8 +1009,13 @@ function setWelcomeMessageBusy(value){
  $('welcomeButton3Response').disabled=welcomeMessageBusy;
 }
 
-$('welcomeMessageText').addEventListener('input',()=>{
- $('welcomeMessageLength').textContent=$('welcomeMessageText').value.length+' / 1500';
+['welcomeMessageText','welcomeButton1Response','welcomeButton3Response'].forEach(id=>{
+ $(id).addEventListener('input',()=>{
+  welcomeMessageDirty=true;
+  if(id==='welcomeMessageText'){
+   $('welcomeMessageLength').textContent=$('welcomeMessageText').value.length+' / 1500';
+  }
+ });
 });
 
 $('welcomeMessageSave').addEventListener('click',async()=>{
@@ -1026,6 +1042,7 @@ $('welcomeMessageSave').addEventListener('click',async()=>{
    body:JSON.stringify({message,buttons})
   });
 
+  welcomeMessageDirty=false;
   renderWelcomeMessage(result.settings);
   setWelcomeMessageFeedback('Welcome message and fixed buttons saved successfully.');
  }catch(error){
