@@ -62,6 +62,31 @@
     return account.token;
   }
 
+  async function updateDisplayName(displayName) {
+    const token = await getAccessToken();
+    const response = await fetch(getApiBase() + '/api/auth/me', {
+      method: 'PATCH',
+      headers: {
+        Authorization: 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ displayName })
+    });
+
+    const result = await response.json().catch(() => ({}));
+    if (response.status === 401) {
+      localStorage.removeItem(AUTH_TOKEN_KEY);
+      window.dispatchEvent(new Event('trendy-auth-changed'));
+      throw new Error(result.error || 'Your session has expired. Please sign in again.');
+    }
+    if (!response.ok || !result?.success || !result.user) {
+      throw new Error(result.error || 'Unable to update your display name.');
+    }
+
+    window.dispatchEvent(new Event('trendy-auth-changed'));
+    return result.user;
+  }
+
   async function signOut() {
     const token = getAuthToken();
     if (!token) {
@@ -86,6 +111,7 @@
   window.TrendyAuth = Object.freeze({
     getAccessToken,
     getAccount,
+    updateDisplayName,
     signOut
   });
 
