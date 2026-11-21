@@ -9,12 +9,29 @@
 :root{color-scheme:dark;--bg:#0b0b0b;--panel:#171717;--panel2:#101010;--line:#30291e;--gold:#c9a45e;--gold2:#f1d99e;--muted:#aaa397;--green:#62d69a;--red:#ff7777}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#211a10 0,#0b0b0b 48%);color:#f5f1e8;font:14px Inter,system-ui,Arial,sans-serif;min-height:100vh}.wrap{width:min(1120px,calc(100% - 32px));margin:auto}a{color:inherit;text-decoration:none}button,input,textarea,select{font:inherit}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}.brand{font-weight:900;letter-spacing:.08em}.brand span{color:var(--gold2)}.nav{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid #66532e;background:#211a10;color:var(--gold2);border-radius:9px;padding:9px 13px;font-size:12px;font-weight:750;cursor:pointer}.btn.primary{background:linear-gradient(120deg,#b88c42,#f1d99e);color:#17120a;border:0}.btn.danger{border-color:#713c36;color:#ffaaa2;background:#241311}.btn:disabled{opacity:.5;cursor:not-allowed}header{padding:28px 0 14px}.eyebrow{font-size:10px;letter-spacing:.2em;color:var(--gold);font-weight:900}h1{font-size:clamp(27px,5vw,40px);margin:7px 0}.muted,.small{color:var(--muted)}.small{font-size:11px;line-height:1.5}.notice{padding:12px 14px;border:1px solid var(--line);border-radius:11px;background:#17130d;color:#d9c9a7;margin:12px 0}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}.tab[aria-selected=true]{background:linear-gradient(120deg,#b88c42,#f1d99e);color:#17120a;border-color:transparent}.panel{background:linear-gradient(145deg,#1b1b1b,var(--panel));border:1px solid var(--line);border-radius:14px;padding:17px;margin:12px 0}.panel h2{font-size:13px;color:var(--gold2);margin:0 0 14px;letter-spacing:.05em}.layout{display:grid;grid-template-columns:minmax(260px,.8fr) minmax(0,1.5fr);gap:14px}.field{display:grid;gap:6px;margin:11px 0}.field label{font-size:12px;color:#d4c9b6}.field input,.field textarea,.field select{width:100%;background:#0d0d0d;border:1px solid #403728;border-radius:8px;padding:11px;color:#f5f1e8;outline:none}.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--gold)}.field textarea{min-height:82px;resize:vertical}.check{display:flex;align-items:center;gap:8px;margin:12px 0;color:#d4c9b6;font-size:12px}.check input{accent-color:var(--gold)}.list{display:grid;gap:8px}.item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;background:#101010;border:1px solid #302b24;border-radius:10px;min-width:0}.item-main{min-width:0;overflow-wrap:anywhere}.item strong{display:block;color:#f1d99e}.item p{margin:4px 0 0;color:var(--muted);font-size:11px;white-space:pre-wrap}.item-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.pill{display:inline-block;border:1px solid #51432b;border-radius:99px;padding:3px 8px;font-size:10px;color:var(--gold2);margin-top:6px}.empty{padding:18px;text-align:center;color:var(--muted);border:1px dashed #393126;border-radius:10px}.feedback{min-height:18px;color:var(--green);font-size:12px;margin-top:10px}.feedback.error{color:var(--red)}.hidden{display:none!important}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:650px}th,td{text-align:left;padding:11px 9px;border-bottom:1px solid #302b24;font-size:12px;vertical-align:top}th{color:var(--gold2);font-size:10px;letter-spacing:.08em}td{color:#ddd4c5}.status{font-size:10px;border-radius:99px;padding:4px 8px;border:1px solid #51432b;color:var(--gold2);white-space:nowrap}.status.pending{color:#f1d99e}.status.confirmed{color:#80dca8}.status.cancelled{color:#ff9999}.status.completed{color:#9dc5ff}.topline{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}.topline h2{margin:0}.foot{padding:20px 0;margin-top:24px;border-top:1px solid var(--line);color:#777;font-size:11px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
 @media(max-width:760px){.layout{grid-template-columns:1fr}.wrap{width:calc(100% - 22px)}.panel{padding:13px}.top{align-items:flex-start}.item{align-items:flex-start;flex-direction:column}.item-actions{justify-content:flex-start}.nav{width:100%}.nav .btn{flex:1;text-align:center}}
+
+/* TRENDY_PROFILE_SHORTCUT */
+.tb-profile-stack{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;flex:0 0 auto}
+.tb-profile-shortcut{width:38px;height:38px;border:1px solid var(--gold2);border-radius:50%;overflow:hidden;display:grid;place-items:center;background:linear-gradient(145deg,#4b3718,#17130d);color:var(--gold2);font-size:12px;font-weight:900;line-height:1;text-decoration:none;box-shadow:0 3px 12px #0007;transition:transform .18s,border-color .18s}
+.tb-profile-shortcut:hover{transform:translateY(-2px);border-color:var(--gold)}
+.tb-profile-shortcut img{width:100%;height:100%;object-fit:cover;display:none}
+.tb-profile-shortcut.has-image img{display:block}
+.tb-profile-shortcut.has-image .tb-profile-initials{display:none}
+.tb-profile-caption{font-size:9px;font-weight:800;letter-spacing:.04em;color:var(--gold2);white-space:nowrap}
+.tb-profile-nav-item{display:flex;flex-direction:column;align-items:center;gap:7px}
+
+/* TRENDY_NAV_POLISH */
+.nav{align-items:flex-end;gap:9px}
+.nav>.btn{min-height:38px;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;padding:9px 14px}
+.nav>.tb-profile-nav-item{min-width:104px;flex:0 0 auto}
+.nav>.tb-profile-nav-item>.btn{width:100%;min-height:38px;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;padding:9px 14px}
+@media(max-width:760px){.nav{align-items:flex-end;gap:8px}.nav>.btn{flex:1 1 auto}.nav>.tb-profile-nav-item{flex:1 1 104px}.nav>.tb-profile-nav-item>.btn{width:100%}}
 </style>
 <link rel="icon" href="/favicon.ico" sizes="any">
 </head>
 <body>
 <div class="wrap">
-<nav class="top"><a class="brand" href="./index.html">TRENDY<span>BOT</span> 2.0</a><div class="nav"><a class="btn" href="./dashboard.html">← Dashboard</a><a class="btn" href="./connect.html">WhatsApp session</a><button class="btn" id="signout">Sign out</button></div></nav>
+<nav class="top"><a class="brand" href="./index.html">TRENDY<span>BOT</span> 2.0</a><div class="nav"><a class="btn" href="./dashboard.html">← Dashboard</a><a class="btn" href="./connect.html">WhatsApp session</a><div class="tb-profile-nav-item"><div class="tb-profile-stack" id="tbProfileStack" hidden><a class="tb-profile-shortcut" id="tbProfileShortcut" href="./profile.html" aria-label="Open your profile" title="Open your profile"><img id="tbProfileImage" alt=""><span class="tb-profile-initials" id="tbProfileInitials">TB</span></a><span class="tb-profile-caption">MY PROFILE</span></div><button class="btn" id="signout">Sign out</button></div></div></nav>
 <header><div class="eyebrow">TRENDY CORE • STOREFRONT CONTROL</div><h1>Catalog <span style="color:var(--gold2)">Manager.</span></h1><p class="muted">Manage the products and categories customers see inside WhatsApp.</p></header>
 <div class="notice"><strong>Session:</strong> <span id="sessionLabel">Checking your saved WhatsApp session…</span><br><span class="small">Your catalog is isolated to this WhatsApp session. Changes here do not affect other connected sessions.</span></div>
 <div class="tabs" role="tablist"><button class="btn tab" data-tab="categories" aria-selected="true">Categories</button><button class="btn tab" data-tab="products" aria-selected="false">Products</button><button class="btn tab" data-tab="orders" aria-selected="false">Orders</button></div>
@@ -171,5 +188,30 @@ document.querySelectorAll('[data-tab]').forEach(button=>button.addEventListener(
 $('signout').addEventListener('click',async()=>{try{await window.TrendyAuth.signOut();window.location.replace('./index.html');}catch(e){feedback('globalFeedback',e.message,true);}});
 (async()=>{try{await window.TrendyAuth.getAccessToken();if(!sessionId||!sessionToken){$('sessionLabel').textContent='No saved WhatsApp session';feedback('globalFeedback','Connect a WhatsApp session before managing its catalog.',true);return;}$('sessionLabel').textContent='Session credentials found';await loadCategories();$('productFilterCategory').value=$('productFilterCategory').options[1]?.value||'';if($('productFilterCategory').value)await loadProducts();}catch(e){feedback('globalFeedback',e.message,true);if(/sign in|expired|verify your email/i.test(e.message))setTimeout(()=>location.replace('./index.html'),1800);}})();
 </script>
-</body>
+<script>
+(() => {
+  const stack = document.getElementById('tbProfileStack');
+  if (!stack || !window.TrendyAuth) return;
+  const shortcut = document.getElementById('tbProfileShortcut');
+  const image = document.getElementById('tbProfileImage');
+  const initials = document.getElementById('tbProfileInitials');
+  function setFallback(name) {
+    initials.textContent = (name || '').trim().split(/\s+/).slice(0, 2).map(part => part[0]).join('').toUpperCase() || 'TB';
+    shortcut.classList.remove('has-image');
+    image.removeAttribute('src');
+  }
+  window.TrendyAuth.getAccount().then(account => {
+    if (!account?.user) return;
+    const user = account.user;
+    const name = user.displayName || user.display_name || user.email || '';
+    setFallback(name);
+    if (user.profileImageUrl) {
+      image.onload = () => shortcut.classList.add('has-image');
+      image.onerror = () => setFallback(name);
+      image.src = user.profileImageUrl;
+    }
+    stack.hidden = false;
+  }).catch(() => {});
+})();
+</script></body>
 </html>

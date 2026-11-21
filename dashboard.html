@@ -217,6 +217,23 @@ footer{
  .autoreply-rule .btn{padding:7px 9px}
 }
 
+
+/* TRENDY_PROFILE_SHORTCUT */
+.tb-profile-stack{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;flex:0 0 auto}
+.tb-profile-shortcut{width:38px;height:38px;border:1px solid var(--gold2);border-radius:50%;overflow:hidden;display:grid;place-items:center;background:linear-gradient(145deg,#4b3718,#17130d);color:var(--gold2);font-size:12px;font-weight:900;line-height:1;text-decoration:none;box-shadow:0 3px 12px #0007;transition:transform .18s,border-color .18s}
+.tb-profile-shortcut:hover{transform:translateY(-2px);border-color:var(--gold)}
+.tb-profile-shortcut img{width:100%;height:100%;object-fit:cover;display:none}
+.tb-profile-shortcut.has-image img{display:block}
+.tb-profile-shortcut.has-image .tb-profile-initials{display:none}
+.tb-profile-caption{font-size:9px;font-weight:800;letter-spacing:.04em;color:var(--gold2);white-space:nowrap}
+.tb-profile-nav-item{display:flex;flex-direction:column;align-items:center;gap:7px}
+
+/* TRENDY_NAV_POLISH */
+.navlinks{align-items:center;gap:10px}
+.navlinks>a,.navlinks>.tb-profile-nav-item>.btn{min-height:38px;display:inline-flex;align-items:center;justify-content:center;padding:9px 14px;border-radius:9px;white-space:nowrap}
+.tb-profile-nav-item{min-width:104px}
+.tb-profile-nav-item>.btn{width:100%;box-sizing:border-box}
+@media(max-width:600px){.navlinks{display:flex;align-items:center;justify-content:flex-start;gap:9px}.tb-profile-nav-item{min-width:0}.tb-profile-nav-item>.btn{width:auto}}
 </style>
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
@@ -253,7 +270,7 @@ footer{
  <div class="navlinks">
   <a class="btn" href="./preview.html">Public Preview</a>
   <a class="btn" href="./catalog.html">Catalog Manager</a>
-  <a class="btn" href="./connect.html">Connect WhatsApp</a>
+  <div class="tb-profile-nav-item"><div class="tb-profile-stack" id="tbProfileStack" hidden><a class="tb-profile-shortcut" id="tbProfileShortcut" href="./profile.html" aria-label="Open your profile" title="Open your profile"><img id="tbProfileImage" alt=""><span class="tb-profile-initials" id="tbProfileInitials">TB</span></a><span class="tb-profile-caption">MY PROFILE</span></div><a class="btn" href="./connect.html">Connect WhatsApp</a></div>
   <button class="btn" id="signout">Sign out</button>
  </div>
 </nav>
@@ -1235,5 +1252,30 @@ $('signout').addEventListener('click',async()=>{
  }
 })();
 </script>
-</body>
+<script>
+(() => {
+  const stack = document.getElementById('tbProfileStack');
+  if (!stack || !window.TrendyAuth) return;
+  const shortcut = document.getElementById('tbProfileShortcut');
+  const image = document.getElementById('tbProfileImage');
+  const initials = document.getElementById('tbProfileInitials');
+  function setFallback(name) {
+    initials.textContent = (name || '').trim().split(/\s+/).slice(0, 2).map(part => part[0]).join('').toUpperCase() || 'TB';
+    shortcut.classList.remove('has-image');
+    image.removeAttribute('src');
+  }
+  window.TrendyAuth.getAccount().then(account => {
+    if (!account?.user) return;
+    const user = account.user;
+    const name = user.displayName || user.display_name || user.email || '';
+    setFallback(name);
+    if (user.profileImageUrl) {
+      image.onload = () => shortcut.classList.add('has-image');
+      image.onerror = () => setFallback(name);
+      image.src = user.profileImageUrl;
+    }
+    stack.hidden = false;
+  }).catch(() => {});
+})();
+</script></body>
 </html>

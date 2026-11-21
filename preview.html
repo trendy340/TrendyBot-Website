@@ -117,6 +117,16 @@ footer{border-top:1px solid var(--line);margin-top:38px;padding-top:20px;display
 .tb-menu-profile-link{display:inline-block;margin-top:9px;color:#f1d99e;font-size:12px;font-weight:800;text-decoration:none}.tb-menu-profile-link:hover{text-decoration:underline}
 @media(max-width:480px){#tb-menu-root{right:14px;bottom:14px}#tb-menu-toggle{width:50px;height:50px}}
 
+
+/* TRENDY_PROFILE_SHORTCUT */
+.tb-profile-stack{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;flex:0 0 auto}
+.tb-profile-shortcut{width:38px;height:38px;border:1px solid var(--gold2);border-radius:50%;overflow:hidden;display:grid;place-items:center;background:linear-gradient(145deg,#4b3718,#17130d);color:var(--gold2);font-size:12px;font-weight:900;line-height:1;text-decoration:none;box-shadow:0 3px 12px #0007;transition:transform .18s,border-color .18s}
+.tb-profile-shortcut:hover{transform:translateY(-2px);border-color:var(--gold)}
+.tb-profile-shortcut img{width:100%;height:100%;object-fit:cover;display:none}
+.tb-profile-shortcut.has-image img{display:block}
+.tb-profile-shortcut.has-image .tb-profile-initials{display:none}
+.tb-profile-caption{font-size:9px;font-weight:800;letter-spacing:.04em;color:var(--gold2);white-space:nowrap}
+.tb-profile-nav-item{display:flex;flex-direction:column;align-items:center;gap:7px}
 </style>
 
     <!-- TrendyBot social sharing preview -->
@@ -149,6 +159,15 @@ footer{border-top:1px solid var(--line);margin-top:38px;padding-top:20px;display
   border-radius: 16px;
   box-shadow: 0 8px 30px rgba(216,181,106,.14);
 }
+
+/* TRENDY_NAV_POLISH */
+nav .navlinks{align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:12px}
+nav .navlinks>a{min-height:36px;display:inline-flex;align-items:center;justify-content:center;padding:7px 10px;border-radius:8px;white-space:nowrap;transition:background .18s,color .18s}
+nav .navlinks>a:hover{background:#211a10;color:var(--gold2)}
+nav .navlinks>.tb-profile-nav-item{min-width:104px}
+nav .navlinks>.tb-profile-nav-item>a{width:100%}
+@media(max-width:800px){nav{align-items:flex-start;flex-direction:column;gap:12px}nav .navlinks{width:100%;justify-content:flex-start;gap:8px}}
+@media(max-width:440px){nav .navlinks{gap:6px}nav .navlinks>a{padding:6px 8px;font-size:11px}.tb-profile-nav-item{min-width:0}}
 </style>
 
 <link rel="icon" href="/favicon.ico" sizes="any">
@@ -178,7 +197,7 @@ footer{border-top:1px solid var(--line);margin-top:38px;padding-top:20px;display
   </section>
 </div>
 <div class="wrap">
-<nav><a class="brand" href="./index.html">TRENDY<span>BOT</span> 2.0</a><div class="navlinks"><a href="./index.html">Home</a><a href="#activity">Activity</a><a href="#commands">Commands</a><a href="./dashboard.html">Live Dashboard →</a></div></nav>
+<nav><a class="brand" href="./index.html">TRENDY<span>BOT</span> 2.0</a><div class="navlinks"><a href="./index.html">Home</a><a href="#activity">Activity</a><a href="#commands">Commands</a><div class="tb-profile-nav-item"><div class="tb-profile-stack" id="tbProfileStack" hidden><a class="tb-profile-shortcut" id="tbProfileShortcut" href="./profile.html" aria-label="Open your profile" title="Open your profile"><img id="tbProfileImage" alt=""><span class="tb-profile-initials" id="tbProfileInitials">TB</span></a><span class="tb-profile-caption">MY PROFILE</span></div><a href="./dashboard.html">Live Dashboard →</a></div></div></nav>
 <header class="hero"><div><div class="eyebrow">Trendy Core • Control Center</div><div class="welcome-neon" aria-label="Welcome to TrendyBot"><span id="welcomeTyping"></span><span class="typing-cursor" aria-hidden="true"></span></div><h1>Public <span class="gold">Dashboard.</span></h1><p class="sub">A quick look at the TrendyBot 2.0 ecosystem, its capabilities and activity.</p></div><div class="hero-actions"><a class="start-btn" href="https://trendybot-website.pages.dev/">GET STARTED <span>→</span></a><div class="badge" id="apiBadge">● CONNECTING</div><div class="live-clock" id="liveClock"><div class="clock-label">YOUR LOCAL TIME</div><div class="clock-time" id="clockTime">--:--:--</div><div class="clock-date" id="clockDate">Loading date…</div><div class="clock-zone" id="clockZone"></div></div></div></header>
 <img class="trendy-visible-banner"
      src="./trendybot-og-image.jpg"
@@ -465,4 +484,30 @@ footer{border-top:1px solid var(--line);margin-top:38px;padding-top:20px;display
 </script>
 
 <script src="./auth-client.js"></script>
+<script>
+(() => {
+  const stack = document.getElementById('tbProfileStack');
+  if (!stack || !window.TrendyAuth) return;
+  const shortcut = document.getElementById('tbProfileShortcut');
+  const image = document.getElementById('tbProfileImage');
+  const initials = document.getElementById('tbProfileInitials');
+  function setFallback(name) {
+    initials.textContent = (name || '').trim().split(/\s+/).slice(0, 2).map(part => part[0]).join('').toUpperCase() || 'TB';
+    shortcut.classList.remove('has-image');
+    image.removeAttribute('src');
+  }
+  window.TrendyAuth.getAccount().then(account => {
+    if (!account?.user) return;
+    const user = account.user;
+    const name = user.displayName || user.display_name || user.email || '';
+    setFallback(name);
+    if (user.profileImageUrl) {
+      image.onload = () => shortcut.classList.add('has-image');
+      image.onerror = () => setFallback(name);
+      image.src = user.profileImageUrl;
+    }
+    stack.hidden = false;
+  }).catch(() => {});
+})();
+</script>
 </body></html>
