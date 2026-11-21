@@ -87,6 +87,57 @@
     return result.user;
   }
 
+  async function uploadProfilePicture(file) {
+    if (!(file instanceof File)) throw new Error('Choose a profile picture first.');
+    const token = await getAccessToken();
+    const body = new FormData();
+    body.append('image', file);
+    const response = await fetch(getApiBase() + '/api/auth/me/avatar', {
+      method: 'POST', headers: { Authorization: 'Bearer ' + token }, body
+    });
+    const result = await response.json().catch(() => ({}));
+    if (response.status === 401) {
+      localStorage.removeItem(AUTH_TOKEN_KEY);
+      window.dispatchEvent(new Event('trendy-auth-changed'));
+      throw new Error(result.error || 'Your session has expired. Please sign in again.');
+    }
+    if (!response.ok || !result?.success) throw new Error(result.error || 'Unable to upload your profile picture.');
+    window.dispatchEvent(new Event('trendy-auth-changed'));
+    return result.profileImageUrl || null;
+  }
+
+  async function removeProfilePicture() {
+    const token = await getAccessToken();
+    const response = await fetch(getApiBase() + '/api/auth/me/avatar', {
+      method: 'DELETE', headers: { Authorization: 'Bearer ' + token }
+    });
+    const result = await response.json().catch(() => ({}));
+    if (response.status === 401) {
+      localStorage.removeItem(AUTH_TOKEN_KEY);
+      window.dispatchEvent(new Event('trendy-auth-changed'));
+      throw new Error(result.error || 'Your session has expired. Please sign in again.');
+    }
+    if (!response.ok || !result?.success) throw new Error(result.error || 'Unable to remove your profile picture.');
+    window.dispatchEvent(new Event('trendy-auth-changed'));
+  }
+
+  async function changePassword(currentPassword, newPassword, confirmPassword) {
+    const token = await getAccessToken();
+    const response = await fetch(getApiBase() + '/api/auth/change-password', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ currentPassword, newPassword, confirmPassword })
+    });
+    const result = await response.json().catch(() => ({}));
+    if (response.status === 401) {
+      localStorage.removeItem(AUTH_TOKEN_KEY);
+      window.dispatchEvent(new Event('trendy-auth-changed'));
+      throw new Error(result.error || 'Your session has expired. Please sign in again.');
+    }
+    if (!response.ok || !result?.success) throw new Error(result.error || 'Unable to change your password.');
+    return result;
+  }
+
   async function signOut() {
     const token = getAuthToken();
     if (!token) {
@@ -112,6 +163,9 @@
     getAccessToken,
     getAccount,
     updateDisplayName,
+    uploadProfilePicture,
+    removeProfilePicture,
+    changePassword,
     signOut
   });
 
