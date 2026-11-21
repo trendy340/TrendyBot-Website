@@ -685,7 +685,7 @@ function renderStats(stats){
 function renderCommands(commands, mode='public'){
  const allowed=[
   'autoviewstatus','antidelete','anticall',
-  'typing','recording','alwaysonline','autoread','autoreact'
+  'autoreactstatus','typing','recording','alwaysonline','autoread','autoreact'
  ];
  const list=Array.isArray(commands)?commands.filter(item=>allowed.includes(item.name)):[];
  $('featureSwitches').replaceChildren();
