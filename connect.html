@@ -38,7 +38,7 @@
 #tb-menu-signout{margin-top:8px;color:#f1d99e}
 @media(max-width:480px){#tb-menu-root{right:14px;bottom:14px}#tb-menu-toggle{width:50px;height:50px}}
 
-</style><script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script><link rel="icon" href="/favicon.ico" sizes="any">
+</style><link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
@@ -70,7 +70,7 @@
 <section class="card"><div class="tabs"><button class="tab active" id="pairTab" type="button">⌨ Pairing code</button><button class="tab" id="qrTab" type="button">▦ QR code</button></div>
 <div id="pairPanel"><label for="phone">WhatsApp phone number</label><input id="phone" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="Enter your phone number"><p class="hint">Select your country, then enter your phone number without the country code.</p><button class="action" id="pairBtn" type="button">Generate pairing code</button></div>
 <div id="qrPanel" hidden><div class="qrbox"><div><div class="qrmark">▦</div><b>QR connection will appear here</b><br><small>Secure connection service not connected yet</small></div></div><button class="action" id="qrBtn" type="button">Start QR connection</button></div>
-<div class="cf-turnstile" data-sitekey="0x4AAAAAAFs_xdzbq9wc2gcc" data-theme="dark"></div><div class="status" id="status" role="status">Connection service is not active yet.</div></section>
+<div class="status" id="status" role="status">Connection service is not active yet.</div></section>
 <section class="steps"><h2>How linking will work</h2><ol><li>Choose pairing code or QR code above.</li><li>Open WhatsApp on your phone and go to <b>Linked Devices</b>.</li><li>Choose <b>Link a Device</b>, then scan the QR or choose phone-number linking and enter the code.</li><li>Keep this page open until the connection status confirms success.</li></ol></section>
 <p class="disclaimer">Security note: Never share a pairing code or QR code with anyone. It grants access to link a device to your WhatsApp account. Only link a session you control.</p><footer>© TrendyBot 2.0 • Trendy Core — Always Ready.</footer></main>
 
@@ -134,16 +134,12 @@ async function request(url,options={}){
  return data;
 }
 async function createSession(base){
- if(!window.turnstile)throw new Error('Security verification is loading. Please wait.');
- const token=turnstile.getResponse();
- if(!token)throw new Error('Please complete the security verification first.');
  const userToken=await getVerifiedAccessToken();
  const data=await request(base+'/api/sessions',{
   method:'POST',
   headers:{'Content-Type':'application/json','Authorization':'Bearer '+userToken},
-  body:JSON.stringify({turnstileToken:token})
+  body:JSON.stringify({})
  });
- turnstile.reset();
  const session=data.session||data;
  const sessionId=session.sessionId||session.id||data.sessionId;
  const accessToken=session.accessToken||data.accessToken||data.token;
