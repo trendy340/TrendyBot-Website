@@ -127,6 +127,11 @@ footer{border-top:1px solid var(--line);margin-top:38px;padding-top:20px;display
 .tb-profile-shortcut.has-image .tb-profile-initials{display:none}
 .tb-profile-caption{font-size:9px;font-weight:800;letter-spacing:.04em;color:var(--gold2);white-space:nowrap}
 .tb-profile-nav-item{display:flex;flex-direction:column;align-items:center;gap:7px}
+
+/* TRENDY_PROFILE_EDGE */
+.navlinks{position:relative;padding-right:72px;min-height:56px}
+.tb-profile-nav-item{display:contents}
+.tb-profile-stack{position:absolute;right:0;top:50%;transform:translateY(-50%);z-index:3}
 </style>
 
     <!-- TrendyBot social sharing preview -->
@@ -159,15 +164,6 @@ footer{border-top:1px solid var(--line);margin-top:38px;padding-top:20px;display
   border-radius: 16px;
   box-shadow: 0 8px 30px rgba(216,181,106,.14);
 }
-
-/* TRENDY_NAV_POLISH */
-nav .navlinks{align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:12px}
-nav .navlinks>a{min-height:36px;display:inline-flex;align-items:center;justify-content:center;padding:7px 10px;border-radius:8px;white-space:nowrap;transition:background .18s,color .18s}
-nav .navlinks>a:hover{background:#211a10;color:var(--gold2)}
-nav .navlinks>.tb-profile-nav-item{min-width:104px}
-nav .navlinks>.tb-profile-nav-item>a{width:100%}
-@media(max-width:800px){nav{align-items:flex-start;flex-direction:column;gap:12px}nav .navlinks{width:100%;justify-content:flex-start;gap:8px}}
-@media(max-width:440px){nav .navlinks{gap:6px}nav .navlinks>a{padding:6px 8px;font-size:11px}.tb-profile-nav-item{min-width:0}}
 </style>
 
 <link rel="icon" href="/favicon.ico" sizes="any">
