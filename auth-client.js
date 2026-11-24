@@ -181,6 +181,22 @@
   const emailNode = document.getElementById('tb-menu-email');
   const signout = document.getElementById('tb-menu-signout');
 
+  // TrendyBot Boost links are additive; existing navigation remains unchanged.
+  const menuLinks = root.querySelector('.tb-menu-links');
+  if (menuLinks && !menuLinks.querySelector('[data-boost-link]')) {
+    const boostLinks = [
+      ['Customer Boost', './boost.html'],
+      ['Creator Dashboard', './boost-creator.html']
+    ];
+    for (const [label, href] of boostLinks) {
+      const link = document.createElement('a');
+      link.href = href;
+      link.textContent = label;
+      link.dataset.boostLink = 'true';
+      menuLinks.appendChild(link);
+    }
+  }
+
   if (!toggle || !panel || !accountLink || !accountBox ||
       !nameNode || !emailNode || !signout) {
     console.warn('[Trendy menu] Required elements are missing.');
